@@ -1,41 +1,33 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const PORT = 3000
+const express = require("express")
+const path = require("path")
+const exphdb = require("express-handlebars")
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const hbs = exphdb.create({
+  extname: 'hbs',
+  defaultLayout: 'main',
+  layoutsDir: __dirname + '/views/layouts',
+  partialsDir: __dirname + '/views/partials',
+  helpers: {
+    isEqual: (a, b, options) => {
+      return a === b ? options.fn(this) : options.inverse(this);
+    },
+    multiply: (a, b) => a * b,
+    formatPrice: (price) => `$${price.toFixed(2)}`,
+    remove:(c) => c.substring(1)
+  }
+})
 
-var app = express();
+const app = express()
+app.engine('hbs', hbs.engine)
+app.set("view engine", "hbs")
+app.set("views", path.join(__dirname, "views"));
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.get("/", (req, resp) => {
+  resp.render("home", {"message":"Hello Welcome"})
+})
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.listen(PORT, ()=>{
+  console.log("Server has been started")
+})
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-module.exports = app;
