@@ -2,23 +2,17 @@ var express = require('express');
 
 var eventRouter = express.Router();
 
-const path = require("path")
 const eventService = require("../service/events")
 const readInt = require("./parameter")
 
+const Constants = require("../service/constants")
+
 
 function getOrElse(v, d){
-
-    if(isNaN(v)){
+    r = parseInt(v)
+    if(isNaN(r)){
         return d
     }else{
-        let r 
-        try {
-            r = parseInt(v)
-        } catch (error) {
-            r = d
-        }
-
         return r
     }
 }
@@ -34,10 +28,23 @@ function getEventList(res, resp){
         }
     }
 
+    const typeList = Constants.event.types
+    const statusList = Constants.event.status
+
     const eventsListWithTotal = eventService.getEventList(param)
+
+    condition = {
+        statusCode: param.statusCode == -1 ?  "" : param.statusCode,
+        typeCode: param.typeCode == -1 ? "" : param.typeCode
+    }
+
     let result = {
         "data": eventsListWithTotal,
-        "param":param
+        "param":condition,
+        "selections":{
+            "typeList":typeList,
+            "statusList":statusList
+        }
     }
     resp.render("events", result)
 }

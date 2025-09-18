@@ -1,6 +1,52 @@
-<script lang="javascript" src="/javascripts/page.js" defer></script>
-<script lang="javascript" src="/javascripts/invites.js" defer></script>
+<script lang="javascript" src="/javascripts/events/page.js" defer></script>
+<script lang="javascript" src="/javascripts/events/invites.js" defer></script>
+<script lang="javascript" src="/javascripts/events/dropdownlist.js" defer></script>
+<div>
+<div class="dropdown relative inline-block text-left mt-10 mb-10"
+     data-name="typeCode"          
+     data-allow-empty="true"        
+     data-placeholder="Event Type"   
+     data-value="{{param.typeCode}}">                
+  <button class="dd-btn inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm bg-white hover:bg-gray-50">
+    <svg class="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08z"/></svg>
+  </button>
 
+  <div class="dd-menu absolute left-0 mt-2 z-50 w-56 origin-top-left rounded-md border bg-white shadow-lg max-h-60 overflow-auto hidden">
+    <ul class="py-1 text-sm">
+      {{#each selections.typeList}}
+      <li><button type="button" class="w-full text-left px-4 py-2 hover:bg-gray-50" data-value="{{this.code}}">{{this.name}}</button></li>
+      {{/each}}
+    </ul>
+  </div>
+
+  <input type="hidden" class="dd-input" id="q_TypeCode" name="typeCode" value="{{param.typeCode}}">
+</div>
+
+<div class="dropdown relative inline-block text-left mt-10 mb-10"
+     data-name="statusCode"
+     data-allow-empty="true"
+     data-placeholder="Status Type"
+     data-value="{{param.statusCode}}">
+  <button class="dd-btn inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm bg-white hover:bg-gray-50">
+    <svg class="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.94l3.71-3.71a.75.75 0 1 1 1.06 1.06l-4.24 4.24a.75.75 0 0 1-1.06 0L5.21 8.29a.75.75 0 0 1 .02-1.08z"/></svg>
+  </button>
+
+  <div class="dd-menu absolute left-0 mt-2 z-50 w-56 origin-top-left rounded-md border bg-white shadow-lg max-h-60 overflow-auto hidden">
+    <ul class="py-1 text-sm">
+      {{#each selections.statusList}}
+      <li><button type="button" class="w-full text-left px-4 py-2 hover:bg-gray-50" data-value="{{this.code}}">{{this.name}}</button></li>
+      {{/each}}
+    </ul>
+  </div>
+
+  <input type="hidden" class="dd-input" id="q_StatusCode" name="statusCode" value="{{param.statusCode}}">
+</div>
+
+<button onclick="newSearch()" class="px-6 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg shadow-md 
+               hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Query</button>
+<form id="queryForm" action="/events/list" method="get">
+</form>
+</div>
 <ul role="list" class="divide-y divide-gray-100">
 {{#each data.list}}
   <li class="flex justify-between gap-x-6 py-5">
@@ -113,10 +159,30 @@
           </div>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-          <button type="button" id="copyButton" onclick="copyToClipboard()" class="inline-flex w-full justify-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-400 sm:ml-3 sm:w-auto">Copy</button>
+          <button type="button" id="copyButton" onclick="copyToClipboard()" class="inline-flex w-full justify-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-600 sm:ml-3 sm:w-auto">Copy</button>
           <button type="button" onclick="closeInvitesDialog()" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
         </div>
       </el-dialog-panel>
     </div>
   </dialog>
 </el-dialog>
+
+
+<script>
+  function newSearch(){
+
+    let typeCode = document.createElement("input")
+    let statusCode = document.createElement("input")
+    typeCode.type = "hidden"
+    statusCode.type = "hidden"
+    typeCode.name = "typeCode"
+    statusCode.name = "statusCode"
+    typeCode.value = document.getElementById("q_TypeCode").value
+    statusCode.value = document.getElementById("q_StatusCode").value
+
+    let form = document.getElementById("queryForm")
+    form.appendChild(typeCode)
+    form.appendChild(statusCode)
+    form.submit()
+  }
+</script>
