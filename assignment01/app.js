@@ -16,7 +16,10 @@ const hbs = exphdb.create({
   helpers: {
     subtract:(a, b) => a - b,
     formatDate:(d)=>`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
-    percentage: (numinator, denumirator) => (numinator / denumirator) * 100 + "%"
+    percentage: (numinator, denumirator) => (numinator / denumirator) * 100 + "%",
+    canInvite:(e) => {
+      return e.status.code === 1 && e.states.code === 2 && new Date() <= e.deadline
+    }
   }
 })
 
