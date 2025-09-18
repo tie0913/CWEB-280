@@ -3,7 +3,7 @@ function create(values){
     res = []
     for(let i = 0; i < values.length; i++){
         res.push({
-            "code": i,
+            "code": i + 1,
             "name": values[i]
         })
     }

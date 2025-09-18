@@ -3,20 +3,20 @@ const express = require("express")
 const path = require("path")
 const exphdb = require("express-handlebars")
 
+
+function pad(n){
+  return n.toString().padStart(2, "0")
+}
+
 const hbs = exphdb.create({
   extname: 'hbs',
   defaultLayout: 'main',
   layoutsDir: __dirname + '/views/layouts',
   partialsDir: __dirname + '/views/partials',
   helpers: {
-    isEqual: (a, b, options) => {
-      return a === b ? options.fn(this) : options.inverse(this);
-    },
-    multiply: (a, b) => a * b,
-    formatPrice: (price) => `$${price.toFixed(2)}`,
-    remove:(c) => c.substring(1),
-    percentage: (numinator, denumirator) => (numinator / denumirator) * 100 + "%",
-    depercentage: (numinator, denumirator) => ((denumirator - numinator)/ denumirator) * 100 + "%"
+    subtract:(a, b) => a - b,
+    formatDate:(d)=>`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
+    percentage: (numinator, denumirator) => (numinator / denumirator) * 100 + "%"
   }
 })
 
@@ -32,6 +32,7 @@ app.get("/", (req, resp) => {
 })
 
 app.use("/events", eventRouter)
+app.use(express.static("public"))
 
 app.listen(PORT, ()=>{
   console.log("Server has been started")
