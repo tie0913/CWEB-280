@@ -5,7 +5,8 @@ const express = require("express");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
 const exphbs = require("express-handlebars");
-const JWT_SECRET = process.env.JWT_SECRET || "Test Token"
+const jwt = require("jsonwebtoken")
+const {JWT_SECRET} = require("./config/jwt.js")
 // --- Handlebars engine + helpers ---
 const hbs = exphbs.create({
     extname: ".hbs",
@@ -45,13 +46,15 @@ app.use((req, res, next) => {
     res.locals.chrome = true;
 
     const token = req.cookies?.session;
+    console.log(`Token from HOME: ${token}`)
     if (token) {
     try {
       const payload = jwt.verify(token, JWT_SECRET);
       req.user = payload;      
       res.locals.user = payload;  
-    } catch {
-      res.clearCookie("session");  // bad/expired token — clear it
+    } catch(e) {
+        console.log(`ERROR: ${e}`);
+        res.clearCookie("session");  // bad/expired token — clear it
     }
 }
   
@@ -70,8 +73,7 @@ app.get("/", (req, res) => {
 app.use(authRoutes);          // /signin, /signup, /logout, /signup/success
 app.use(registrationRoutes);  // /my/registrations, /register (GET/POST)
 
-// --- (Optional) simple 404 ---
-app.use((req, res) => res.status(404).render("errors/404", { title: "Not Found" }));
+//app.use((req, res) => res.status(404).render("errors/404", { title: "Not Found" }));
 
 app.listen(PORT, () => {
     console.log(`Server has been started on http://localhost:${PORT}`);

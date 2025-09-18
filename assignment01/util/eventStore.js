@@ -1,4 +1,3 @@
-const fs = require("fs/promises");
 const path = require("path");
 const crypto = require("crypto");
 const { ensureFileWithDefault, readJson, writeJsonAtomic, withLock } = require("./jsonUtil.js");

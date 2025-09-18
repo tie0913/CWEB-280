@@ -7,12 +7,17 @@ const { validationResult } = require("express-validator");
 const { createUser, verifyCredentials, getUserById } = require("../util/userStore.js");
 const { uploadResume } = require("../middleware/upload.js");
 const { signUpValidators } = require("../middleware/validators.js");
+const {JWT_SECRET} = require("../config/jwt.js")
+
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || "Test-Token-SECRET";
+
 router.get('/signin', (req, res) => {
     res.render("signin", { title: "Sign In", chrome: false });
 });
+
+console.log("[VERIFY] using secret:", JWT_SECRET);
+
 
 router.post("/signin", async (req, res) => {
     const { email, password } = req.body;
@@ -32,6 +37,8 @@ router.post("/signin", async (req, res) => {
     const token = jwt.sign(
         { id: user.id, email: user.email, role: user.role }, 
         JWT_SECRET , { expiresIn: '1h' });
+    console.log(`Token from login: ${token}`)
+
     res.cookie("session", token, { httpOnly: true, sameSite: "lax" });
     res.redirect("/");
 });

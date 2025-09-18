@@ -10,6 +10,7 @@ const {
 
 const router = Router();
 
+
 router.get("/my/registrations", requireAuth, async (req, res) => {
     const rows = await listUserRegistrations(req.user.id);
 
