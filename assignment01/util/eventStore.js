@@ -3,7 +3,7 @@ const path = require("path");
 const crypto = require("crypto");
 const { ensureFileWithDefault, readJson, writeJsonAtomic, withLock } = require("./jsonUtil.js");
 
-const DATA_DIR = path.resolve("database");
+const DATA_DIR = path.resolve("../database");
 const EVENTS_FILE = path.join(DATA_DIR, "events.json");
 const REGS_FILE = path.join(DATA_DIR, "registrations.json");
 

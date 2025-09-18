@@ -42,7 +42,7 @@ let queue = Promise.resolve();
  * @param {object} payloadObj
  */
  async function writeJsonAtomic(filePath, payloadObj) {
-    const tmp = filepath + "." + crypto.randomBytes(6).toString("hex") + ".tmp";
+    const tmp = filePath + "." + crypto.randomBytes(6).toString("hex") + ".tmp";
     const data = JSON.stringify(payloadObj, null, 2);
     await fs.writeFile(tmp, data, "utf8");
     await fs.rename(tmp, filePath);

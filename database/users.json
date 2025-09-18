@@ -1,0 +1,15 @@
+{
+  "users": [
+    {
+      "id": "1d13a0d0-f334-4539-9d4d-f19ee585eca9",
+      "email": "admin@example.com",
+      "passwordHash": "$2b$10$SzCDq8V5qTcLCf.3IB1p1u9Ej9070IciSQEU9k8dPP0OhduYdawAG",
+      "role": "admin",
+      "name": "Admin",
+      "phone": "",
+      "position": "",
+      "resumePath": "",
+      "createdAt": "2025-09-18T04:47:38.780Z"
+    }
+  ]
+}

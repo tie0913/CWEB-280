@@ -2,7 +2,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
 
-const UPLOAD_DIR = path.resolve('database/uploads');
+const UPLOAD_DIR = path.resolve('../database/uploads');
 
 const storage = multer.diskStorage({
     destination: async (req, file, cb) => {
