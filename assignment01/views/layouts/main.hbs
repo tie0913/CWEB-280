@@ -2,20 +2,18 @@
 <html>
 <head>
   <title>{{{title}}}</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-dvh">
-  <!-- 固定 Header -->
   <header class="fixed inset-x-0 top-0 h-16 bg-gray-800 text-white flex items-center justify-center z-50">
     {{> header}}
   </header>
 
-  <!-- 主内容：预留 header/footer 的高度 -->
   <main class="mx-5 pt-16 pb-16">
     {{{ body }}}
   </main>
 
-  <!-- 固定 Footer -->
   <footer class="fixed inset-x-0 bottom-0 h-16 bg-gray-800 text-white flex items-center justify-center z-40">
     {{> footer}}
   </footer>

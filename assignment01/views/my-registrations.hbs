@@ -1,0 +1,63 @@
+<h1>My Registrations</h1>
+<p style="margin:12px 0;">
+    <a href="/register" class="btn btn-primary"> Register new event</a>
+</p>
+
+{{#if registrations.length}}
+    <table>
+        <thead>
+            <tr style="text-align:left; border-bottom:1px" >
+                <th style="padding:8px">Event</th>
+                <th style="padding:8px">Status</th>
+                <th style="padding:8px">Registered On</th>
+                <th style="padding:8px">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each registrations}}
+            <tr style="border-bottom: 1px solid #eee">
+                <td style="padding:8px">
+                    {{#if this.event}}
+                        {{this.event.name}}
+                        {{else}}
+                        <em>Event Deleted</em>
+                    {{/if}}
+                </td>
+
+                <td style="padding:8px">
+                    {{#if this.event}}
+                    {{this.event.type}}
+                    {{/if}}
+                </td>
+
+                <td style="padding:8px">
+                    {{#if this.event}}
+                        {{#if (eq this.event.remaining 0)}}
+                             <span style="padding:2px 8px; border-radius:12px; background:#ffe5e5; color:#a40000;">Sold Out</span>
+                        {{else}}
+                            <span style="padding:2px 8px; border-radius:12px; background:#e8f5e9; color:#1b5e20;">Active</span>
+                        {{/if}}
+                    {{/if}}
+                </td>
+
+                <td style="padding: 8px">
+                    {{this.createdAt}}
+                </td>
+
+                <td style="padding:8px;">
+                    {{#if this.event}}
+                    <a href="/register?eventId={{this.event.id}}" class="btn">Register again</a>
+                    {{/if}}
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    {{else}}
+{{/if}}
+<style>
+  .btn { display:inline-block; padding:8px 12px; border:1px solid #ccc; border-radius:8px; text-decoration:none; }
+  .btn:hover { background:#f2f2f2; }
+  .btn-primary { border-color:#0d6efd; background:#0d6efd; color:#fff; }
+  .btn-primary:hover { filter:brightness(1.05); }
+</style>

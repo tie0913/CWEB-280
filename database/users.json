@@ -1,0 +1,37 @@
+{
+  "users": [
+    {
+      "id": "1d13a0d0-f334-4539-9d4d-f19ee585eca9",
+      "email": "admin@example.com",
+      "passwordHash": "$2b$10$SzCDq8V5qTcLCf.3IB1p1u9Ej9070IciSQEU9k8dPP0OhduYdawAG",
+      "role": "admin",
+      "name": "Admin",
+      "phone": "",
+      "position": "",
+      "resumePath": "",
+      "createdAt": "2025-09-18T04:47:38.780Z"
+    },
+    {
+      "id": "4bacf81a-bc13-4548-9aa0-30d677c26372",
+      "email": "nguyen@example.com",
+      "passwordHash": "$2b$10$KN7eGBKGq/J8hMI0/CUQ5.d5TXC0zEt4htP28X3bOp.gkNk5XUMXa",
+      "role": "user",
+      "fullname": "Nguyen Tran",
+      "phone": "13065917181",
+      "position": "Junior Android Development",
+      "resumePath": "..\\database\\uploads\\1758224040455_Meeting_Agenda_02_07_2025.pdf",
+      "createdAt": "2025-09-18T19:34:00.513Z"
+    },
+    {
+      "id": "2d0de24e-732d-45c7-9b96-ad910c002b46",
+      "email": "tiewang@example.com",
+      "passwordHash": "$2b$10$JeDfquHev6472FRPty6nvuxygtVjxZ3cHXRRfdRdgLb4a7raE1zty",
+      "role": "user",
+      "fullname": "Tie Wang",
+      "phone": "12345678",
+      "position": "Student",
+      "resumePath": "",
+      "createdAt": "2025-09-18T22:45:08.432Z"
+    }
+  ]
+}
