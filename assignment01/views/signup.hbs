@@ -1,0 +1,89 @@
+﻿<h1>Sign up</h1>
+
+{{#if error}}
+<div role="alert" style="color:#b00020; margin-bottom:12px;">
+    {{error}}
+</div>
+{{/if}}
+
+<div id="clientErrors" style="color:#b00020; margin-bottom:12px;"></div>
+
+<form id="signupForm" method="POST" action="/signup" enctype="multipart/form-data" novalidate>
+    <div style="margin-bottom:10px;">
+        <label for="name">Full name</label><br />
+        <input id="name"
+               name="name"
+               type="text"
+               required
+               placeholder="Nguyen Tran"
+               value="{{form.name}}"
+               style="min-width:280px; padding:6px;" />
+    </div>
+
+    <div style="margin-bottom:10px;">
+        <label for="email">Email</label><br />
+        <input id="email"
+               name="email"
+               type="email"
+               required
+               placeholder="you@example.com"
+               value="{{form.email}}"
+               style="min-width:280px; padding:6px;" />
+    </div>
+
+    <div style="margin-bottom:10px;">
+        <label for="phone">Phone</label><br />
+        <input id="phone"
+               name="phone"
+               type="text"
+               required
+               placeholder="+1 (306) 555-1234"
+               value="{{form.phone}}"
+               pattern="^[\\d\\s()+\\-]{7,20}$"
+               title="Use digits and (), +, -, spaces. 7–20 characters."
+               style="min-width:280px; padding:6px;" />
+    </div>
+
+    <div style="margin-bottom:10px;">
+        <label for="position">Position</label><br />
+        <input id="position"
+               name="position"
+               type="text"
+               required
+               placeholder="Junior Android Developer"
+               value="{{form.position}}"
+               style="min-width:280px; padding:6px;" />
+    </div>
+
+    <div style="margin-bottom:14px;">
+        <label for="password">Password</label><br />
+        <input id="password"
+               name="password"
+               type="password"
+               required
+               minlength="6"
+               placeholder="At least 6 characters"
+               style="min-width:280px; padding:6px;" />
+    </div>
+
+    <div style="margin-bottom:14px;">
+        <label for="resume">Resume (PDF, ≤ 2MB)</label><br />
+        <input id="resume"
+               name="resume"
+               type="file"
+               accept=".pdf,application/pdf"
+               required
+               style="min-width:280px;" />
+        <div style="font-size:12px;color:#555;margin-top:4px;">
+            Only PDF files are accepted. Max size 2MB.
+        </div>
+    </div>
+
+    <button type="submit" style="padding:8px 14px;">Create account</button>
+</form>
+
+<p style="margin-top:12px;">
+    Already have an account? <a href="/signin">Sign in</a>
+</p>
+
+<script src="/js/signup-validate.js"></script>

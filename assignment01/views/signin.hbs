@@ -1,0 +1,37 @@
+<h1>Sign in</h1>
+
+{{#if error}}
+<div role="alert" style="color:#b00020; margin-bottom:12px;">
+    {{error}}
+</div>
+{{/if}}
+
+<form method="POST" action="/signin" autocomplete="on" novalidate>
+    <div style="margin-bottom:10px;">
+        <label for="email">Email</label><br />
+        <input id="email"
+               name="email"
+               type="email"
+               required
+               placeholder="you@example.com"
+               value="{{form.email}}"
+               style="min-width:240px; padding:6px;" />
+    </div>
+
+    <div style="margin-bottom:14px;">
+        <label for="password">Password</label><br />
+        <input id="password"
+               name="password"
+               type="password"
+               required
+               minlength="6"
+               placeholder="Your password"
+               style="min-width:240px; padding:6px;" />
+    </div>
+
+    <button type="submit" style="padding:8px 14px;">Sign in</button>
+</form>
+
+<p style="margin-top:12px;">
+    New here? <a href="/signup">Create an account</a>
+</p>
