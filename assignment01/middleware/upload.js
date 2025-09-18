@@ -1,6 +1,6 @@
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs/promises';
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs/promises');
 
 const UPLOAD_DIR = path.resolve('../database/uploads');
 
@@ -23,8 +23,10 @@ function fileFilter(req, file, cb) {
     cb(null, true);
 }
 
-export const uploadResume = multer({
+const uploadResume = multer({
     storage,
     fileFilter,
     limits: { file: 2 * 1024 * 1024 },
 }).single("resume");
+
+module.exports = {uploadResume}

@@ -4,20 +4,30 @@ const {
     listEvents,
     findEvent,
     tryReserveSeat,
-    addRegistraction,
+    addRegistration,
     listUserRegistrations,
 } = require("../util/eventStore.js");
 
 const router = Router();
+
 router.get("/my/registrations", requireAuth, async (req, res) => {
     const rows = await listUserRegistrations(req.user.id);
-    res.render("my-registrations", { title: "My Registrations", registrations: rows });
+
+    const registrations = rows.map((r) =>({
+        id: r.id,
+        createAt: r.createAt,
+        event: r.event
+        ? { id: r.event.id, name: r.event.name, type: r.event.type, remaining: r.event.remaining} : null,
+    }));
+
+    res.render("my-registrations", { title: "My Registrations", registrations});
 });
 
 router.get("/register", requireAuth, async (req, res) => {
-    const { eventID } = req.query;
+    const { eventId } = req.query;
     const events = await listEvents();
     const selectedEvent = eventId ? await findEvent(eventId) : null;
+
     res.render("register", { title: "Event Registration", events, selectedEvent });
 });
 
@@ -30,7 +40,7 @@ router.post("/register", requireAuth, async (req, res) => {
     const ok = await tryReserveSeat(eventId);
     if (!ok) return res.status(409).render("errors/Full", { title: "Event Full" });
 
-    await addRegistraction({ userId: req.user.id, eventId });
+    await addRegistration({ userId: req.user.id, eventId });
     res.redirect("/my/registrations");
 });
 

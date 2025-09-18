@@ -10,6 +10,17 @@
       "position": "",
       "resumePath": "",
       "createdAt": "2025-09-18T04:47:38.780Z"
+    },
+    {
+      "id": "4bacf81a-bc13-4548-9aa0-30d677c26372",
+      "email": "nguyen@example.com",
+      "passwordHash": "$2b$10$KN7eGBKGq/J8hMI0/CUQ5.d5TXC0zEt4htP28X3bOp.gkNk5XUMXa",
+      "role": "user",
+      "fullname": "Nguyen Tran",
+      "phone": "13065917181",
+      "position": "Junior Android Development",
+      "resumePath": "..\\database\\uploads\\1758224040455_Meeting_Agenda_02_07_2025.pdf",
+      "createdAt": "2025-09-18T19:34:00.513Z"
     }
   ]
 }

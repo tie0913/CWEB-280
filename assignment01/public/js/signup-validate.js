@@ -6,7 +6,7 @@
     const phoneRe = /^[\d\s()+\-]{7,20}$/;
 
     form.addEventListener("submit", (e) => {
-        const name = form.name?.value.trim();
+        const fullName = form.fullname?.value.trim();
         const email = form.email?.value.trim();
         const phone = form.phone?.value.trim();
         const position = form.position?.value.trim();
@@ -14,7 +14,7 @@
         const file = form.resume?.files?.[0];
 
         const errs = [];
-        if (!name) errs.push("Name is required");
+        if (!fullName) errs.push("Name is required");
         if (!emailRe.test(email)) errs.push("Valid email is required");
         if (!phoneRe.test(phone)) errs.push("Valid phone is required");
         if (!position) errs.push("Position is required");

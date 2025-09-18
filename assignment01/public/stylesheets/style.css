@@ -2,7 +2,73 @@ body {
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
+/* layout */
+.navbar { background: #111; }
+.nav-list {
+  display: flex; align-items: center; gap: 10px;
+  list-style: none; margin: 0; padding: 10px 16px;
+}
+.nav-list a { text-decoration: none; color: #ddd; }
+.nav-list a:hover { color: #fff; }
+.nav-list .spacer { flex: 1; } /* pushes auth buttons to the right */
+
+/* buttons */
+.btn {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: transform .02s ease, filter .15s ease, background .15s ease;
+  text-decoration: none;
+  line-height: 1;
+  font-weight: 600;
+}
+.btn:active { transform: translateY(1px); }
+
+/* outline (for Sign in / Logout) */
+.btn-outline {
+  border-color: #3a3a3a;
+  color: #eee;
+  background: transparent;
+}
+.btn-outline:hover { background: #1e1e1e; }
+
+/* primary (for Sign up) */
+.btn-primary {
+  background: #0d6efd;
+  border-color: #0d6efd;
+  color: #fff;
+}
+.btn-primary:hover { filter: brightness(1.05); }
+
+/* make the form button look like links/buttons in the nav */
+.link-btn {
+  all: unset;
+  display: inline-block;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid #3a3a3a;
+  color: #eee;
+}
+.link-btn:hover { background: #1e1e1e; }
+
+/* small screens */
+@media (max-width: 700px) {
+  .nav-list { flex-wrap: wrap; gap: 8px; }
+  .nav-list .spacer { flex-basis: 100%; height: 0; }
+}
+
 
 a {
   color: #00B7FF;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10;
+}
+
+th, td {
+  padding: 8px;
 }

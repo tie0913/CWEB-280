@@ -2,7 +2,7 @@ const fs = require("fs/promises");
 const path = require("path");
 const bcrypt = require("bcrypt");
 
-const DATA_DIR = path.resolve("../database");
+const DATA_DIR = path.resolve("database");
 const USERS_FILE = path.join(DATA_DIR, "users.json"); 
 const SALT_ROUNDS = 10;
 

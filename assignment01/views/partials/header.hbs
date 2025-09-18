@@ -1,21 +1,26 @@
 <header>
-<h1>Header</h1>
-<nav class="navbar">
-    <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/events">Events</a></li>
-        <li><a href="/career">Career</a></li>
+  <nav class="navbar">
+    <ul class="nav-list">
+      <li><a href="/">Home</a></li>
+      <li><a href="/events">Events</a></li>
+      <li><a href="/career">Career</a></li>
 
-        {{#if user}}
-            <li><a href="/my/registrations">My Registrations</a></li>
-            {{#if (eq user.role "admin")}}
-                <li><a href="/admin/registrations">Admin</a></li>
-            {{/if}}
-            <li><a href="/logout">Logout</a></li>
-        {{else}}
-            <li><a href="/signin">Sign in</a></li>
-            <li><a href="/signup">Sign up</a></li>
+      <li class="spacer"></li> {{!-- pushes the following items to the right --}}
+
+      {{#if user}}
+        <li><a href="/my/registrations">My Registrations</a></li>
+        {{#if (eq user.role "admin")}}
+          <li><a href="/admin/registrations">Admin</a></li>
         {{/if}}
+        <li>
+          <form action="/logout" method="post" style="display:inline;">
+            <button class="btn btn-outline" type="submit">Logout</button>
+          </form>
+        </li>
+      {{else}}
+        <li><a class="btn btn-outline" href="/signin">Sign in</a></li>
+        <li><a class="btn btn-primary" href="/signup">Sign up</a></li>
+      {{/if}}
     </ul>
-</nav>
+  </nav>
 </header>

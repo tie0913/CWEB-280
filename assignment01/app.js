@@ -5,7 +5,7 @@ const express = require("express");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
 const exphbs = require("express-handlebars");
-
+const JWT_SECRET = process.env.JWT_SECRET || "Test Token"
 // --- Handlebars engine + helpers ---
 const hbs = exphbs.create({
     extname: ".hbs",
@@ -44,12 +44,17 @@ app.use((req, res, next) => {
     // pages can override with { chrome: false } to hide header/footer
     res.locals.chrome = true;
 
-    // simple placeholder nav (Home, Event List, Registration)
-    res.locals.navLinks = [
-        { href: "/", label: "Home" },
-        { href: "/events", label: "Event List" },
-        { href: "/admin/registrations", label: "Registration" },
-    ];
+    const token = req.cookies?.session;
+    if (token) {
+    try {
+      const payload = jwt.verify(token, JWT_SECRET);
+      req.user = payload;      
+      res.locals.user = payload;  
+    } catch {
+      res.clearCookie("session");  // bad/expired token — clear it
+    }
+}
+  
     next();
 });
 
