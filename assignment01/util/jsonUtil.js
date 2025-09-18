@@ -1,11 +1,11 @@
-import fs from "fs/promises";
-import path from "path";
-import crypto from "crypto";
+const fs = require("fs/promises");
+const path = require("path");
+const crypto = require("crypto");
 
 let queue = Promise.resolve();
-export const withLock = (fn) => (queue = queue.then(fn, fn));
+ const withLock = (fn) => (queue = queue.then(fn, fn));
 
-export async function ensureDir(dirPath) {
+ async function ensureDir(dirPath) {
     await fs.mkdir(dirPath, { recursive: true });
 }
 /**
@@ -13,7 +13,7 @@ export async function ensureDir(dirPath) {
  * @param {string} filePath - absolute or relative path
  * @param {object} defaultObj - e.g. { events: [] }
  */
-export async function ensureFileWithDefault(filePath, defaultObj) {
+ async function ensureFileWithDefault(filePath, defaultObj) {
     await ensureDir(path.dirname(filePath));
     try {
         await fs.access(filePath);
@@ -26,7 +26,7 @@ export async function ensureFileWithDefault(filePath, defaultObj) {
  * @param {string} filePath
  * @param {object} fallback - returned if file is missing or empty
  */
-export async function readJson(filePath, fallback = {}) {
+ async function readJson(filePath, fallback = {}) {
     await ensureDir(path.dirname(filePath));
     try {
         const txt = await fs.readFile(filePath, "utf8");
@@ -41,10 +41,18 @@ export async function readJson(filePath, fallback = {}) {
  * @param {string} filePath
  * @param {object} payloadObj
  */
-export async function writeJsonAtomic(filePath, payloadObj) {
+ async function writeJsonAtomic(filePath, payloadObj) {
     const tmp = filepath + "." + crypto.randomBytes(6).toString("hex") + ".tmp";
     const data = JSON.stringify(payloadObj, null, 2);
     await fs.writeFile(tmp, data, "utf8");
     await fs.rename(tmp, filePath);
 }
+
+module.exports = {
+  withLock,
+  ensureDir,
+  ensureFileWithDefault,
+  readJson,
+  writeJsonAtomic,
+};
 

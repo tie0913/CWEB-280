@@ -1,10 +1,12 @@
-import { Router } from 'express';
-import jwt from 'jsonwebtoken';
-import fs from "fs/promises"
-import { createUser, verifyCredentials, getUserById } from '../util/userStore.js';
-import { uploadResume } from '../middleware/upload.js';
-import { validationResult } from "express-validator";
-import { signUpValidators } from "../middleware/validators.js"
+const { Router } = require("express");
+const jwt = require("jsonwebtoken");
+const fs = require("fs/promises");
+const path = require("path");
+const { validationResult } = require("express-validator");
+
+const { createUser, verifyCredentials, getUserById } = require("../util/userStore.js");
+const { uploadResume } = require("../middleware/upload.js");
+const { signUpValidators } = require("../middleware/validators.js");
 
 const router = Router();
 
@@ -32,21 +34,18 @@ router.post("/signin", async (req, res) => {
 router.get('/signup', (req, res) => res.render("signup", { title: "Sign Up", chrome: false }));
 
 router.post("/signup",
-    // 1) handle file upload first (multer parses form-data)
     (req, res, next) => uploadResume(req, res, (err) => {
         if (err) {
             return res.status(400).render("signup", { title: "Sign up", chrome: false, error: err.message });
         }
         next();
     }),
-    // 2) then validate fields
     signUpValidators,
     async (req, res) => {
         const errors = validationResult(req);
         const { name, email, phone, position, password } = req.body;
 
         if (!errors.isEmpty()) {
-            // delete uploaded file if validation failed
             if (req.file?.path) {
                 try { await fs.unlink(req.file.path); } catch { }
             }
@@ -54,7 +53,6 @@ router.post("/signup",
                 title: "Sign up",
                 chrome: false,
                 error: errors.array().map(e => e.msg).join(", "),
-                // Optionally re-fill safe fields (not password)
                 form: { name, email, phone, position }
             });
         }
@@ -62,11 +60,8 @@ router.post("/signup",
         try {
             const resumePath = req.file ? path.relative(process.cwd(), req.file.path) : "";
             const user = await createUser({ email, password, role: "user", name, phone, position, resumePath });
-
-            // Redirect to success page showing submitted details + uploaded file info
             res.redirect(`/signup/success?u=${encodeURIComponent(user.id)}`);
         } catch (e) {
-            // delete uploaded file on create error
             if (req.file?.path) {
                 try { await fs.unlink(req.file.path); } catch { }
             }
@@ -81,8 +76,6 @@ router.get("/signup/success", async (req, res) => {
 
     const user = await getUserById(userId);
     if (!user) return res.redirect("/signup");
-
-    // You can choose chrome: false or true; keeping false to match auth pages
     res.render("signup-success", {
         title: "Application Submitted",
         chrome: false,
@@ -91,7 +84,7 @@ router.get("/signup/success", async (req, res) => {
             email: user.email,
             phone: user.phone,
             position: user.position,
-            resumePath: user.resumePath, // display a path or a download link you create
+            resumePath: user.resumePath,
         },
     });
 });
@@ -102,4 +95,4 @@ router.post("/logout", (req, res) => {
 });
 // email: "admin@example.com"
 // password = "Admin123!"
-module.exports = router;
+module.exports = router

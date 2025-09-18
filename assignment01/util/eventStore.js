@@ -1,6 +1,7 @@
-import path from "path";
-import crypto from "crypto";
-import { ensureFileWithDefault, readJson, writeJsonAtomic, withLock } from "./jsonUtil.js";
+const fs = require("fs/promises");
+const path = require("path");
+const crypto = require("crypto");
+const { ensureFileWithDefault, readJson, writeJsonAtomic, withLock } = require("./jsonUtil.js");
 
 const DATA_DIR = path.resolve("database");
 const EVENTS_FILE = path.join(DATA_DIR, "events.json");
@@ -23,16 +24,16 @@ async function readRegs() {
     return registrations;
 }
 
-export function findEvent(id) {
+async function findEvent(id) {
     const events = await readEvents();
     return events.find(e => e.id === id) || null;
 }
 
-export function listEvents() {
+async function listEvents() {
     return await readEvents();
 }
 
-export async function tryReserveSeat(eventId) {
+async function tryReserveSeat(eventId) {
     let ok = false;
     await withLock(async () => {
         const events = await readEvents();
@@ -49,7 +50,7 @@ export async function tryReserveSeat(eventId) {
     return ok;
 }
 
-export async function addRegistraction({ userId, eventId }) {
+ async function addRegistration({ userId, eventId }) {
     const reg = {
         id: crypto.randomUUID(),
         userId,
@@ -64,17 +65,26 @@ export async function addRegistraction({ userId, eventId }) {
     return reg;
 }
 
-export async function listUserRegistrations(userId) {
+ async function listUserRegistrations(userId) {
     const [regs, events] = await Promise.all([readRegs(), readEvents()]);
     return regs.filter(r => r.userId === userId)
-        .map(r => ({ ...r, events.find(e => e.id === r.eventId) || null }));
+        .map(r => ({ ...r,event: events.find(e => e.id === r.eventId) || null }));
 }
 
-export async function seedEventsIfEmpty(seed = []) {
+ async function seedEventsIfEmpty(seed = []) {
     await withLock(async () => {
         const { events } = await readJson(EVENTS_FILE, { events: [] });
         if (events.length > 0) return;
         await writeJsonAtomic(EVENTS_FILE, { events: seed });
     });
 }
+
+module.exports = {
+  findEvent,
+  listEvents,
+  tryReserveSeat,
+  addRegistration,
+  listUserRegistrations,
+  seedEventsIfEmpty,
+};
 

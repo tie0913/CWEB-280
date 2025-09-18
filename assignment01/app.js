@@ -1,4 +1,4 @@
-// app.js (CommonJS)
+
 const PORT = 3000;
 const path = require("path");
 const express = require("express");
@@ -55,8 +55,8 @@ app.use((req, res, next) => {
 
 // --- Routes ---
 // NOTE: these require your route files to export CommonJS modules (module.exports = router)
-const authRoutes = require("./src/routes/auth");
-const registrationRoutes = require("./src/routes/registrations");
+const authRoutes = require("./routes/auth.js");
+const registrationRoutes = require("./routes/registrations.js");
 
 app.get("/", (req, res) => {
     res.render("home", { title: "Home", message: "Hello Welcome" });

@@ -1,12 +1,12 @@
-import { Router } from "express";
-import { requireAuth } from "../middleware/auth.js";
-import {
+const { Router } =  require("express");
+const { requireAuth } = require ("../middleware/auth.js");
+const {
     listEvents,
     findEvent,
     tryReserveSeat,
     addRegistraction,
     listUserRegistrations,
-} from "../util/eventStore.js";
+} = require("../util/eventStore.js");
 
 const router = Router();
 router.get("/my/registrations", requireAuth, async (req, res) => {
