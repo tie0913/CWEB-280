@@ -7,7 +7,6 @@ const readInt = require("./parameter")
 const Constants = require("../service/constants")
 const {requireAuthJson, requireAdminJson, requireAuth} = require("../middleware/auth")
 
-
 function getOrElse(v, d){
     r = parseInt(v)
     if(isNaN(r)){
