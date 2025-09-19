@@ -18,15 +18,17 @@ function getOrElse(v, d){
 }
 
 
-function getEventList(res, resp){
+function getEventList(req, resp){
     let param = {
-        "statusCode": getOrElse(res.query.statusCode, -1),
-        "typeCode":getOrElse((res.query.typeCode), -1),
+        "statusCode": getOrElse(req.query.statusCode, -1),
+        "typeCode":getOrElse((req.query.typeCode), -1),
         "pagination":{
-            "pageSize":getOrElse(res.query.pageSize,10),
-            "pageNo":getOrElse(res.query.pageNo, 1)
+            "pageSize":getOrElse(req.query.pageSize,10),
+            "pageNo":getOrElse(req.query.pageNo, 1)
         }
     }
+
+    console.log(resp.locals.user)
 
     const typeList = Constants.event.types
     const statusList = Constants.event.status

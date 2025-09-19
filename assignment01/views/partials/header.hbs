@@ -8,9 +8,9 @@
       <li class="spacer"></li> {{!-- pushes the following items to the right --}}
 
       {{#if user}}
-        <li><a href="/my/registrations">My Registrations</a></li>
+        <li><a href="/registerations/enter">My Registrations</a></li>
         {{#if (eq user.role "admin")}}
-          <li><a href="/admin/registrations">Admin</a></li>
+          <li><a href="/registrations/admin">Admin</a></li>
         {{/if}}
         <li>
           <li><a class="btn btn-outline" href="/logout">Logout</a></li>

@@ -67,7 +67,6 @@ app.set("views", path.join(__dirname, "views"));
 
 app.use((req, res, next) => {
     const token = req.cookies?.session;
-    console.log(`Token from HOME: ${token}`)
     if (token) {
         try {
           const payload = jwt.verify(token, JWT_SECRET);
@@ -97,7 +96,7 @@ app.get("/", (req, res) => {
 });
 
 app.use(authRoutes);          // /signin, /signup, /logout, /signup/success
-app.use(registrationRoutes);  // /my/registrations, /register (GET/POST)
+app.use("/registrations", registrationRoutes);  // /my/registrations, /register (GET/POST)
 
 //app.use((req, res) => res.status(404).render("errors/404", { title: "Not Found" }));
 

@@ -67,11 +67,37 @@ class EventService{
         }
     }
 
+    getEventByIds(...ids){
+        return this.#list.filter(e => ids.find(e.id) != null)
+    }
+
 
     createInvites(eventId){
         let event = this.#list.find(e => e.id === eventId)
         return invites.create(event, uuidv4())
     }
+
+    redeem(eventId){
+
+        let code = 0
+        let message = ""
+        let event = this.#list.find(eventId)
+        if(event.vacant > 0){
+            event.vacant--
+        }else{
+            code = 1
+            message = "insufficient seats"
+        }
+
+        return {
+            code: code,
+            message: message,
+            succeed(){
+                return code === 0
+            }
+        }
+    }
+
 }
 
 module.exports = new EventService()

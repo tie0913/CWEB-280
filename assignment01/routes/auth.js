@@ -16,16 +16,12 @@ router.get('/signin', (req, res) => {
     res.render("signin", { title: "Sign In", chrome: false });
 });
 
-console.log("[VERIFY] using secret:", JWT_SECRET);
-
-
 router.post("/signin", async (req, res) => {
     const { email, password } = req.body;
 
-    const user = await verifyCredentials(email,password);
-    console.log(user)
-    if (!user.ok) {
-        console.warn("[signin failed]",{email, reason: user.reason})
+    const queryResult = await verifyCredentials(email,password);
+    if (!queryResult.ok) {
+        console.warn("[signin failed]",{email, reason: queryResult.reason})
 
         return res.status(401).render("signin", {
             title: "Sign In",
@@ -34,11 +30,11 @@ router.post("/signin", async (req, res) => {
         });
     }
 
+    const user = queryResult.user
     const token = jwt.sign(
         { id: user.id, email: user.email, role: user.role }, 
         JWT_SECRET ,
         { expiresIn: '1h' });
-    console.log(`Token from login: ${token}`)
 
     res.cookie("session", token, { httpOnly: true, sameSite: "lax" });
     res.redirect("/");
