@@ -85,7 +85,7 @@ router.get("/signup/success", async (req, res) => {
 
     const user = await getUserById(userId);
     if (!user) return res.redirect("/signup");
-    res.render("signup-success", {
+    res.render("profile", {
         title: "Application Submitted",
         chrome: false,
         applicant: {

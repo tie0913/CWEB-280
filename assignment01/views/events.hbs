@@ -42,8 +42,8 @@
   <input type="hidden" class="dd-input" id="q_StatusCode" name="statusCode" value="{{param.statusCode}}">
 </div>
 
-<button onclick="newSearch()" class="px-6 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg shadow-md 
-               hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Query</button>
+<button onclick="newSearch()" class="px-6 py-2 bg-black text-white text-sm font-semibold rounded-lg shadow-md 
+               hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400">Query</button>
 <form id="queryForm" action="/events/list" method="get">
 </form>
 </div>
@@ -63,7 +63,7 @@
 
         <div class="w-full bg-gray-200 rounded-full h-6 relative">
             <div class="bg-green-500 h-6 rounded-full" style="width: {{percentage this.vacant this.seats}}"></div>
-            <span class="absolute inset-0 flex items-center justify-center text-xs font-medium text-blue-500">
+            <span class="absolute inset-0 flex items-center justify-center text-xs font-medium text-black-500">
                 {{this.vacant}} seats left
             </span>
         </div>
@@ -71,12 +71,12 @@
         
         {{#if (eq ../user.role "admin")}}
             {{#if (canInvite this)}}
-            <button onclick="createInvites({{this.id}})"class="px-6 py-2 bg-blue-500 text-white text-sm font-semibold rounded-lg shadow-md 
-                   hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <button onclick="createInvites({{this.id}})"class="px-6 py-2 bg-black text-white text-sm font-semibold rounded-lg shadow-md 
+                   hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
                    Create Invites
             </button>
             {{else}}
-            <button class="px-6 py-2 bg-gray-500 text-white text-sm font-semibold rounded-lg shadow-md 
+            <button class="cursor-default px-6 py-2 bg-gray-300 text-white text-sm font-semibold rounded-lg shadow-md 
                    focus:outline-none focus:ring-2 focus:ring-blue-400">
                    Create Invites
             </button>
@@ -91,10 +91,6 @@
   Pagination
   -->
 <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
-  <div class="flex flex-1 justify-between sm:hidden">
-    <a href="#" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
-    <a href="#" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
-  </div>
   <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
     <div>
       <p class="text-sm text-gray-700">

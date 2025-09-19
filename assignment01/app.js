@@ -98,7 +98,7 @@ app.get("/", (req, res) => {
 app.use(authRoutes);          // /signin, /signup, /logout, /signup/success
 app.use("/registrations", registrationRoutes);  // /my/registrations, /register (GET/POST)
 
-//app.use((req, res) => res.status(404).render("errors/404", { title: "Not Found" }));
+app.use((req, res) => res.status(404).render("errors/404", { title: "Not Found" }));
 
 app.listen(PORT, () => {
     console.log(`Server has been started on http://localhost:${PORT}`);
