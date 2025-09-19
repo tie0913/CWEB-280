@@ -24,17 +24,19 @@ const hbs = exphbs.create({
     helpers: {
         subtract:(a, b) => a - b,
         formatDate:(d)=>`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
-        percentage: (numinator, denumirator) => (numinator / denumirator) * 100 + "%",
+        percentage: (numinator, denumirator) => {
+          return Math.round((numinator / denumirator) * 100) + "%"
+        },
         canInvite:(e) => {
           return stillCanInvite(e)
         },
         getCloseIn:(e) => {
           let today = new Date()
           if( today > e.deadline || !stillCanInvite(e)){
-            return ""
+            return "Has Been Expired"
           }else{
             const d = Math.ceil((e.deadline - today)/(1000 * 60 * 60 * 24))
-            return "Expire in " + d + " Days"
+            return "Close in " + d + " Days"
           }
         },
         eq:(a, b) => a === b
