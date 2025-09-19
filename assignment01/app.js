@@ -3,6 +3,10 @@ function pad(n){
   return n.toString().padStart(2, "0")
 }
 
+function stillCanInvite(e){
+  return e.status.code === 1 && e.vacant > 0 && new Date() <= e.deadline
+}
+
 const PORT = 3000;
 const path = require("path");
 const express = require("express");
@@ -22,7 +26,16 @@ const hbs = exphbs.create({
         formatDate:(d)=>`${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`,
         percentage: (numinator, denumirator) => (numinator / denumirator) * 100 + "%",
         canInvite:(e) => {
-          return e.status.code === 1 && e.states.code === 2 && new Date() <= e.deadline
+          return stillCanInvite(e)
+        },
+        getCloseIn:(e) => {
+          let today = new Date()
+          if( today > e.deadline || !stillCanInvite(e)){
+            return ""
+          }else{
+            const d = Math.ceil((e.deadline - today)/(1000 * 60 * 60 * 24))
+            return "Expire in " + d + " Days"
+          }
         },
         eq:(a, b) => a === b
     }

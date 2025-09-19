@@ -28,13 +28,9 @@ function getEventList(req, resp){
         }
     }
 
-    console.log(resp.locals.user)
-
     const typeList = Constants.event.types
     const statusList = Constants.event.status
-
     const eventsListWithTotal = eventService.getEventList(param)
-
     condition = {
         statusCode: param.statusCode == -1 ?  "" : param.statusCode,
         typeCode: param.typeCode == -1 ? "" : param.typeCode

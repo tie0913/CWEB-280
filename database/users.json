@@ -23,26 +23,15 @@
       "createdAt": "2025-09-18T19:34:00.513Z"
     },
     {
-      "id": "2d0de24e-732d-45c7-9b96-ad910c002b46",
-      "email": "tiewang@example.com",
-      "passwordHash": "$2b$10$JeDfquHev6472FRPty6nvuxygtVjxZ3cHXRRfdRdgLb4a7raE1zty",
-      "role": "user",
-      "fullname": "Tie Wang",
-      "phone": "12345678",
-      "position": "Student",
-      "resumePath": "",
-      "createdAt": "2025-09-18T22:45:08.432Z"
-    },
-    {
-      "id": "b44a5514-9c99-4f4b-9876-e049aeb0f4da",
-      "email": "AA@example.com",
-      "passwordHash": "$2b$10$4bpPlvY.Nljd36jdBhLBB.8EtqyHYH5t9/NGYnys59XQgPXO784Ja",
+      "id": "ca409f01-f905-4af3-8135-e609e3e08735",
+      "email": "AA@A.com",
+      "passwordHash": "$2b$10$dENpAhs0BOW62wlDUHMeKuw3YWhAcQuZGWpz.JhsKAcQrKe8LsJZy",
       "role": "user",
       "fullname": "AA",
-      "phone": "+1 (306) 555 1293",
+      "phone": "1234567890",
       "position": "Student",
-      "resumePath": "..\\database\\uploads\\1758311863672_public_util_description.pdf",
-      "createdAt": "2025-09-19T19:57:43.736Z"
+      "resumePath": "..\\database\\uploads\\1758319022443_public_util_description.pdf",
+      "createdAt": "2025-09-19T21:57:02.508Z"
     }
   ]
 }

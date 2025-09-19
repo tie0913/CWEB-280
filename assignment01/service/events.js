@@ -29,6 +29,13 @@ function createList(size){
         return Math.floor(Math.random() * limit) + 1
     }
 
+    function randomDate(start, end) {
+        const startTime = start.getTime();
+        const endTime = end.getTime();
+        const randomTime = startTime + Math.random() * (endTime - startTime);
+        return new Date(randomTime);
+    }
+
     for(let i = 0; i < size;i++){
 
         seats = getRandom(100)
@@ -38,11 +45,10 @@ function createList(size){
             "id":i,
             "name":`Event Name ${i}`,
             "status":getStatus(),
-            "states":getStates(),
             "type":getType(),
             "vacant":vacant,
             "seats": seats,
-            "deadline":new Date("2025-09-30")
+            "deadline": randomDate(new Date("2025-09-15"), new Date("2025-10-15"))
         })
     }
 
@@ -63,7 +69,7 @@ class EventService{
 
         return {
             list:matched.slice((pageNo - 1) * pageSize, pageNo * pageSize),
-            pageInfo: createPage(pageSize, pageNo, matched.length/pageSize, matched.length)
+            pageInfo: createPage(pageSize, pageNo, matched.length)
         }
     }
 

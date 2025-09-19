@@ -56,7 +56,8 @@ router.post("/signup",
         console.log("BODY: ", req.body)
         if (!errors.isEmpty()) {
             if (req.file?.path) {
-                try { await fs.unlink(req.file.path); } catch { }
+                try { await fs.unlink(req.file.path); } catch {
+                 }
             }
             return res.status(400).render("signup", {
                 title: "Sign up",

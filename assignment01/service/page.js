@@ -1,6 +1,8 @@
 
 
-function createPage(pageSize, pageNo, totalPages, recordNumbers){
+function createPage(pageSize, pageNo, recordNumbers){
+
+    let totalPages = Math.ceil(recordNumbers/pageSize)
 
     let pageNoArr = []
     for(let i = 1; i <= totalPages; i++){
@@ -9,12 +11,16 @@ function createPage(pageSize, pageNo, totalPages, recordNumbers){
             current: i === pageNo
         })
     }
+  
+    let logicalTo = pageNo * pageSize
+
+    let to = recordNumbers < logicalTo ? recordNumbers : logicalTo
 
     return {
         pageNo:pageNo,
         pageSize:pageSize,
         from:(pageNo - 1) * pageSize + 1,
-        to:pageNo * pageSize,
+        to:to,
         total:totalPages,
         pageNoArr:pageNoArr,
         recordNumbers: recordNumbers,
