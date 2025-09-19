@@ -26,7 +26,6 @@ router.get("/enter", requireAuth, async (req, res) => {
      * create an array containing event id
      */
     const eventIds = registrationList.map(r => {r.eventId})
-    
     /**
      * search event list by event id array
      */

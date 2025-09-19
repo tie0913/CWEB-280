@@ -68,7 +68,7 @@ class EventService{
     }
 
     getEventByIds(...ids){
-        return this.#list.filter(e => ids.find(e.id) != null)
+        return this.#list.filter(e => ids.includes(e.id))
     }
 
 
@@ -81,7 +81,7 @@ class EventService{
 
         let code = 0
         let message = ""
-        let event = this.#list.find(eventId)
+        let event = this.#list.find(e => e.id === eventId)
         if(event.vacant > 0){
             event.vacant--
         }else{
