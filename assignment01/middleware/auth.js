@@ -25,4 +25,24 @@ function requireAdmin(req, res, next){
     return res.status(403).render("error/403",{title: "Admins Only"});
 }
 
-module.exports = { requireAuth, requireAdmin  };
+function requireAuthJson(req, res, next){
+    const token = req.cookies?.session;
+    if(!token) {
+        res.json({code:403, message:"unauthorized access, please sign in first"})
+    }else{
+        try{
+            const payload = jwt.verify(token, JWT_SECRET);
+            req.user = payload;
+            res.locals.user = payload;
+            next()
+        } catch {
+        }
+    }
+}
+
+function requireAdminJson(req, res, next){
+    if(req.user?.role === "admin") return next()
+    res.json({code:403, message:"unauthorized access, this is admin only interface"})
+}
+
+module.exports = { requireAuth, requireAdmin, requireAuthJson, requireAdminJson };

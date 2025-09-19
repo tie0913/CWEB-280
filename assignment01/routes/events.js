@@ -4,8 +4,8 @@ var eventRouter = express.Router();
 
 const eventService = require("../service/events")
 const readInt = require("./parameter")
-
 const Constants = require("../service/constants")
+const {requireAuthJson, requireAdminJson, requireAuth} = require("../middleware/auth")
 
 
 function getOrElse(v, d){
@@ -49,7 +49,7 @@ function getEventList(req, resp){
 
 eventRouter.get('/list', getEventList);
 
-eventRouter.get('/invites', (req, resp)=>{
+eventRouter.get('/invites', requireAuthJson, requireAdminJson, (req, resp)=>{
     const p = readInt("eventId", req.query.eventId)
 
     if(p.ok){
