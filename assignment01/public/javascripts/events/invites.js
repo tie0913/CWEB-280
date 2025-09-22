@@ -24,3 +24,18 @@ function copyToClipboard(){
         closeInvitesDialog()
     }, 200);
 }
+
+
+const buttons = document.getElementsByName("CreateInvitesButtons")
+for(const btn of buttons){
+    btn.addEventListener("click", function(){
+        createInvites(btn.getAttribute("eventId"))
+    })
+}
+
+const copyButton = document.getElementById("copyButton")
+copyButton.addEventListener("click", function(){
+    copyToClipboard()
+})
+
+

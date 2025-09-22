@@ -76,7 +76,7 @@
         
         {{#if (eq ../user.role "admin")}}
             {{#if (canInvite this)}}
-            <button onclick="createInvites({{this.id}})"class="px-6 py-2 bg-black text-white text-sm font-semibold rounded-lg shadow-md 
+            <button name="CreateInvitesButtons" eventId="{{this.id}}" class="px-6 py-2 bg-black text-white text-sm font-semibold rounded-lg shadow-md 
                    hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-400">
                    Create Invites
             </button>
@@ -169,8 +169,8 @@
           </div>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-          <button type="button" id="copyButton" onclick="copyToClipboard()" class="inline-flex w-full justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-gray-600 sm:ml-3 sm:w-auto">Copy</button>
-          <button type="button" onclick="closeInvitesDialog()" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
+          <button type="button" id="copyButton" class="inline-flex w-full justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-gray-600 sm:ml-3 sm:w-auto">Copy</button>
+          <button type="button" id="cancelButton" onclick="closeInvitesDialog()" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
         </div>
       </el-dialog-panel>
     </div>
