@@ -25,37 +25,32 @@ router.get("/enter", requireAuth, async (req, res) => {
     /**
      * create an array containing event id
      */
-    const eventIds = registrationList.map(r => {r.eventId})
+    const eventIds = registrationList.map(r => r.eventId)
     /**
      * search event list by event id array
      */
     const eventList = eventService.getEventByIds(eventIds)
 
-    /** 
-    const rows = await listUserRegistrations(req.user.id);
+    const byId = Object.fromEntries(eventList.map(e => [e.id, e]))
+    const registrations = registrationList.map(r =>{
+        const ev = byId[r.eventId] || null;
+        return{
+            id: r.id,
+            createdAt: r.createdAt || null,
+            event: ev ?{
+                id: ev.id,
+                name: ev.name,
+                type: String(ev.type),
+                remaining: typeof ev.vacant === "number" ? ev.vacant : 0,
+            } : null,
+        };
+    });
 
-    const registrations = rows.map((r) =>({
-        id: r.id,
-        createAt: r.createAt,
-        event: r.event
-        ? { id: r.event.id, name: r.event.name, type: r.event.type, remaining: r.event.remaining} : null,
-    }));
-    */
-
-    //res.render("my-registrations", { title: "My Registrations", registrations});
 
     res.render("my-registrations", {
-        list:registrationList
+        registrations
     })
 });
-/** 
-router.get("/register", requireAuth, async (req, res) => {
-    const { eventId } = req.query;
-    const events = await listEvents();
-    const selectedEvent = eventId ? await findEvent(eventId) : null;
-
-    res.render("register", { title: "Event Registration", events, selectedEvent });
-});*/
 
 router.post("/register", requireAuth, async (req, res) => {
     const { code } = req.body;
@@ -80,17 +75,10 @@ router.post("/register", requireAuth, async (req, res) => {
         message = verification.message    
     }
 
-    /*
-    const events = await findEvent(eventId);
-    if (!events) {
-        return res.status(404).render("errors/404", { title: "Event Not Found" });
+    if (message){
+        return res.redirect(`/registrations/enter?error=${encodeURIComponent(message)}`)
     }
-    const ok = await tryReserveSeat(eventId);
-    if (!ok) return res.status(409).render("errors/Full", { title: "Event Full" });
-
-    await addRegistration({ userId: req.user.id, eventId });
-    res.redirect("/my/registrations");
-    */
+    return res.redirect("registrations/enter")
 });
 
 module.exports = router;

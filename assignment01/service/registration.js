@@ -9,6 +9,7 @@
  *      
  * 
  */
+const {v4:uuidv4} = require("uuid")
 
 class RegistrationService{
     #tickets
@@ -33,14 +34,17 @@ class RegistrationService{
         }else{
             this.#tickets.add(uuid)
             this.#list.push({
+                id: uuidv4(),
                 userId:userId,
-                eventId:eventId
+                eventId:eventId,
+                createdAt: new Date(),
             });
         }
 
         return {
             code:code,
-            message: message
+            message: message,
+            success() {return code ==0;}
         }
     }
 }
