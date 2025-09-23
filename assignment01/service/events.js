@@ -67,6 +67,11 @@ class EventService{
             return statusMatched && typeMatched
         })
 
+        if((Math.ceil(matched.length / pageSize) <= pageSize
+            || matched.length == 0) && pageNo > 1){
+            throw new Error("Pagination Error")
+        }
+
         return {
             list:matched.slice((pageNo - 1) * pageSize, pageNo * pageSize),
             pageInfo: createPage(pageSize, pageNo, matched.length)

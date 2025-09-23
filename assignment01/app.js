@@ -116,6 +116,12 @@ app.use("/registrations", registrationRoutes);  // /my/registrations, /register 
 
 app.use((req, res) => res.status(404).render("errors/404", { title: "Not Found" }));
 
+app.use((err, req, resp, next) => {
+  console.error(err.stack)
+  if (resp.headersSent) return next(err);
+  resp.status(500).render("errors/500")
+})
+
 app.listen(PORT, () => {
     console.log(`Server has been started on http://localhost:${PORT}`);
 });

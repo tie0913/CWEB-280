@@ -52,7 +52,8 @@ async function getRelatedInformation(registrationList, userId){
 }
 
 
-router.get("/enter", requireAuth, async (req, res) => {
+require("express-async-errors")
+router.get("/enter", requireAuth, async (req, res, next) => {
 
     const pageSize = getOrElse(req.query.pageSize,3)
     const pageNo = getOrElse(req.query.pageNo, 1)
@@ -61,6 +62,12 @@ router.get("/enter", requireAuth, async (req, res) => {
      * get registration list by user id
      */
     let registrationList = registrationService.getRegistrationByUserId(req.user.id);
+
+    if((Math.ceil(registrationList.length / pageSize) <= pageSize 
+        || registrationList.length == 0) && pageNo > 1){
+        next(new Error("Pagination Error"))
+    }
+
 
     let userId = undefined
     if(req.user.role !== "admin"){
