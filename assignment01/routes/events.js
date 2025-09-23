@@ -6,15 +6,8 @@ const eventService = require("../service/events")
 const readInt = require("./parameter")
 const Constants = require("../service/constants")
 const {requireAuthJson, requireAdminJson, requireAuth} = require("../middleware/auth")
+const getOrElse = require("../util/param")
 
-function getOrElse(v, d){
-    r = parseInt(v)
-    if(isNaN(r)){
-        return d
-    }else{
-        return r
-    }
-}
 
 
 function getEventList(req, resp){

@@ -3,12 +3,7 @@ const {JWT_SECRET} = require("../config/jwt.js")
 
 function requireAuth(req, res, next) {
     const token = req.cookies?.session;
-    console.log(token);
     if (!token) return res.status(403).render("errors/403", { title: "Forbidden" });
-
-    console.log(`Token from middleware: ${token}`)
-    console.log(`Secret: ${JWT_SECRET}`)
-
 
     try {
         const payload = jwt.verify(token, JWT_SECRET);

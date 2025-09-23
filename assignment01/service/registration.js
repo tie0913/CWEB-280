@@ -34,17 +34,16 @@ class RegistrationService{
         }else{
             this.#tickets.add(uuid)
             this.#list.push({
-                id: uuidv4(),
                 userId:userId,
                 eventId:eventId,
-                createdAt: new Date(),
+                createdAt: new Date()
             });
         }
 
         return {
             code:code,
             message: message,
-            success() {return code ==0;}
+            succeed() {return code === 0;}
         }
     }
 }

@@ -2,7 +2,7 @@
 const path = require("path")
 const Constants = require("./constants")
 
-const createPage = require("./page")
+const createPage = require("../util/page")
 
 const invites = require("./invites")
 const {v4: uuidv4} = require("uuid")
@@ -74,13 +74,16 @@ class EventService{
     }
 
     getEventByIds(...ids){
-        return this.#list.filter(e => ids.includes(e.id))
+        const result = this.#list.filter(e => {
+            return ids.includes(e.id)
+        })
+        return result
     }
 
 
     createInvites(eventId){
         let event = this.#list.find(e => e.id === eventId)
-        return invites.create(event, uuidv4())
+        return invites.create(event.id, uuidv4())
     }
 
     redeem(eventId){

@@ -1,0 +1,140 @@
+<script lang="javascript" src="/javascripts/registration/registration.js" defer></script>
+<script lang="javascript" src="/javascripts/events/page.js" defer></script>
+
+<button
+    onclick="openRegisterDialog()"
+    class="w-64 px-4 py-2 bg-black text-white font-semibold rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 mb-10">
+    Registe An Event
+</button>
+<div class="overflow-x-auto border border-gray-200 rounded-lg">
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-900">
+      <tr>
+        <th class="px-4 py-2 text-left text-xs font-semibold text-white uppercase tracking-wider">Event Name</th>
+        <th class="px-4 py-2 text-left text-xs font-semibold text-white uppercase tracking-wider">Event Status</th>
+        <th class="px-4 py-2 text-left text-xs font-semibold text-white uppercase tracking-wider">Event Type</th>
+        <th class="px-4 py-2 text-left text-xs font-semibold text-white uppercase tracking-wider">Seats</th>
+        <th class="px-4 py-2 text-left text-xs font-semibold text-white uppercase tracking-wider">Register</th>
+        <th class="px-4 py-2 text-left text-xs font-semibold text-white uppercase tracking-wider">Register Time</th>
+      </tr>
+    </thead>
+
+    <tbody class="divide-y divide-gray-200 bg-white">
+      {{#each registrations}}
+        <tr class="hover:bg-gray-50">
+          <td class="px-4 py-2 text-sm text-gray-900">{{this.event.name}}</td>
+          <td class="px-4 py-2 text-sm text-gray-700 break-all">{{this.event.status.name}}</td>
+          <td class="px-4 py-2 text-sm text-gray-700">{{this.event.type.name}}</td>
+          <td class="px-4 py-2 text-sm text-gray-700">
+            <div class="w-full bg-gray-200 rounded-full h-6 relative">
+              <div class="bg-green-500 h-6 rounded-full" style="width: {{percentage this.event.vacant this.event.seats}}"></div>
+              <span class="absolute inset-0 flex items-center justify-center text-xs font-medium text-black-500">
+                  {{this.event.vacant}}/{{this.event.seats}} seats left
+              </span>
+            </div>
+          <td class="px-4 py-2 text-sm text-gray-700">{{this.user.name}}</td>
+          <td class="px-4 py-2 text-sm text-gray-700">{{formatDate this.createAt}}</td>
+          <!--
+          <td class="px-4 py-2 text-right">
+            <a href="/registrations/{{this.id}}" class="text-sm font-semibold text-blue-600 hover:underline">View</a>
+          </td>-->
+        </tr>
+      {{/each}}
+      {{#unless registrations.length}}
+        <tr>
+          <td colspan="6" class="px-4 py-8 text-center text-sm text-gray-500">No data.</td>
+        </tr>
+      {{/unless}}
+    </tbody>
+  </table>
+</div>
+
+<!-- pagination -->
+<div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+  <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+    <div>
+      <p class="text-sm text-gray-700">
+        Showing
+        <span class="font-medium">{{pageInfo.from}}</span>
+        to
+        <span class="font-medium">{{pageInfo.to}}</span>
+        of
+        <span class="font-medium">{{pageInfo.recordNumbers}}</span>
+        results
+      </p>
+    </div>
+    <div>
+      <form id="pageForm" action="/registrations/enter" method="get">
+      <input type="hidden" name="pageSize" value="{{pageInfo.pageSize}}"/>
+      <nav aria-label="Pagination" class="isolate inline-flex -space-x-px rounded-md shadow-xs">
+        {{#if pageInfo.isNotFirst}}
+        <a href="#" onclick="gotoPage('pageForm', 1)" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 inset-ring inset-ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+          <span class="sr-only">Previous</span>
+          <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
+            <path d="M11.78 5.22a.75.75 0 0 1 0 1.06L8.06 10l3.72 3.72a.75.75 0 1 1-1.06 1.06l-4.25-4.25a.75.75 0 0 1 0-1.06l4.25-4.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" fill-rule="evenodd" />
+          </svg>
+        </a>
+        {{/if}}
+        <!-- Current: "z-10 bg-indigo-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 inset-ring inset-ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" -->
+
+        {{#each pageInfo.pageNoArr}}
+        {{#if this.current}}
+        <a aria-current="page" class="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">{{this.index}}</a>
+        {{else}}
+        <a href="#" onclick="gotoPage('pageForm', {{this.index}})" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 inset-ring inset-ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">{{this.index}}</a>
+        {{/if}}
+        {{/each}}
+
+        {{#if pageInfo.isNotLast}}
+        <a href="#" onclick="gotoPage('pageForm', {{pageInfo.total}})" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 inset-ring inset-ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+          <span class="sr-only">Next</span>
+          <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="size-5">
+            <path d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
+          </svg>
+        </a>
+        {{/if}}
+      </nav>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- dialog -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindplus/elements@1" type="module"></script>
+<el-dialog>
+  <dialog id="registerDialog" aria-labelledby="dialog-title" class="fixed inset-0 size-auto max-h-none max-w-none overflow-y-auto bg-transparent backdrop:bg-transparent">
+    <el-dialog-backdrop class="fixed inset-0 bg-gray-500/75 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"></el-dialog-backdrop>
+    <div tabindex="0" class="flex min-h-full items-end justify-center p-4 text-center focus:outline-none sm:items-center sm:p-0">
+      <el-dialog-panel class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in sm:my-8 sm:w-full sm:max-w-lg data-closed:sm:translate-y-0 data-closed:sm:scale-95">
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="sm:flex sm:items-start">
+            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <h3 id="dialog-title" class="text-base font-semibold text-gray-900">
+                Please Paste Your Code
+              </h3>
+            </div>
+          </div>
+          <div class="mt-2">
+            <form action="/registrations/register" method="post">
+            <p id="code" name="code" class="text-sm text-gray-500 w-full h-full border p-2" contenteditable="true"></p>
+            </form>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+          <button type="button" onclick="register()" id="copyButton" class="inline-flex w-full justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-gray-600 sm:ml-3 sm:w-auto">Regist</button>
+          <button type="button" onclick="closeRegisterDialog()" id="cancelButton" onclick="closeInvitesDialog()" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">Cancel</button>
+        </div>
+      </el-dialog-panel>
+    </div>
+  </dialog>
+</el-dialog>
+<!-- alert -->
+<div id="alert" class="hidden fixed bottom-60 left-1/2 transform -translate-x-1/2 
+            opacity-0 transition-opacity duration-1000 p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+  <span class="font-medium">Error</span> <span id="message"></span>
+</div>
+<div id="tip"class="hidden fixed bottom-60 left-1/2 transform -translate-x-1/2 
+            opacity-0 transition-opacity duration-1000 p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400" role="alert">
+  <span class="font-medium">Success</span> <span id="message"></span>
+</div>

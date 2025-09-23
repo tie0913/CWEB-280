@@ -5,20 +5,22 @@ const SECRET = "saskpolytechnic-regian-cst-year2"
 
 class Invites{
     create(eventId, uuid){
-        return jwt.sign({
+        const token = {
             eventId:eventId,
-            unique:uuid
-        }, SECRET, {
+            uuid:uuid
+        }
+        const invitation = jwt.sign(token, SECRET, {
             expiresIn:'24h'
         })
+        return invitation
     }
 
     resolve(invitation){
-
         let message = ""
         let code = 0
+        let res
         try{
-            let res = jwt.verify(invitation, SECRET)
+            res = jwt.verify(invitation, SECRET)
         }catch(err){
             code = -1
             message = "Verification Error"
@@ -28,7 +30,6 @@ class Invites{
                 message = "Token is incorrect"
             }
         }
-
         return {
             code : code,
             message : message,
