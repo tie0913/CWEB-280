@@ -55,6 +55,8 @@ router.get("/enter", requireAuth, async (req, res, next) => {
      */
     let registrationList = req.user.role === "admin" ? registrationService.getAllRegistration() : registrationService.getRegistrationByUserId(req.user.id);
 
+    registrationList = [...registrationList].reverse()
+
     if(registrationList.length<= pageSize && pageNo > 1){
         next(new Error("Pagination Error"))
     }
