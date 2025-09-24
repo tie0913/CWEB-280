@@ -26,6 +26,12 @@ function register(){
     .then(data => {
         closeRegisterDialog()
         if(data.code === 0){
+
+            let button = document.getElementById("registButton")
+            button.classList.add("cursor-default")
+            button.classList.add("bg-gray-300")
+            button.classList.remove("hover:bg-gray-700")
+            button.disabled = true
             show("tip", data.message)
             window.setTimeout(function(){
                 window.location = "/registrations/enter"
