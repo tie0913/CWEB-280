@@ -66,13 +66,13 @@
       </div>
     </div>
     <div class="hidden w-[8%] sm:flex sm:flex-col sm:items-end">
-        <div class="w-full bg-gray-200 rounded-full h-6 relative">
+        <div class="w-[180%] bg-gray-200 rounded-full h-6 relative">
             <div class="bg-green-500 h-6 rounded-full" style="width: {{percentage this.vacant this.seats}}"></div>
             <span class="absolute inset-0 flex items-center justify-center text-xs font-medium text-black-500">
                 {{this.vacant}}/{{this.seats}} seats left
             </span>
         </div>
-        <p class="mt-1 text-xs/5 text-gray-500">{{getCloseIn this}}</p>
+        <p class="mt-1 text-xs/5 text-gray-500">{{getStatusText this}}</p>
         
         {{#if (eq ../user.role "admin")}}
             {{#if (canInvite this)}}

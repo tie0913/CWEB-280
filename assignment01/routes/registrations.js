@@ -17,7 +17,7 @@ const {
 const router = Router();
 
 
-async function getRelatedInformation(registrationList, userId){
+async function getRelatedInformation(registrationList){
     /**
      * create an array containing event id
      */
@@ -28,15 +28,7 @@ async function getRelatedInformation(registrationList, userId){
      */
     const eventList = eventService.getEventByIds(...eventIds)
 
-
-    let userList = [];
-    if(userId == undefined){
-        let allUsers = await readUsers()
-        userList = userList.concat(allUsers)
-    }else{
-        userList.push(await getUserById(userId))
-    }
-
+    let userList = await readUsers()
     /**
      * set up attributes and make sure each instance is a copy
      */
@@ -61,25 +53,18 @@ router.get("/enter", requireAuth, async (req, res, next) => {
     /**
      * get registration list by user id
      */
-    let registrationList = registrationService.getRegistrationByUserId(req.user.id);
+    let registrationList = req.user.role === "admin" ? registrationService.getAllRegistration() : registrationService.getRegistrationByUserId(req.user.id);
 
-    if((Math.ceil(registrationList.length / pageSize) <= pageSize 
-        || registrationList.length == 0) && pageNo > 1){
+    if(registrationList.length<= pageSize && pageNo > 1){
         next(new Error("Pagination Error"))
     }
 
-
-    let userId = undefined
-    if(req.user.role !== "admin"){
-        userId = req.user.id
-    }
-  
     /**
      * query event and user information and combine the together based on the registration information
      */
     let registrations = []
     if(registrationList.length > 0){
-        registrations = registrations.concat(await getRelatedInformation(registrationList, userId))
+        registrations = registrations.concat(await getRelatedInformation(registrationList))
     }
     
     res.render("registrations", {

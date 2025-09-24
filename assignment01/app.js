@@ -30,6 +30,20 @@ const hbs = exphbs.create({
         canInvite:(e) => {
           return stillCanInvite(e)
         },
+        getStatusText:(e) =>{
+
+          let today = new Date()
+          if(e.status.code === 2){
+            return "Closed"
+          }else if(e.vacant === 0){
+            return "Sold Out"
+          }else if(today > e.deadline) {
+            return "Expired"
+          }else {
+            const d = Math.ceil((e.deadline - today)/(1000 * 60 * 60 * 24))
+            return "Close in " + d + " Days"
+          }
+        },
         getCloseIn:(e) => {
           let today = new Date()
           if( today > e.deadline || !stillCanInvite(e)){

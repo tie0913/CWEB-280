@@ -67,8 +67,7 @@ class EventService{
             return statusMatched && typeMatched
         })
 
-        if((Math.ceil(matched.length / pageSize) <= pageSize
-            || matched.length == 0) && pageNo > 1){
+        if(matched.length  <= pageSize && pageNo > 1){
             throw new Error("Pagination Error")
         }
 

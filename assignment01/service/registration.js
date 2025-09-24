@@ -18,6 +18,9 @@ class RegistrationService{
         this.#list = []
         this.#tickets = new Set()
     }
+    getAllRegistration(){
+        return this.#list
+    }
 
     getRegistrationByUserId(userId){
         return this.#list.filter(e => e.userId === userId)
