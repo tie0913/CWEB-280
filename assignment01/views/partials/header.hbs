@@ -10,6 +10,7 @@
 
     <div class="flex items-center space-x-4">
       {{#if user}}
+        <span>{{user.fullname}}</span>
         <a href="/signup/success?u={{user.id}}" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-700 text-white hover:bg-gray-600 focus:outline-none">
           <svg xmlns="http://www.w3.org/2000/svg" 
                class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
