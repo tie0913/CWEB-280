@@ -10,7 +10,8 @@ class Invites{
             uuid:uuid
         }
         const invitation = jwt.sign(token, SECRET, {
-            expiresIn:'24h'
+            //expiresIn:'24h'
+            expiresIn:'5m'
         })
         return invitation
     }
