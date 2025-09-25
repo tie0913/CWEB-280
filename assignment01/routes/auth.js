@@ -42,13 +42,24 @@ router.post("/signin", async (req, res) => {
 
 router.get('/signup', (req, res) => res.render("signup", { title: "Sign Up", chrome: false }));
 
-router.post("/signup",
-    (req, res, next) => uploadResume(req, res, (err) => {
-        if (err) {
-            return res.status(400).render("signup", { title: "Sign up", chrome: false, error: err.message });
-        }
-        next();
-    }),
+router.post("/signup", 
+    (req, resp, next) =>{
+        const multifile = uploadResume.single('resume')
+        multifile(req, res, async(err)=>{
+            if(err){
+                let msg = err.message || 'Uploading failed'
+                if(err.code === "Limited File Type") msg = "Only PDF File can be uploaded"
+                if(err.code === "LIMIT_FILE_SIZE") msg = "File Can NOT Greater Than 2MB" 
+
+                if (req.file?.path) {
+                  try { await fs.unlink(req.file.path); } catch {}
+                }
+                return resp.status(400).render("signup", { title: "Sign up", chrome: false, error: msg });
+            }else{
+                next()
+            }
+        })
+    },
     signUpValidators,
     async (req, res) => {
         const errors = validationResult(req);

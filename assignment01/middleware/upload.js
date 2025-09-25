@@ -18,7 +18,9 @@ const storage = multer.diskStorage({
 function fileFilter(req, file, cb) {
     const okTypes = ["application/pdf"];
     if (!okTypes.includes(file.mimetype)) {
-        return cb(new Error("Only PDF resumes are allowed"))
+        const err = new Error("Only PDF resumes are allowed")
+        err.code = "Limited File Type"
+        return cb(err)
     }
     cb(null, true);
 }
@@ -26,7 +28,7 @@ function fileFilter(req, file, cb) {
 const uploadResume = multer({
     storage,
     fileFilter,
-    limits: { file: 2 * 1024 * 1024 },
-}).single("resume");
+    limits: { fileSize: 2 * 1024 * 1024 },
+});
 
 module.exports = {uploadResume}
