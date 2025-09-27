@@ -8,16 +8,50 @@ const invites = require("./invites")
 const {v4: uuidv4} = require("uuid")
 
 function createList(size){
-    res = []
+    res = [
+      { "id": 1,  "name": "Cloud Security",        "type": { "code": 2, "name": "Seminar" } },
+      { "id": 2,  "name": "Riverfront Cycling",    "type": { "code": 6, "name": "Tour" } },
+      { "id": 3,  "name": "UX Prototyping",        "type": { "code": 1, "name": "Workshops" } },
+      { "id": 4,  "name": "Microeconomics",        "type": { "code": 3, "name": "Lecture" } },
+      { "id": 5,  "name": "Prompt Engineering",    "type": { "code": 4, "name": "Webinar" } },
+
+      { "id": 6,  "name": "Botanical Garden",      "type": { "code": 6, "name": "Tour" } },
+      { "id": 7,  "name": "Digital Photography",   "type": { "code": 1, "name": "Workshops" } },
+      { "id": 8,  "name": "AI in Healthcare",      "type": { "code": 2, "name": "Seminar" } },
+      { "id": 9,  "name": "Evolutionary Biology",  "type": { "code": 3, "name": "Lecture" } },
+      { "id": 10, "name": "Leadership Skills",     "type": { "code": 5, "name": "Training" } },
+
+      { "id": 11, "name": "Historic Downtown",     "type": { "code": 6, "name": "Tour" } },
+      { "id": 12, "name": "Art History",           "type": { "code": 3, "name": "Lecture" } },
+      { "id": 13, "name": "Public Speaking",       "type": { "code": 5, "name": "Training" } },
+      { "id": 14, "name": "Serverless Architecture","type": { "code": 4, "name": "Webinar" } },
+      { "id": 15, "name": "Data Science",          "type": { "code": 5, "name": "Training" } },
+
+      { "id": 16, "name": "Comparative Literature","type": { "code": 3, "name": "Lecture" } },
+      { "id": 17, "name": "Startup Pitch",         "type": { "code": 1, "name": "Workshops" } },
+      { "id": 18, "name": "Blockchain Basics",     "type": { "code": 4, "name": "Webinar" } },
+      { "id": 19, "name": "Museum Highlights",     "type": { "code": 6, "name": "Tour" } },
+      { "id": 20, "name": "Behavioral Economics",  "type": { "code": 2, "name": "Seminar" } },
+
+      { "id": 21, "name": "SQL for Analysts",      "type": { "code": 5, "name": "Training" } },
+      { "id": 22, "name": "Sustainable Energy",    "type": { "code": 2, "name": "Seminar" } },
+      { "id": 23, "name": "Remote Work",           "type": { "code": 4, "name": "Webinar" } },
+      { "id": 24, "name": "Creative Coding",       "type": { "code": 1, "name": "Workshops" } },
+      { "id": 25, "name": "Urban Planning",        "type": { "code": 2, "name": "Seminar" } },
+
+      { "id": 26, "name": "Data Visualization",    "type": { "code": 1, "name": "Workshops" } },
+      { "id": 27, "name": "Tech Campus",           "type": { "code": 6, "name": "Tour" } },
+      { "id": 28, "name": "Cybersecurity Trends",  "type": { "code": 4, "name": "Webinar" } },
+      { "id": 29, "name": "Agile Project",         "type": { "code": 5, "name": "Training" } },
+      { "id": 30, "name": "Modern Physics",        "type": { "code": 3, "name": "Lecture" } },
+
+      { "id": 31, "name": "Green Tech Expo",        "type": { "code": 1, "name": "Workshops" } },
+      { "id": 32, "name": "Global Trade Forum",     "type": { "code": 2, "name": "Seminar" } }
+    ];
 
     function getStatus(){
         let seed = Math.floor(Math.random() * 100) + 1
         return Constants.event.status[seed % Constants.event.status.length] 
-    }
-
-    function getStates(){
-        let seed = Math.floor(Math.random() * 100) + 1
-        return Constants.event.states[seed % Constants.event.states.length] 
     }
 
     function getType(){
@@ -36,22 +70,17 @@ function createList(size){
         return new Date(randomTime);
     }
 
-    for(let i = 0; i < size;i++){
-
-        seats = getRandom(100)
-        vacant = getRandom(seats)
-
-        res.push({
-            "id":i,
-            "name":`Event Name ${i}`,
-            "status":getStatus(),
-            "type":getType(),
-            "vacant":vacant,
-            "seats": seats,
-            "deadline": randomDate(new Date("2025-09-15"), new Date("2025-10-15"))
-        })
+    for(let e of res){
+        let seats = getRandom(50)
+        let vacant = getRandom(seats)
+        if(e.id > 0 && e.id % 4 === 0){
+            vacant = 1
+        }
+        e.vacant = vacant
+        e.seats = seats
+        e.status = getStatus()
+        e.deadline = randomDate(new Date("2025-09-28"), new Date("2025-10-15"))
     }
-
     return res
 }
 class EventService{

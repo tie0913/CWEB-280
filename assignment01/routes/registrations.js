@@ -47,7 +47,7 @@ async function getRelatedInformation(registrationList){
 require("express-async-errors")
 router.get("/enter", requireAuth, async (req, res, next) => {
 
-    const pageSize = getOrElse(req.query.pageSize,3)
+    const pageSize = getOrElse(req.query.pageSize,5)
     const pageNo = getOrElse(req.query.pageNo, 1)
 
     /**
