@@ -32,6 +32,28 @@
       "position": "Student",
       "resumePath": "..\\database\\uploads\\1758319022443_public_util_description.pdf",
       "createdAt": "2025-09-19T21:57:02.508Z"
+    },
+    {
+      "id": "75c9ee97-a5d0-4456-9201-7a7fe66164d5",
+      "email": "t@t.com",
+      "passwordHash": "$2b$10$TWP2M3xxtJdOBR9Uc5uiKuLw7zCaG.WVcR4l6yhaDSHarDtMUoMkS",
+      "role": "user",
+      "fullname": "tt",
+      "phone": "6394767022",
+      "position": "Student",
+      "resumePath": "..\\database\\uploads\\1758999859016_Job_Description.pdf",
+      "createdAt": "2025-09-27T19:04:19.077Z"
+    },
+    {
+      "id": "de8a3982-1c9c-49c9-acb4-fbdd411fb622",
+      "email": "r@t.com",
+      "passwordHash": "$2b$10$Y3WuswE/aT3t0ijs2wpmE.JoNcbq4DHKdgq1lFV.ul/X2QBIxla6u",
+      "role": "user",
+      "fullname": "rr",
+      "phone": "6394767022",
+      "position": "Student",
+      "resumePath": "database\\uploads\\1759000002848_Cover_Letter_Assignment_TCOM291_Fall2025.pdf",
+      "createdAt": "2025-09-27T19:06:42.911Z"
     }
   ]
 }
