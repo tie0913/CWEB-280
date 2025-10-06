@@ -1,0 +1,32 @@
+{
+  "name": "pictionary",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "echo \" Error : no test specified\" && exit 0",
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@socket.io/redis-adapter": "^8.3.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "ioredis": "^5.8.1",
+    "mongodb": "^6.20.0",
+    "pino": "^10.0.0",
+    "pino-http": "^11.0.0",
+    "socket.io": "^4.8.1"
+  },
+  "private": "true",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "scripts/start": "nodemon src/server/js"
+}
