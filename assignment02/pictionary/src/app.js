@@ -3,6 +3,7 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const pinoHttp = require('pino-http')();
+const api = require("./routers/index")
 
 const app = express();
 app.disable('x-powered-by');
@@ -10,6 +11,9 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(pinoHttp);
+
+
+app.use('/api/v1', api)
 
 // Health check
 app.get('/healthz', (req, res) => {

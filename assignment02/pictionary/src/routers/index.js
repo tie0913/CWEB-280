@@ -4,6 +4,6 @@ const rooms = require('./rooms.routes');
 
 const router = Router();
 router.use('/users', users);
-router.use('/rooms', rooms);
+//router.use('/rooms', rooms);
 
 module.exports = router;
