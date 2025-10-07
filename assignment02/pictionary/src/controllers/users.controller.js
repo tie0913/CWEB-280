@@ -1,6 +1,6 @@
 const service = require('../services/users.service');
 
-exports.listUsers = async (_req, res, next) => {
+exports.listUsers = async (req, res, next) => {
   try {
     const data = await service.listUsers();
     res.json({ data });
