@@ -11,7 +11,7 @@ const PORT = Number(process.env.PORT) || 3000;
 const server = http.createServer(app);
 
 // Socket.IO
-const io = new Server(server, { cors: { origin: '*' } }); // prod 收紧
+const io = new Server(server, { cors: { origin: '*' } }); 
 const pub = getRedis().duplicate();
 const sub = getRedis().duplicate();
 Promise.all([pub.connect?.(), sub.connect?.()].map(p => p?.catch?.(() => {}))).finally(() => {
