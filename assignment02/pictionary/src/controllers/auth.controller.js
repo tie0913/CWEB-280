@@ -1,6 +1,7 @@
-const {SignIn} = require('../schemas/user.joi')
+const {signInSchema} = require('../schemas/user.joi')
 
-const userSerivce = require('../services/users.service')
+const userService = require('../services/users.service')
+const sessionService = require('../services/session.service')
 
 const {succeed, fail} = require('../util/response')
 const {generateToken} = require('../util/token')
@@ -10,19 +11,19 @@ const {bizLogger} = require('../util/biz_logger')
 
 class AuthController{
 
-    constructor(){
-        this.userService = userSerivce
-    }
-
     async signIn(req, resp){
-        const {error, value} = SignIn.validate(req.body)
+        const {error, value} = signInSchema.validate(req.body)
         if(error){
             return resp.status(400).json(fail(1, error.details.map(d => d.message)))
         }
         try{
-            const user = await this.userService.getUserByEmail(value.email)
+            const user = await userService.getUserByEmail(value.email)
             if(user != null && user.password === value.password){
-                const token = generateToken(user._id.toString())
+
+                const sessionId = await sessionService.createSession(user['_id'])
+
+                const token = generateToken(sessionId)
+
                 resp.cookie(config.cookie_name, token, {
                     httpOnly:true
                 })
@@ -38,13 +39,21 @@ class AuthController{
     }
 
 
-    signUp(req, resp){
+    async signUp(req, resp){
         console.log("This is sign up")
     }
 
-    signOut(req, resp){
-
-        console.log("This is sign out")
+    async signOut(req, resp){
+        const user = req.user
+        try{
+            await sessionService.deleteSessionByUserId(user['_id'])
+            resp.clearCookie(config.cookie_name, {
+                httpOnly:true
+            })
+            return resp.status(200).json(succeed("you have signed out successfully"))
+        }catch(e){
+            return resp.status(500).json(fail(code=1,message="Signing out has erro", body=null))
+        }
     }
 
 }

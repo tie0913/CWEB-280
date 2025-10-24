@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken')
 const config = require('../config/env')
 
-function generateToken(userId){
-    return jwt.sign({content:String(userId)}, config.jwt_secret)
+function generateToken(content){
+    return jwt.sign({content:String(content)}, config.jwt_secret)
 }
 
 function resolveToken(token){

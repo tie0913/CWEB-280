@@ -1,0 +1,77 @@
+const config = require('../config/env')
+const {ObjectId} = require('mongodb')
+const {resolveToken} = require('../util/token')
+const sessionService = require('../services/session.service')
+const userService = require('../services/users.service')
+const {fail, succeed} = require('../util/response')
+const { bizLogger } = require('../util/biz_logger')
+
+
+async function verifyUser(token){
+    let sessionId
+    try{
+        sessionId = resolveToken(token)
+    }catch(e){
+        bizLogger.error('token resolve error', e)
+        return fail(code=1, message="resolving token has errors", body=null)
+    }
+
+    try{
+        const session = await sessionService.getSession(new ObjectId(sessionId))
+        bizLogger.info(session)
+        bizLogger.info(new Date())
+        if(session == null){
+            return fail(code=2, message="no session has been found by current session id, you need to sign in again", body=null)
+        }else if(new Date() > session['expireAt']){
+            return fail(code=3, message="session has expired, you need to sign in again", body=null)
+        }
+
+        const user = await userService.getUserByObjectId(session['userId'])
+        if(user == null){
+            return fail(code=4, message="cannot find user, you need to sign in again or contact admin to verify your account", body=null)
+        }else{
+            return succeed(body=user)
+        }
+
+    }catch(e){
+        bizLogger.error("auth validator error", e)
+        return fail(code=-1, message="Server Error", body=null)
+    }
+}
+
+/**
+ * verify if the user has signed in
+ * @param  req 
+ * @param  resp 
+ * @param  next 
+ * @returns 
+ */
+async function authValidator(req, resp, next){
+    const token = req.cookies[config.cookie_name]
+    const verification = await verifyUser(token)
+    if(verification.isSuccess()){
+        req.user = verification.body
+        next()
+    }else{
+        bizLogger.info(verification)
+        const httpStatus = verification.code == -1 ?  500 : 401
+        return resp.stats(httpStatus).json(verification)
+    }
+}
+
+/**
+ * verify if the user is administrative
+ * @param req 
+ * @param resp 
+ * @param next 
+ * @returns 
+ */
+async function adminValidator(req, resp, next){
+    if(req.local.user['admin']){
+       next()
+    }else{
+       return resp.status(401).json(fail(code=5, message="insufficiant authorities", body=null))
+    }
+}
+
+module.exports = {authValidator, adminValidator}

@@ -8,6 +8,10 @@ class UserService{
   async getUserByEmail(email) {
     return await this.repo.getUserByEmail(email)
   }
+
+  async getUserByObjectId(userObjectId){
+    return await this.repo.getUserByObjectId(userObjectId)
+  }
 }
 
 module.exports = new UserService()
