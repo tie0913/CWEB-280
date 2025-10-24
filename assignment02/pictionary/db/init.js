@@ -21,18 +21,18 @@ db.collection['session'].insertOne({
 /**
  * Expire Index for session table
  */
-db.collection['session'].createIndex(
+db.session.createIndex(
   {"expireAt": 1 },
   {"expireAfterSeconds":0}
 )
 
-db.collection['users'].createIndex({
+db.users.createIndex({
     "email":1
 },{
     "unique":true
 })
 
-db.collection['session'].createIndex({
+db.session.createIndex({
     "userId":1
 },{
     "unique":true

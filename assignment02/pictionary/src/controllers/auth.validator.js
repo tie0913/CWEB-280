@@ -13,7 +13,7 @@ async function verifyUser(token){
         sessionId = resolveToken(token)
     }catch(e){
         bizLogger.error('token resolve error', e)
-        return fail(code=1, message="resolving token has errors", body=null)
+        return fail(1, "resolving token has errors", null)
     }
 
     try{
@@ -21,21 +21,21 @@ async function verifyUser(token){
         bizLogger.info(session)
         bizLogger.info(new Date())
         if(session == null){
-            return fail(code=2, message="no session has been found by current session id, you need to sign in again", body=null)
+            return fail(2, "no session has been found by current session id, you need to sign in again", null)
         }else if(new Date() > session['expireAt']){
-            return fail(code=3, message="session has expired, you need to sign in again", body=null)
+            return fail(3, "session has expired, you need to sign in again", null)
         }
 
         const user = await userService.getUserByObjectId(session['userId'])
         if(user == null){
-            return fail(code=4, message="cannot find user, you need to sign in again or contact admin to verify your account", body=null)
+            return fail(4, "cannot find user, you need to sign in again or contact admin to verify your account", null)
         }else{
-            return succeed(body=user)
+            return succeed(user)
         }
 
     }catch(e){
         bizLogger.error("auth validator error", e)
-        return fail(code=-1, message="Server Error", body=null)
+        return fail(-1, "Server Error", null)
     }
 }
 
@@ -70,7 +70,7 @@ async function adminValidator(req, resp, next){
     if(req.local.user['admin']){
        next()
     }else{
-       return resp.status(401).json(fail(code=5, message="insufficiant authorities", body=null))
+       return resp.status(401).json(fail(5, "insufficiant authorities", null))
     }
 }
 

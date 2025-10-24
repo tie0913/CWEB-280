@@ -9,6 +9,11 @@ class UserService{
     return await this.repo.getUserByEmail(email)
   }
 
+  async createUser(user){
+    user['admin'] = false
+    await this.repo.createUser(user)
+  }
+
   async getUserByObjectId(userObjectId){
     return await this.repo.getUserByObjectId(userObjectId)
   }

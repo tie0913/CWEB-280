@@ -1,4 +1,4 @@
-const {signInSchema} = require('../schemas/user.joi')
+const {signInSchema, signUpSchema} = require('../schemas/user.joi')
 
 const userService = require('../services/users.service')
 const sessionService = require('../services/session.service')
@@ -34,13 +34,29 @@ class AuthController{
             }
         }catch(e){
             console.log(e)
-            return resp.status(400).json(fail(1, 'sign in has error'))
+            return resp.status(500).json(fail(1, 'sign in has error'))
         }
     }
 
 
     async signUp(req, resp){
-        console.log("This is sign up")
+        const {error, value} = signUpSchema.validate(req.body)
+        if(error){
+            return resp.status(400).json(fail(1, error.details.map(d => d.message)))
+        }
+
+        try{
+            await userService.createUser(value)
+            return resp.status(200).json(succeed("signing up has been successful"))
+        }catch(e){
+            bizLogger.error("sign up has error", e)
+            if(e.code === 11000){
+                return resp.status(200).json(fail(1, "duplicate email", null))
+            }else{
+                return resp.status(500).json(fail(1, "signing up has error", null))
+            }
+        }
+
     }
 
     async signOut(req, resp){
@@ -52,7 +68,7 @@ class AuthController{
             })
             return resp.status(200).json(succeed("you have signed out successfully"))
         }catch(e){
-            return resp.status(500).json(fail(code=1,message="Signing out has erro", body=null))
+            return resp.status(500).json(fail(1,"Signing out has erro", null))
         }
     }
 

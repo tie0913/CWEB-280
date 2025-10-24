@@ -13,6 +13,11 @@ class UserRepository{
     const db = await mongoDb()
     return await db.collection('users').findOne({'_id': userObjectId})
   }
+
+  async createUser(user){
+    const db = await mongoDb()
+    await db.collection('users').insertOne(user)
+  }
 }
 
 module.exports = new UserRepository()
