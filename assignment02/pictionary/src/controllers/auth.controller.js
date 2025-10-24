@@ -8,6 +8,7 @@ const {generateToken} = require('../util/token')
 const config = require('../config/env')
 
 const {bizLogger} = require('../util/biz_logger')
+const UserStatus = require('../constants/UserConstants')
 
 class AuthController{
 
@@ -19,6 +20,9 @@ class AuthController{
         try{
             const user = await userService.getUserByEmail(value.email)
             if(user != null && user.password === value.password){
+                if(UserStatus.isActivated(user)){
+                    return resp.status(200).json(fail(3, 'user is inactivated please contact Administrator', null))
+                }
 
                 const sessionId = await sessionService.createSession(user['_id'])
 
@@ -37,7 +41,6 @@ class AuthController{
             return resp.status(500).json(fail(1, 'sign in has error'))
         }
     }
-
 
     async signUp(req, resp){
         const {error, value} = signUpSchema.validate(req.body)

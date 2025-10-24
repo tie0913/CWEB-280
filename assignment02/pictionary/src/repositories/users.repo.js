@@ -3,6 +3,12 @@ const { mongoDb } = require('../db/mongo');
 
 class UserRepository{
 
+  /**
+   * this is for sign in method
+   * so we will add status = activated
+   * @param  email 
+   * @returns 
+   */
   async getUserByEmail(email){
     const db = await mongoDb()
     return await db.collection('users').findOne({'email': email})
