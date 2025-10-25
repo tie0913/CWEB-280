@@ -1,14 +1,13 @@
 const {signInSchema, signUpSchema} = require('../schemas/user.joi')
 
 const userService = require('../services/users.service')
-const sessionService = require('../services/session.service')
+const authService = require('../services/auth.service')
 
 const {succeed, fail} = require('../util/response')
 const {generateToken} = require('../util/token')
 const config = require('../config/env')
 
 const {bizLogger} = require('../util/biz_logger')
-const UserStatus = require('../constants/UserConstants')
 
 class AuthController{
 
@@ -18,27 +17,17 @@ class AuthController{
             return resp.status(400).json(fail(1, error.details.map(d => d.message)))
         }
         try{
-            const user = await userService.getUserByEmail(value.email)
-            if(user != null && user.password === value.password){
-                if(UserStatus.isActivated(user)){
-                    return resp.status(200).json(fail(3, 'user is inactivated please contact Administrator', null))
-                }
-
-                const sessionId = await sessionService.createSession(user['_id'])
-
-                const token = generateToken(sessionId)
-
+            const response = await authService.signIn(value)
+            if(response.isSuccess()){
+                const token = generateToken(response.body)
                 resp.cookie(config.cookie_name, token, {
                     httpOnly:true
                 })
-                bizLogger.info('we have got user ' + user.email + ' signing in')
-                return resp.status(200).json(succeed("sign in succeed"));
-            }else{
-                return resp.status(400).json(fail(1, 'email and password does not match'))
             }
+            return resp.status(200).json(response)
         }catch(e){
-            console.log(e)
-            return resp.status(500).json(fail(1, 'sign in has error'))
+            bizLogger.error("sign in has error", e)
+            return resp.status(500).json(fail(1, "sign in has error", null))
         }
     }
 
@@ -65,13 +54,28 @@ class AuthController{
     async signOut(req, resp){
         const user = req.user
         try{
-            await sessionService.deleteSessionByUserId(user['_id'])
+            await authService.signOut(user['_id'])
             resp.clearCookie(config.cookie_name, {
                 httpOnly:true
             })
             return resp.status(200).json(succeed("you have signed out successfully"))
         }catch(e){
-            return resp.status(500).json(fail(1,"Signing out has erro", null))
+            return resp.status(500).json(fail(1,"Signing out has error", null))
+        }
+    }
+
+
+    async deleteAccount(req, resp){
+        const user = req.user
+        try{
+            await authService.deleteAccount(user)
+            resp.clearCookie(config.cookie_name, {
+                httpOnly:true
+            })
+            return resp.status(200).json(succeed("you have deleted your account and signed out"))
+        }catch(e){
+            bizLogger.error('deleting account has error', e)
+            return resp.status(500).json(fail(1, "Deleting account has error", null))
         }
     }
 

@@ -1,5 +1,5 @@
 
-const { mongoDb } = require('../db/mongo');
+const { mongoDb , getSession} = require('../db/mongo');
 class SessionRepository{
     /**
      * create a session and return its primary key as a string variable
@@ -8,7 +8,7 @@ class SessionRepository{
      */
     async insertSession(session){
         const db = await mongoDb()
-        const result = await db.collection('session').insertOne(session)
+        const result = await db.collection('session').insertOne(session, getSession())
         return result.insertedId.toString()
     }
 
@@ -20,13 +20,13 @@ class SessionRepository{
      */
     async getSessionById(sessionId){
         const db = await mongoDb()
-        return await db.collection('session').findOne({'_id': sessionId})
+        return await db.collection('session').findOne({'_id': sessionId}, getSession())
     }
 
 
     async deleteSessionByUserId(userId){
         const db = await mongoDb()
-        await db.collection('session').deleteOne({"userId": userId})
+        await db.collection('session').deleteOne({"userId": userId}, getSession())
     }
 
 }

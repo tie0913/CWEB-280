@@ -2,17 +2,18 @@ use('pictionary');
 /**
  * users table structure
  */
-db.collection['users'].insertOne({
+db.users.insertOne({
     "name": "Tie Wang",
     "email": "wangtie_913@outlook.com",
     "password": "123456",
+    "status":1,
     "admin": true
 })
 
 /**
  * session table structure
  */
-db.collection['session'].insertOne({
+db.session.insertOne({
   "userId": "68e53a2627d7e9724394de63",
   "expireAt": {
     "$date": new Date()

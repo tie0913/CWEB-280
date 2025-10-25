@@ -1,4 +1,4 @@
-const { mongoDb } = require('../db/mongo');
+const { mongoDb,getSession } = require('../db/mongo');
 
 
 class UserRepository{
@@ -11,18 +11,24 @@ class UserRepository{
    */
   async getUserByEmail(email){
     const db = await mongoDb()
-    return await db.collection('users').findOne({'email': email})
+    return await db.collection('users').findOne({'email': email}, getSession())
   }
 
 
   async getUserByObjectId(userObjectId){
     const db = await mongoDb()
-    return await db.collection('users').findOne({'_id': userObjectId})
+    return await db.collection('users').findOne({'_id': userObjectId}, getSession())
   }
 
   async createUser(user){
     const db = await mongoDb()
-    await db.collection('users').insertOne(user)
+    await db.collection('users').insertOne(user, getSession())
+  }
+
+  async updateUser(user){
+    const db = await mongoDb()
+    await db.collection('users').updateOne({'_id': user['_id']}, {$set: user}, getSession())
+    throw new Error('Test error')
   }
 }
 

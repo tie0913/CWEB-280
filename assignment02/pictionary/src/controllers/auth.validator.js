@@ -1,7 +1,7 @@
 const config = require('../config/env')
 const {ObjectId} = require('mongodb')
 const {resolveToken} = require('../util/token')
-const sessionService = require('../services/session.service')
+const sessionService = require('../services/auth.service')
 const userService = require('../services/users.service')
 const {fail, succeed} = require('../util/response')
 const { bizLogger } = require('../util/biz_logger')
@@ -48,6 +48,9 @@ async function verifyUser(token){
  */
 async function authValidator(req, resp, next){
     const token = req.cookies[config.cookie_name]
+    if(token == null){
+        return resp.status(401).json(fail(1, "Token does not exist, please sign in"))
+    }
     const verification = await verifyUser(token)
     if(verification.isSuccess()){
         req.user = verification.body

@@ -1,7 +1,11 @@
+
+const {AsyncLocalStorage} =require('node:async_hooks')
 const { MongoClient } = require('mongodb');
 const {bizLogger} = require('../util/biz_logger')
-let client;
 
+const als = new AsyncLocalStorage()
+
+let client;
 async function getMongoClient() {
   if (!client) {
     client = new MongoClient(process.env.MONGO_URL, { maxPoolSize: 20, serverSelectionTimeoutMS: 5000 });
@@ -17,11 +21,17 @@ async function mongoDb() {
 async function closeMongo() { if (client) await client.close(); }
 
 
-async function withMongoTx(transaction){
+async function withMongoTx(transaction, txOptions = {
+  readConcern: { level: 'snapshot' },
+  writeConcern: { w: 'majority' },
+  readPreference: 'primary',
+}){
   const session = client.startSession();
   try{
-    session.startTransaction({})
-    const result = await transaction()
+    session.startTransaction(txOptions)
+    const result = als.run({session}, async () => {
+      return await transaction()
+    })
     await session.commitTransaction()
     return result
   }catch(e){
@@ -33,4 +43,8 @@ async function withMongoTx(transaction){
   }
 }
 
-module.exports = { getMongoClient, mongoDb, closeMongo , withMongoTx};
+async function getSession(){
+  return als.getStore()?.session
+}
+
+module.exports = { getMongoClient, mongoDb, closeMongo , withMongoTx, getSession};
