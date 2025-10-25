@@ -24,14 +24,14 @@ class AuthService{
             }
 
             const userId = user['_id']
-            async function createNewSession(sess){
+            async function txMethod(tx){
                 const expireAt = new Date(new Date().getTime() + EXPIRE_TIME_FRAME)
                 const session = {"userId": userId, "expireAt": expireAt}
-                await sessionRepository.deleteSessionByUserId(userId, sess)
-                return await sessionRepository.insertSession(session, sess)
+                await sessionRepository.deleteSessionByUserId(userId, tx)
+                return await sessionRepository.insertSession(session, tx)
             }
 
-            const sessionId = await withMongoTx(createNewSession)
+            const sessionId = await withMongoTx(txMethod)
             return succeed(sessionId);
         }else{
             return fail(1, 'email and password does not match')
@@ -58,11 +58,11 @@ class AuthService{
 
     async deleteAccount(user){
         UserStatus.delete(user)
-        async function tx(sess){
-            await sessionRepository.deleteSessionByUserId(user['_id'], sess)
-            await userRepository.updateUser(user, sess)
+        async function txMethod(tx){
+            await sessionRepository.deleteSessionByUserId(user['_id'], tx)
+            await userRepository.updateUser(user, tx)
         }
-        await withMongoTx(tx)
+        await withMongoTx(txMethod)
     }
 }
 

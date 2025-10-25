@@ -6,10 +6,9 @@ class SessionRepository{
      * @param session 
      * @returns 
      */
-    async insertSession(session, sess){
+    async insertSession(session, tx){
         const db = await mongoDb()
-        //const result = await db.collection('session').insertOne(session, sessionOpt())
-        const result = await db.collection('session').insertOne(session, {session:sess})
+        const result = await db.collection('session').insertOne(session, {session:tx})
         return result.insertedId.toString()
     }
 
@@ -19,16 +18,15 @@ class SessionRepository{
      * @param sessionId this is an ObjectId instead of a string
      * @returns 
      */
-    async getSessionById(sessionId, sess){
+    async getSessionById(sessionId, tx){
         const db = await mongoDb()
-        return await db.collection('session').findOne({'_id': sessionId}, {session:sess})
+        return await db.collection('session').findOne({'_id': sessionId}, {session:tx})
     }
 
 
-    async deleteSessionByUserId(userId, sess){
+    async deleteSessionByUserId(userId, tx){
         const db = await mongoDb()
-        await db.collection('session').deleteOne({"userId": userId}, {session:sess})
-        //await db.collection('session').deleteOne({"userId": userId}, sessionOpt())
+        await db.collection('session').deleteOne({"userId": userId}, {session:tx})
     }
 
 }

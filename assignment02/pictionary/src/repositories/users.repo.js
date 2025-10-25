@@ -9,25 +9,25 @@ class UserRepository{
    * @param  email 
    * @returns 
    */
-  async getUserByEmail(email, sess){
+  async getUserByEmail(email, tx){
     const db = await mongoDb()
-    return await db.collection('users').findOne({'email': email}, {session:sess})
+    return await db.collection('users').findOne({'email': email}, {session:tx})
   }
 
 
-  async getUserByObjectId(userObjectId, sess){
+  async getUserByObjectId(userObjectId, tx){
     const db = await mongoDb()
-    return await db.collection('users').findOne({'_id': userObjectId}, {session:sess})
+    return await db.collection('users').findOne({'_id': userObjectId}, {session:tx})
   }
 
-  async createUser(user, sess){
+  async createUser(user, tx){
     const db = await mongoDb()
-    await db.collection('users').insertOne(user, {session:sess})
+    await db.collection('users').insertOne(user, {session:tx})
   }
 
-  async updateUser(user, sess){
+  async updateUser(user, tx){
     const db = await mongoDb()
-    await db.collection('users').updateOne({'_id': user['_id']}, {$set: user}, {session:sess})
+    await db.collection('users').updateOne({'_id': user['_id']}, {$set: user}, {session:tx})
     throw new Error('Test error')
   }
 }
