@@ -4,7 +4,6 @@ const DELETED = 3
 
 class UserStatus{
     static isActivated(user){
-        console.log(user)
         return user.status === ACTIVATED
     }
 

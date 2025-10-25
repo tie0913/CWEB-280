@@ -1,4 +1,4 @@
-const { mongoDb,getSession } = require('../db/mongo');
+const { mongoDb} = require('../db/mongo');
 
 
 class UserRepository{
@@ -9,38 +9,28 @@ class UserRepository{
    * @param  email 
    * @returns 
    */
-  async getUserByEmail(email){
+  async getUserByEmail(email, sess){
     const db = await mongoDb()
-    return await db.collection('users').findOne({'email': email}, getSession())
+    return await db.collection('users').findOne({'email': email}, {session:sess})
   }
 
 
-  async getUserByObjectId(userObjectId){
+  async getUserByObjectId(userObjectId, sess){
     const db = await mongoDb()
-    return await db.collection('users').findOne({'_id': userObjectId}, getSession())
+    return await db.collection('users').findOne({'_id': userObjectId}, {session:sess})
   }
 
-  async createUser(user){
+  async createUser(user, sess){
     const db = await mongoDb()
-    await db.collection('users').insertOne(user, getSession())
+    await db.collection('users').insertOne(user, {session:sess})
   }
 
-  async updateUser(user){
+  async updateUser(user, sess){
     const db = await mongoDb()
-    await db.collection('users').updateOne({'_id': user['_id']}, {$set: user}, getSession())
+    await db.collection('users').updateOne({'_id': user['_id']}, {$set: user}, {session:sess})
     throw new Error('Test error')
   }
 }
 
 module.exports = new UserRepository()
-/*
-exports.findMany = async () => {
-  const db = await mongoDb();
-  return db.collection('users').find().limit(100).toArray();
-};
 
-exports.insertOne = async (doc) => {
-  const db = await mongoDb();
-  const r = await db.collection('users').insertOne(doc);
-  return { _id: r.insertedId, ...doc };
-};*/

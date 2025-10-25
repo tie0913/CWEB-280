@@ -24,11 +24,11 @@ class AuthService{
             }
 
             const userId = user['_id']
-            async function createNewSession(){
+            async function createNewSession(sess){
                 const expireAt = new Date(new Date().getTime() + EXPIRE_TIME_FRAME)
                 const session = {"userId": userId, "expireAt": expireAt}
-                await sessionRepository.deleteSessionByUserId(userId)
-                return await sessionRepository.insertSession(session)
+                await sessionRepository.deleteSessionByUserId(userId, sess)
+                return await sessionRepository.insertSession(session, sess)
             }
 
             const sessionId = await withMongoTx(createNewSession)
@@ -58,9 +58,9 @@ class AuthService{
 
     async deleteAccount(user){
         UserStatus.delete(user)
-        async function tx(){
-            await sessionRepository.deleteSessionByUserId(user['_id'])
-            await userRepository.updateUser(user)
+        async function tx(sess){
+            await sessionRepository.deleteSessionByUserId(user['_id'], sess)
+            await userRepository.updateUser(user, sess)
         }
         await withMongoTx(tx)
     }
