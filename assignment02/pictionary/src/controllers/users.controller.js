@@ -85,8 +85,8 @@ class UserController{
   async getUserList(req, resp){
     const {filter, page} = r(req)
     try{
-      const {list, total} = await userService.getUserList(filter, page)
-      return resp.status(200).json(succeed({list:list, total:total}))
+      const result = await userService.getUserList(filter, page)
+      return resp.status(200).json(succeed(result))
     }catch(e){
       bizLogger.error('get user list has error', e)
       return resp.status(500).json(fail(-1, "Getting user list has error"))

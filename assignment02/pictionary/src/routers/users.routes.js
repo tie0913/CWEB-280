@@ -12,6 +12,9 @@ router.get('/self', authValidator, ctrl.self.bind(ctrl));
  * update user by him/herself
  */
 router.post('/self/update', authValidator, ctrl.selfUpdate.bind(ctrl))
+
+
+
 /**
  * get user info 
  * this is only provided for admin

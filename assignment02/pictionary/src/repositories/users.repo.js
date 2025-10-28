@@ -14,6 +14,11 @@ class UserRepository{
     return await db.collection('users').findOne({'email': email}, {session:tx})
   }
 
+  async deleteUserByUserId(userObjectId, tx){
+    const db = await mongoDb()
+    await db.collection('users').deleteOne({'_id': userObjectId}, tx)
+  }
+
 
   async getUserByObjectId(userObjectId, tx){
     const db = await mongoDb()
@@ -45,10 +50,10 @@ class UserRepository{
       col.find(cond).skip((page.no - 1) * page.size).limit(page.size).toArray()
     ])
 
-    const totalPages = Math.ceil(recNum/page.size)
+    page.totalPages = Math.ceil(recNum/page.size)
     return {
       list:items,
-      total:totalPages,
+      page:page,
     }
   }
 }

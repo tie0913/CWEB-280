@@ -49,10 +49,9 @@ class AuthService{
 
 
     async deleteAccount(user){
-        UserStatus.delete(user)
         async function txMethod(tx){
             await sessionRepository.deleteSessionByUserId(user['_id'], tx)
-            await userRepository.updateUser(user, tx)
+            await userRepository.deleteUserByUserId(user['_id'], tx)
         }
         await withMongoTx(txMethod)
     }
