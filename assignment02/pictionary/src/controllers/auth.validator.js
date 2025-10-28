@@ -58,7 +58,7 @@ async function authValidator(req, resp, next){
     }else{
         bizLogger.info(verification)
         const httpStatus = verification.code == -1 ?  500 : 401
-        return resp.stats(httpStatus).json(verification)
+        return resp.status(httpStatus).json(verification)
     }
 }
 
@@ -70,7 +70,7 @@ async function authValidator(req, resp, next){
  * @returns 
  */
 async function adminValidator(req, resp, next){
-    if(req.local.user['admin']){
+    if(req.user['admin']){
        next()
     }else{
        return resp.status(401).json(fail(5, "insufficiant authorities", null))

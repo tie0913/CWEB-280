@@ -1,4 +1,4 @@
-const UserStatus = require('../constants/UserConstants');
+const {UserStatus} = require('../constants/UserConstants');
 const repo = require('../repositories/users.repo');
 
 class UserService{
@@ -23,14 +23,26 @@ class UserService{
   async getUserByObjectId(userObjectId){
     return await this.repo.getUserByObjectId(userObjectId)
   }
+
+  async updateUser(user){
+    await this.repo.updateUser(user)
+  }
+
+  async ban(userObjectId){
+    const user = await this.repo.getUserByObjectId(userObjectId)
+    UserStatus.ban(user)
+    await this.repo.updateUser(user)
+  }
+
+  async restoreStatus(userObjectId){
+    const user = await this.repo.getUserByObjectId(userObjectId)
+    UserStatus.activate(user)
+    await this.repo.updateUser(user)
+  }
+  
+  async getUserList(filter, page){
+    return await this.repo.getUserList(filter, page)
+  }
 }
 
 module.exports = new UserService()
-
-/*
-exports.listUsers = () => repo.findMany();
-
-exports.createUser = async (payload) => {
-  if (!payload?.name) throw new Error('name is required');
-  return repo.insertOne({ name: payload.name, createdAt: new Date() });
-};*/

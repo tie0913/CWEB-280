@@ -2,16 +2,8 @@
 const sessionRepository = require('../repositories/session.repo')
 const userRepository = require('../repositories/users.repo')
 const {withMongoTx} = require('../db/mongo')
-const UserStatus = require('../constants/UserConstants')
+const {UserStatus} = require('../constants/UserConstants')
 const {succeed, fail} = require('../util/response')
-/**
- * Session Object
- * {
- *  "_id":ObjectId(),
- *  "userId":ObjectId(), -> This is Foreign Key referencing to user collection _id
- *  "expireAt":Date
- * }
- */
 
 const EXPIRE_TIME_FRAME = 1000 * 60 * 30
 class AuthService{

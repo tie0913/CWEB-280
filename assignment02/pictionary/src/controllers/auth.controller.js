@@ -48,7 +48,6 @@ class AuthController{
                 return resp.status(500).json(fail(1, "signing up has error", null))
             }
         }
-
     }
 
     async signOut(req, resp){

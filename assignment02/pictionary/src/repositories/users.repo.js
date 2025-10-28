@@ -28,7 +28,28 @@ class UserRepository{
   async updateUser(user, tx){
     const db = await mongoDb()
     await db.collection('users').updateOne({'_id': user['_id']}, {$set: user}, {session:tx})
-    throw new Error('Test error')
+  }
+
+
+  async getUserList(filter, page, tx){
+    const db = await mongoDb()
+    const col = db.collection('users')
+
+    const cond = {}
+    if(filter.name){
+      cond.name = {$regex: '^' + escapeRegex(filter.name), $options:'i'}
+    }
+
+    const[recNum, items] = await Promise.all([
+      col.countDocuments(cond),
+      col.find(cond).skip((page.no - 1) * page.size).limit(page.size).toArray()
+    ])
+
+    const totalPages = Math.ceil(recNum/page.size)
+    return {
+      list:items,
+      total:totalPages,
+    }
   }
 }
 
