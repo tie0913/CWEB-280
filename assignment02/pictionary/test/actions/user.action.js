@@ -26,3 +26,12 @@ exports.patch = async(user, cookie) => {
     return response.body
 }
 
+exports.ban = async(user_id, cookie) => {
+    const response = await post(`/api/v1/users/ban/${user_id}`, {}, cookie)
+    return response.body
+}
+
+exports.restore = async(user_id, cookie) => {
+    const response = await post(`/api/v1/users/restore/${user_id}`, {}, cookie)
+    return response.body
+}

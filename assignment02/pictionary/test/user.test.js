@@ -1,7 +1,11 @@
-const {self, list, selfUpdate, getUserForAdmin, patch} = require('./actions/user.action')
+const {self, list, selfUpdate, getUserForAdmin, patch, ban, restore} = require('./actions/user.action')
 const {signIn, signUp, signOut,deleteAccount} = require('./actions/auth.action')
 const {params} = require('./parameters')
 let pictionary_cookie
+
+
+
+
 /**
  * Regular user sign up, in, look up self information and delete account
  */
@@ -30,7 +34,6 @@ describe('GET /users/self', () => {
         expect(body.body).toHaveProperty('name')
     })
 })
-
 
 describe('POST /users/self', () => {
 
@@ -105,6 +108,64 @@ describe('Test Update user by Admin', () => {
         const res = await patch(admin, pictionary_cookie)
         expect(res).toHaveProperty('code', 0)
     })
+})
+
+
+describe('Test ban and restore user', () => {
+
+
+    /**
+     * regist a user which will be banned later
+     */
+    let banned_user
+    it.only('should create a new user', async() => {
+        const body = await signUp(params.banned_user_name, params.banned_user_pwd, params.banned_user_email)
+        expect(body).toHaveProperty('code', 0)
+    })
+
+    /**
+     * find the banned user
+     */
+    it.only('should list first page of all users', async () => {
+        const {body} = await list(pictionary_cookie)
+        expect(body).toHaveProperty('list')
+        expect(Array.isArray(body.list)).toBe(true)
+        expect(body).toHaveProperty('page')
+        expect(body.page).toHaveProperty('no', 1)
+        expect(body.page).toHaveProperty('size', 20)
+
+        banned_user = body.list.filter((u) => {
+            return u.email === params.banned_user_email
+        })[0]
+    })
+    
+    it.only("ban the user", async () => {
+        const res = await ban(banned_user['_id'], pictionary_cookie)
+        expect(res).toHaveProperty('code', 0)
+    })
+
+    it.only('banned user can not sign in ', async () => {
+        const {body} = await signIn(params.banned_user_email, params.banned_user_pwd)
+        expect(body).toHaveProperty('code', 3)
+    })
+
+    it.only("restore the user", async () => {
+        const res = await restore(banned_user['_id'], pictionary_cookie)
+        expect(res).toHaveProperty('code', 0)
+    })
+    
+    let banned_user_cookie
+    it.only('banned user can sign in ', async () => {
+        const {cookies, body} = await signIn(params.banned_user_email, params.banned_user_pwd)
+        expect(body).toHaveProperty('code', 0)
+        banned_user_cookie = cookies[0]
+    })
+
+    it.only('banned user delete account successfully', async() => {
+        const body = await deleteAccount(banned_user_cookie)
+        expect(body).toHaveProperty('code', 0)
+    })
+
 })
 
 describe('POST /auth/signOut', () => {
