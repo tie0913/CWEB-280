@@ -3,7 +3,7 @@ const userService = require('../services/users.service');
 const { succeed, fail } = require('../util/response');
 const {bsonToJs, jsToBson} = require('../util/converter')
 const {updateUserSchema, updateUserByAdminSchema} = require('../schemas/user.joi')
-const r = require('../util/list.param.reader');
+const reader = require('../util/list.param.reader');
 const { bizLogger } = require('../util/biz_logger');
 
 class UserController{
@@ -99,7 +99,7 @@ class UserController{
 
 
   async getUserList(req, resp){
-    const {filter, page} = r(req)
+    const {filter, page} = reader(req)
     try{
       const result = await userService.getUserList(filter, page)
       return resp.status(200).json(succeed(result))

@@ -1,5 +1,5 @@
 const qs = require('qs')
-function r(req){
+function reader(req){
     const parsed = qs.parse(req._parsedUrl.query)
     console.log(parsed)
     const no = parseInt(parsed.page?.mp??'1', 10)
@@ -15,4 +15,4 @@ function r(req){
     }
 }
 
-module.exports = r
+module.exports = reader
