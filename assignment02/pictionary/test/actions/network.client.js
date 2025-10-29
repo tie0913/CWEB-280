@@ -2,19 +2,19 @@ const request = require('supertest')
 const app = require('../../src/app')
 
 module.exports = {
-    post: (url, body, cookie) => {
+    post: async (url, body, cookie) => {
         const req = request(app).post(url).send(body).set('Accept', 'application/json')
         if(cookie){
             req.set('Cookie', cookie)
         }
-        return req
+        return await req
     },
 
-    get: (url, cookie) => {
+    get: async (url, cookie) => {
         const req = request(app).get(url).set('Accept', 'application/json')
         if(cookie){
             req.set('Cookie', cookie)
         }
-        return req
+        return await req
     }
 }

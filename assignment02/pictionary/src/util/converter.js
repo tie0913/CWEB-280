@@ -19,7 +19,7 @@ function bsonToJs(bson) {
   if (typeof bson === 'object') {
     const result = {};
     for (const [key, value] of Object.entries(bson)) {
-      result[key === '_id' ? 'id' : key] = bsonToJs(value);
+      result[key] = bsonToJs(value);
     }
     return result;
   }

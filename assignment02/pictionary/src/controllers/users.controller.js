@@ -9,15 +9,22 @@ const { bizLogger } = require('../util/biz_logger');
 class UserController{
 
   async self(req, resp){
-    return resp.status(200).json(succeed(req.user))
+    try{
+      const user = await userService.getUserByObjectId(req.user['_id'])
+      delete user.admin
+      delete user.status
+      return resp.status(200).json(succeed(bsonToJs(user)))
+    }catch(e){
+      return resp.status(500).json(fail(-1, "query user has error"))
+    }
   }
 
 
   async selfUpdate(req, resp){
 
     const {error, value} = updateUserSchema.validate(req.body)
-
     if(error){
+      bizLogger.error('update self has error when validating params', error)
       return resp.status(400).json(fail(1, error.details.map(d => d.message)))
     }
 
@@ -29,10 +36,18 @@ class UserController{
       await userService.updateUser(user)
       return resp.status(200).json(succeed("updateing user has succeed"))
     }catch(e){
+      bizLogger.error('update self has error', e)
       return resp.status(500).json(fail(-1, "updating user has error", null))
     }
   }
 
+
+  /**
+   * read a user's information by an administrator
+   * @param {} req 
+   * @param {*} resp 
+   * @returns 
+   */
   async detail(req, resp){
     try{
       const user = await userService.getUserByObjectId(new ObjectId(req.params.userId));
@@ -49,6 +64,7 @@ class UserController{
   async update(req, resp){
     const {error, value} = updateUserByAdminSchema.validate(req.body)
     if(error){
+      bizLogger.error('update error', error)
       return resp.status(400).json(fail(1, error.details.map(d => d.message)))
     }
     try{

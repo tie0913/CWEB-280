@@ -18,8 +18,6 @@ async function verifyUser(token){
 
     try{
         const session = await sessionService.getSession(new ObjectId(sessionId))
-        bizLogger.info(session)
-        bizLogger.info(new Date())
         if(session == null){
             return fail(2, "no session has been found by current session id, you need to sign in again", null)
         }else if(new Date() > session['expireAt']){
@@ -56,7 +54,6 @@ async function authValidator(req, resp, next){
         req.user = verification.body
         next()
     }else{
-        bizLogger.info(verification)
         const httpStatus = verification.code == -1 ?  500 : 401
         return resp.status(httpStatus).json(verification)
     }
