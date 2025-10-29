@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const pino = require('pino');
-const config = require('../config/env'); // 里头包含 bizLog: { level, toFile, filePath, rotate, rotateDir, maxFiles }
+const config = require('../config/env'); 
 
 class BizLogger {
   constructor(opts = {}) {
@@ -50,15 +50,12 @@ class BizLogger {
     };
   }
 
-  // -------- 私有工具 --------
   #ensureDir(dir) {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   }
 
   #createStream() {
     if (this.rotate) {
-      // 轮转模式：每天一个文件（需要安装 rotating-file-stream）
-      // npm i rotating-file-stream
       const rfs = require('rotating-file-stream');
       this.#ensureDir(this.rotateDir);
       return rfs.createStream('biz.log', {
@@ -69,13 +66,11 @@ class BizLogger {
     }
 
     if (this.toFile) {
-      // 固定文件模式
       const dir = path.dirname(this.filePath);
       this.#ensureDir(dir);
       return fs.createWriteStream(this.filePath, { flags: 'a' });
     }
 
-    // 默认输出到控制台（stdout）
     return process.stdout;
   }
 }
