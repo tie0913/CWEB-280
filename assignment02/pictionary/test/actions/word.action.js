@@ -7,13 +7,13 @@ exports.create = async (cookie, payload) => {
 };
 
 exports.update = async (cookie, id, payload) => {
-  const response = await put(`/api/v1/words/${id}`, payload, cookie);
+  const response = await post(`/api/v1/words/${id}`, payload, cookie);
   return response.body;
 };
 
 exports.remove = async (cookie, id) => {
   // network.client.del should handle 204; body may be undefined
-  const response = await del(`/api/v1/words/${id}`, cookie);
+  const response = await post(`/api/v1/words/${id}`, {}, cookie);
   return response.body;
 };
 

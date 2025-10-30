@@ -41,11 +41,11 @@ describe('WORDS API', () => {
 
   // --- duplicate protection (force duplicate)
   it.only('creating an exact duplicate should fail', async () => {
-    const text = `dup_${uniq()}`;
-    const ok = await Word.create(adminCookie, { text, difficulty: 'hard' });
+    const word = `dup_${uniq()}`;
+    const ok = await Word.create(adminCookie, { word, difficulty: 'hard' });
     expect(ok).toHaveProperty('code', 0);
 
-    const dup = await Word.create(adminCookie, { text, difficulty: 'hard' });
+    const dup = await Word.create(adminCookie, { word, difficulty: 'hard' });
     expect(dup.code).not.toBe(0);            // controller returns fail()
     // Optional: expect(dup.message).toMatch(/DuplicateWord|duplicate/i);
   });
@@ -63,7 +63,7 @@ describe('WORDS API', () => {
   it.only('random word returns a word', async () => {
     const body = await Word.random(adminCookie);
     expect(body).toHaveProperty('code', 0);
-    expect(body.body).toHaveProperty('text');
+    expect(body.body).toHaveProperty('word');
     expect(body.body).toHaveProperty('difficulty');
   });
 
@@ -75,12 +75,12 @@ describe('WORDS API', () => {
 
   // --- update (admin)
   it.only('admin updates a word text', async () => {
-    const id = createdIds[0];
-    const newText = `updated_${uniq()}`;
-    const body = await Word.update(adminCookie, id, { text: newText, difficulty: 'easy' });
+    const _id = createdIds[0];
+    const word = `updated_${uniq()}`;
+    const body = await Word.update(adminCookie, _id, { word, difficulty: 'easy' });
     expect(body).toHaveProperty('code', 0);
     expect(body.body).toHaveProperty('_id');
-    expect(body.body).toHaveProperty('text', newText);
+    expect(body.body).toHaveProperty('word', word);
   });
 
   // --- permission: regular user cannot create

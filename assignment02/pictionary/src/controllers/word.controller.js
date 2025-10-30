@@ -28,7 +28,7 @@ class WordController {
   async update(req, res) {
     const { error, value } = updateWordSchema.validate({
       ...req.body,
-      id: req.params.id,
+      _id: req.params.id,
     });
     if (error)
       return res.status(400).json(

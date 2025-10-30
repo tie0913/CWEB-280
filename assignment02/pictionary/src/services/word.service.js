@@ -8,20 +8,20 @@ class WordService {
     return { ...doc, _id: id };
   }
 
-  async updateWord({ id, word, difficulty }) {
+  async updateWord({ _id, word, difficulty }) {
     const other = await wordRepo.findByWord(word);
-    if (other && String(other._id) !== String(id)) throw new Error('DuplicateWord');
+    if (other && String(other._id) !== String(_id)) throw new Error('DuplicateWord');
 
     const updates = { word, difficulty, updatedAt: new Date() };
-    await wordRepo.update(id, updates);
-    return await wordRepo.findById(id);
+    await wordRepo.update(_id, updates);
+    return await wordRepo.findById(_id);
   }
 
   async deleteWord(id) {
     await wordRepo.remove(id);
   }
 
-  async listWords({ q, difficulty, page, size }) {
+  async listWords({query, difficulty, page, size }) {
     const { total, items } = await wordRepo.list({
       query, difficulty,
       skip: (page - 1) * size,

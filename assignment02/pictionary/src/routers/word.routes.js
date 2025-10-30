@@ -10,7 +10,7 @@ router.get('/random', (req, res) => ctrl.random(req, res));
 router.get('/random/:difficulty', (req, res) => ctrl.randomByDifficulty(req, res));
 
 router.post('/', adminValidator, (req, res) => ctrl.create(req, res));
-router.put('/:id', adminValidator, (req, res) => ctrl.update(req, res));
-router.delete('/:id', adminValidator, (req, res) => ctrl.remove(req, res));
+router.post('/:id', adminValidator, (req, res) => ctrl.update(req, res));
+router.post('/:id', adminValidator, (req, res) => ctrl.remove(req, res));
 
 module.exports = router;

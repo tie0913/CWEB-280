@@ -22,9 +22,9 @@ class WordRepository {
     return (await this.col()).findOne({ word }, { session: tx });
   }
 
-  async update(id, updates, tx) {
+  async update(_id, updates, tx) {
     return (await this.col()).updateOne(
-      { _id: new ObjectId(id) },
+      { _id: new ObjectId(_id) },
       { $set: updates },
       { session: tx }
     );
