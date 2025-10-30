@@ -1,7 +1,7 @@
 const wordRepo = require('../repositories/word.repo');
 class WordService {
       async createWord({ word, difficulty }) {
-    const existing = await wordRepo.findByText(word);
+    const existing = await wordRepo.findByWord(word);
     if (existing) throw new Error('DuplicateWord');
     const doc = { word, difficulty, createdAt: new Date(), updatedAt: new Date() };
     const id = await wordRepo.insert(doc);
@@ -9,7 +9,7 @@ class WordService {
   }
 
   async updateWord({ id, word, difficulty }) {
-    const other = await wordRepo.findByText(word);
+    const other = await wordRepo.findByWord(word);
     if (other && String(other._id) !== String(id)) throw new Error('DuplicateWord');
 
     const updates = { word, difficulty, updatedAt: new Date() };
@@ -42,3 +42,5 @@ class WordService {
     return word;
   }
 }
+
+module.exports = new WordService()
