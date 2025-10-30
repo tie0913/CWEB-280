@@ -1,28 +1,27 @@
-const {signIn, signOut, signUp, deleteAccount} = require('./actions/auth.action')
-const {self} = require('./actions/room.action')
+const { signIn, signOut, signUp, deleteAccount } = require('./actions/auth.action')
+const { self } = require('./actions/room.action')
 const Room = require('./actions/room.action')
-const {params} = require('./parameters')
+const { params } = require('./parameters')
 
 let owner_cookie, member_cookie;
 let roomId;
 
-describe('Room flow', () => {
-  it.only('owner signs up', async () => {
-    const body = await signUp('Owner A', 'Pass#123', 'owner_a@test.com');
-    expect(body).toHaveProperty('code', 0);
-  });
+const uniq = () => Date.now().toString().slice(-6);
 
-  it.only('owner signs in', async () => {
-    const { cookies, body } = await signIn('owner_a@test.com', 'Pass#123');
+describe('Room flow', () => {
+  it.only('owner signs up & in', async () => {
+    const email = `owner_${uniq()}@test.com`
+    const r1 = await signUp('OwnerA', 'Pass#123', email);
+    expect(r1).toHaveProperty('code', 0);
+    const { cookies, body } = await signIn(email, 'Pass#123');
     expect(body).toHaveProperty('code', 0);
-    ownerCookie = cookies[0];
-    expect(ownerCookie).toMatch(/pictionary_user/);
+    owner_cookie = cookies[0];
   });
 
   // --- Create room ---
   it.only('owner creates a room', async () => {
-    const payload = { name: 'Lobby One', maxMembers: 4, visibility: 0 };
-    const body = await Room.create(ownerCookie, payload);
+    const payload = { name: 'Lobby One', maxPlayers: 4, visibility: 0 };
+    const body = await Room.create(owner_cookie, payload);
     expect(body).toHaveProperty('code', 0);
     expect(body).toHaveProperty('body');
     expect(body.body).toHaveProperty('_id');
@@ -30,7 +29,7 @@ describe('Room flow', () => {
   });
 
   it.only('list rooms shows the new room', async () => {
-    const body = await Room.list(ownerCookie, 'page=1&size=10&state=1'); // state=WAITING
+    const body = await Room.list(owner_cookie, 'page=1&size=10&state=1'); // state=WAITING
     expect(body).toHaveProperty('code', 0);
     expect(Array.isArray(body.body.list)).toBe(true);
     expect(body.body.list.find(r => String(r._id) === String(roomId))).toBeTruthy();
@@ -38,28 +37,31 @@ describe('Room flow', () => {
 
 
   it.only('member signs up & in', async () => {
-    const s = await signUp('Member B', 'Pass#123', 'member_b@test.com');
+    const email = `member_user${uniq()}@test.com`
+    const s = await signUp('MemberB', 'Pass#123', email);
     expect(s).toHaveProperty('code', 0);
-    const { cookies } = await signIn('member_b@test.com', 'Pass#123');
-    memberCookie = cookies[0];
+    const { cookies, body } = await signIn(email, 'Pass#123');
+    expect(body).toHaveProperty('code', 0);
+    member_cookie = cookies[0];
   });
 
   it.only('member joins the room', async () => {
-    const body = await Room.join(memberCookie, roomId);
+    const body = await Room.join(member_cookie, roomId);
     expect(body).toHaveProperty('code', 0);
-    expect(body.body.members.length).toBeGreaterThanOrEqual(2);
+    const membersCount = body.body.members?.length ?? body.body.members?.size ?? 0;
+    expect(membersCount).toBeGreaterThanOrEqual(2);
   });
 
   // --- Start by owner ---
   it.only('owner starts the room', async () => {
-    const body = await Room.start(ownerCookie, roomId);
+    const body = await Room.start(owner_cookie, roomId);
     expect(body).toHaveProperty('code', 0);
     expect(body.body).toHaveProperty('state'); // should be ONGOING
   });
 
   // member leaves (room still exists)
   it.only('member leaves (room continues)', async () => {
-    const body = await Room.leave(memberCookie, roomId);
+    const body = await Room.leave(member_cookie, roomId);
     expect(body).toHaveProperty('code', 0);
     // when closed=false, body.body is the updated room
     if (body.body && body.body.room) {
@@ -69,7 +71,7 @@ describe('Room flow', () => {
 
   // owner leaves => room closes
   it.only('owner leaves (room closes)', async () => {
-    const body = await Room.leave(ownerCookie, roomId);
+    const body = await Room.leave(owner_cookie, roomId);
     expect(body).toHaveProperty('code', 0);
     expect(body.body).toHaveProperty('message');
     expect(body.body.message).toMatch(/Room closed/i);
@@ -77,9 +79,9 @@ describe('Room flow', () => {
 
   // cleanup accounts
   it.only('delete both accounts', async () => {
-    let b1 = await deleteAccount(ownerCookie);
+    let b1 = await deleteAccount(owner_cookie);
     expect(b1).toHaveProperty('code', 0);
-    let b2 = await deleteAccount(memberCookie);
+    let b2 = await deleteAccount(member_cookie);
     expect(b2).toHaveProperty('code', 0);
   });
 });

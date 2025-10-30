@@ -8,6 +8,6 @@ const router = Router();
 router.use('/auth', auth)
 router.use('/users', users)
 router.use('/words', words)
-//router.use('/rooms', rooms);
+router.use('/rooms', rooms);
 
 module.exports = router;

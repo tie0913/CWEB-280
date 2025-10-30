@@ -1,32 +1,32 @@
 const {post, get, del } = require('./network.client');
 
 exports.create = async(cookieStore, payload) => {
-    const {body} = await post('/api/v1/rooms', cookieStore, payload);
-    return body;
+    const response = await post('/api/v1/rooms', payload, cookieStore);
+    return response.body;
 }
 
 exports.list = async (cookieStore, query ='') => {
     const url = '/api/v1/rooms' + (query ? `?${query}` : '');
-    const {body} = await get(url, cookieStore);
-    return body;
+    const response = await get(url, cookieStore);
+    return response.body;
 }
 
 exports.join = async (cookieStore, roomId) => {
-    const {body} = await post(`/api/v1/rooms/${roomId}/join`,{}, cookieStore);
-    return body;
+    const response = await post(`/api/v1/rooms/${roomId}/join`,{}, cookieStore);
+    return response.body;
 }
 
 exports.leave = async (cookieStore, roomId) => {
-    const {body} = await post(`/api/v1/rooms/${roomId}/leave`,{}, cookieStore);
-    return body;
+    const response = await post(`/api/v1/rooms/${roomId}/leave`,{}, cookieStore);
+    return response.body;
 }
 
 exports.remove = async (cookieStore, roomId) => {
-    const {body} = await del(`/api/v1/rooms/${roomId}`, cookieStore);
-    return body;
+    const response = await del(`/api/v1/rooms/${roomId}`, cookieStore);
+    return response.body;
 }
 
 exports.start = async (cookieStore, roomId) => {
-    const {body} = await post(`/api/v1/rooms/${roomId}/start`,{}, cookieStore);
-    return body;
+    const response = await post(`/api/v1/rooms/${roomId}/start`,{}, cookieStore);
+    return response.body;
 }
