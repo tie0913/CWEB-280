@@ -40,16 +40,3 @@ const config = {
 };
 
 module.exports = config
-
-
-/*
-cleanEnv(process.env, {
-  PORT: num({ default: 3000 }),
-  MONGO_URL: url(),
-  MONGO_DB: str({ default: 'app' }),
-  REDIS_URL: url({ default: 'redis://localhost:6379' }),
-  HTTP_LOGGER:{
-    HTTP_REQUEST_LOG_FILE_PATH:str({default: './logs/http.logs'})
-  }
-});
-*/

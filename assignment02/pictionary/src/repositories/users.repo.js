@@ -3,6 +3,10 @@ const { mongoDb} = require('../db/mongo');
 
 class UserRepository{
 
+  #escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
   /**
    * this is for sign in method
    * so we will add status = activated
@@ -42,7 +46,7 @@ class UserRepository{
 
     const cond = {}
     if(filter.name){
-      cond.name = {$regex: '^' + escapeRegex(filter.name), $options:'i'}
+      cond.name = {$regex: '^' + this.#escapeRegex(filter.name), $options:'i'}
     }
 
     const[recNum, items] = await Promise.all([

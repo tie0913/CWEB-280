@@ -28,13 +28,12 @@ function createHttpLogger() {
     logger = pino({
       level: config.http_log.level,
       transport: {
-        target: 'pino-pretty', // 彩色控制台输出
+        target: 'pino-pretty', 
         options: { translateTime: 'SYS:standard', ignore: 'pid,hostname' },
       },
     });
   }
 
-  // 返回 express 中间件
   return pinoHttp({ logger });
 }
 
