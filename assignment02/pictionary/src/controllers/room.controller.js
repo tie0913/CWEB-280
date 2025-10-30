@@ -1,6 +1,5 @@
 const { createRoomSchema, listRoomsSchema } = require("../schemas/room.joi");
 const roomService = require("../services/room.service");
-const svc = new roomService();
 const { succeed, fail } = require("../util/response");
 
 class RoomController {
@@ -14,7 +13,7 @@ class RoomController {
         )
       );
     try {
-      const room = await svc.createRoom(value, req.user._id);
+      const room = await roomService.createRoom(value, req.user['_id']);
       res.status(201).json(succeed(room));
     } catch (err) {
       res.status(500).json(fail(-1, err.message));
@@ -32,7 +31,7 @@ class RoomController {
       );
 
     try {
-      res.json(succeed(await svc.listRooms(value)));
+      res.json(succeed(await roomService.listRooms(value)));
     } catch (err) {
       res.status(500).json(fail(-1, err.message));
     }
@@ -40,7 +39,7 @@ class RoomController {
 
   async join(req, res) {
     try{
-        const room = await svc.joinRoom(req.params.roomId, req.user._id);
+        const room = await roomService.joinRoom(req.params.roomId, req.user['_id']);
         res.json(succeed(room));
     } catch(err){
         const code = err.message === 'Room not found' ? 404 :
@@ -53,7 +52,7 @@ class RoomController {
 
   async leave(req, res) {
     try{
-        const result = await svc.leaveRoom(req.params.roomId, req.user._id);
+        const result = await roomService.leaveRoom(req.params.roomId, req.user['_id']);
         if(result.closed){
             const message = result.reason === 'owner left' ? 'Room closed as owner left' : 'Room closed';
             res.json(succeed({message}));
@@ -68,7 +67,7 @@ class RoomController {
 
   async start(req, res) {
     try{
-        const room = await svc.startRoom(req.params.roomId, req.user._id);
+        const room = await roomService.startRoom(req.params.roomId, req.user['_id']);
         res.json(succeed(room));
     } catch(err){
         const code = err.message === 'Room not found' ? 404 :
@@ -80,7 +79,7 @@ class RoomController {
 
   async delete(req, res) {
     try{
-        await svc.deleteRoom(req.params.roomId, req.user._id);
+        await roomService.deleteRoom(req.params.roomId, req.user._id);
         res.status(204).end();
     } catch(err){
         const code = err.message === 'Room not found' ? 404 : 500;

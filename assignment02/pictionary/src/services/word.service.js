@@ -1,6 +1,4 @@
 const wordRepo = require('../repositories/word.repo');
-const {ObjectId} = require('mongodb');
-
 class WordService {
       async createWord({ word, difficulty }) {
     const existing = await wordRepo.findByText(word);
@@ -25,7 +23,7 @@ class WordService {
 
   async listWords({ q, difficulty, page, size }) {
     const { total, items } = await wordRepo.list({
-      q, difficulty,
+      query, difficulty,
       skip: (page - 1) * size,
       limit: size
     });
@@ -33,14 +31,14 @@ class WordService {
   }
 
   async randomWord() {
-    const w = await wordRepo.getRandom();
-    if (!w) throw new Error('NoWords');
-    return w;
+    const word = await wordRepo.getRandom();
+    if (!word) throw new Error('NoWords');
+    return word;
   }
 
   async randomWordByDifficulty(difficulty) {
-    const w = await wordRepo.getRandomByDifficulty(difficulty);
-    if (!w) throw new Error('NoWordsForDifficulty');
-    return w;
+    const word = await wordRepo.getRandomByDifficulty(difficulty);
+    if (!word) throw new Error('NoWordsForDifficulty');
+    return word;
   }
 }

@@ -1,6 +1,6 @@
 const express = require('express');
 const ctrl = require('../controllers/words.controller');
-const { authValidator, adminValidator } = require('../auth/auth.validator');
+const { authValidator, adminValidator } = require('../controllers/auth.validator');
 
 const router = express.Router();
 router.use(authValidator);

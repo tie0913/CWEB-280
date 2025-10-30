@@ -7,7 +7,6 @@ let owner_cookie, member_cookie;
 let roomId;
 
 describe('Room flow', () => {
-  // --- Owner account ---
   it('owner signs up', async () => {
     const body = await signUp('Owner A', 'Pass#123', 'owner_a@test.com');
     expect(body).toHaveProperty('code', 0);
@@ -37,7 +36,7 @@ describe('Room flow', () => {
     expect(body.body.list.find(r => String(r._id) === String(roomId))).toBeTruthy();
   });
 
-  // --- Member joins ---
+
   it('member signs up & in', async () => {
     const s = await signUp('Member B', 'Pass#123', 'member_b@test.com');
     expect(s).toHaveProperty('code', 0);

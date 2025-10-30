@@ -5,7 +5,6 @@ const {
   listWordsSchema,
 } = require("../schemas/word.joi");
 const wordService = require("../services/word.service");
-const svc = new wordService();
 
 class WordController {
   async create(req, res) {
@@ -18,7 +17,7 @@ class WordController {
         )
       );
     try {
-      const word = await svc.createWord(value);
+      const word = await wordService.createWord(value);
       res.status(201).json(succeed(word));
     } catch (e) {
       const code = e.message === "DuplicateWord" ? 409 : 500;
@@ -39,7 +38,7 @@ class WordController {
         )
       );
     try {
-      const word = await svc.updateWord(value);
+      const word = await wordService.updateWord(value);
       res.json(succeed(word));
     } catch (e) {
       const code = e.message === "DuplicateWord" ? 409 : 500;
@@ -49,7 +48,7 @@ class WordController {
 
   async remove(req, res) {
     try {
-      await svc.deleteWord(req.params.id);
+      await wordService.deleteWord(req.params.id);
       res.status(204).end();
     } catch (e) {
       res.status(500).json(fail(1, e.message));
@@ -66,7 +65,7 @@ class WordController {
         )
       );
     try {
-      res.json(succeed(await svc.listWords(value)));
+      res.json(succeed(await wordService.listWords(value)));
     } catch (e) {
       res.status(500).json(fail(1, e.message));
     }
@@ -74,7 +73,7 @@ class WordController {
 
   async random(req, res) {
     try {
-      res.json(succeed(await svc.randomWord()));
+      res.json(succeed(await wordService.randomWord()));
     } catch (e) {
       const code = e.message === "NoWords" ? 404 : 500;
       res.status(code).json(fail(1, e.message));
@@ -84,7 +83,7 @@ class WordController {
   async randomByDifficulty(req, res) {
     try {
       res.json(
-        succeed(await svc.randomWordByDifficulty(req.params.difficulty))
+        succeed(await wordService.randomWordByDifficulty(req.params.difficulty))
       );
     } catch (e) {
       const code = e.message === "NoWordsForDifficulty" ? 404 : 500;

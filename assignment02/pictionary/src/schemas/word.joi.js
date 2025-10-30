@@ -13,7 +13,7 @@ const updateWordSchema = Joi.object({
 })
 
 const listWordsSchema = Joi.object({
-    q: Joi.string().min(1).optional(),
+    query: Joi.string().min(1).optional(),
     difficulty: Joi.string().valid(...DIFFICULTY_LEVELS),
     page: Joi.number().integer().min(1).default(1),
     limit: Joi.number().integer().min(1).max(100).default(10),
