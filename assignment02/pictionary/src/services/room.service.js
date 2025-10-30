@@ -5,7 +5,7 @@ const { ObjectId } = require('mongodb');
 const eqId = (a,b) => a.toString() === b.toString();
 
 class RoomService{
-    async createRoom({name, maxPlayers, visibility, ownerId}){
+    async createRoom({name, maxPlayers, visibility}, ownerId){
         const ownerObjectId = new ObjectId(ownerId);
         const room = {
             name,
