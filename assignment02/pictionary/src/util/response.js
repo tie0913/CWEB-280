@@ -1,9 +1,11 @@
 
-/**
- *  Business Response Util
- *  
- */
 SUCCESS = 0
+/**
+ * Response class
+ *
+ * Represents a standard API response with a status code, message, and body.
+ * Includes a helper method to check if the response indicates success.
+ */
 class Response{
     constructor(code, message, body){
         this.code = code

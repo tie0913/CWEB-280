@@ -22,11 +22,6 @@ app.get('/healthz', (req, res) => {
   res.json({ ok: true, uptime: process.uptime() });
 });
 
-// example api
-app.get('/api/v1/hello', (req, res) => {
-  res.status(200).json({ message: 'Hello, JSON only interface' });
-});
-
 // 404
 app.use((req, res) => {
   res.status(404).json({ error: { message: 'Not Found' } });

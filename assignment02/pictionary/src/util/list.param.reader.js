@@ -1,4 +1,16 @@
 const qs = require('qs')
+/**
+ * Parse query parameters from a request.
+ *
+ * Extracts pagination (page number and size) and filter (name)
+ * from the request URL query string.
+ *
+ * Returns:
+ *   {
+ *     filter: { name },
+ *     page: { no, size }
+ *   }
+ */
 function reader(req){
     const parsed = qs.parse(req._parsedUrl.query)
     console.log(parsed)

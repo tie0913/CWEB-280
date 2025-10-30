@@ -8,6 +8,18 @@ const {succeed, fail} = require('../util/response')
 const EXPIRE_TIME_FRAME = 1000 * 60 * 30
 class AuthService{
 
+    /**
+     * Sign in a user by verifying email and password.
+     *
+     * Checks user credentials and account status.
+     * If valid and activated, creates a new session in a MongoDB transaction
+     * (removing any old sessions first) and returns the session ID.
+     *
+     * Response:
+     *   Success: Session ID.
+     *   Fail 1: Invalid email or password.
+     *   Fail 3: Account not activated; contact administrator.
+     */
     async signIn(param){
         const user = await userRepository.getUserByEmail(param.email)
         if(user != null && user.password === param.password){

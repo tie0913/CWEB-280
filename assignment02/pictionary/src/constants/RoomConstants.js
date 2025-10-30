@@ -8,6 +8,9 @@ const STATES = [
     { code: ONGOING, name: "ongoing" }
 ];
 
+/**
+ * Room States methods
+ */
 class RoomState {
     static isWaiting(room) {
         return room.state === WAITING;

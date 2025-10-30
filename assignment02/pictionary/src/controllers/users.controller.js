@@ -8,6 +8,16 @@ const { bizLogger } = require('../util/biz_logger');
 
 class UserController{
 
+  /**
+   * Get the current user's profile.
+   *
+   * Fetches user info by ID, removes admin and status fields,
+   * and returns the cleaned data.
+   *
+   * Response:
+   *   200: User profile retrieved successfully.
+   *   500: Server error while fetching user info.
+   */
   async self(req, resp){
     try{
       const user = await userService.getUserByObjectId(req.user['_id'])
@@ -19,7 +29,17 @@ class UserController{
     }
   }
 
-
+  /**
+   * Update the current user's information.
+   *
+   * Validates input with updateUserSchema. If invalid, returns HTTP 400.
+   * Keeps admin and status fields unchanged, then updates the user record.
+   *
+   * Response:
+   *   200: User updated successfully.
+   *   400: Invalid input data.
+   *   500: Server error during update.
+   */
   async selfUpdate(req, resp){
 
     const {error, value} = updateUserSchema.validate(req.body)
@@ -41,12 +61,16 @@ class UserController{
     }
   }
 
-
   /**
-   * read a user's information by an administrator
-   * @param {} req 
-   * @param {*} resp 
-   * @returns 
+   * Get user details by ID.
+   * This is a admin only API
+   *
+   * Fetches user data using userId from params and removes the password field.
+   * Returns the user info if found, or an error message if not.
+   *
+   * Response:
+   *   200: User details or "user not found" message.
+   *   500: Server error while fetching user details.
    */
   async detail(req, resp){
     try{
@@ -60,7 +84,18 @@ class UserController{
     }
   }
 
-
+  /**
+   * Update a user's information (admin only).
+   *
+   * Validates input with updateUserByAdminSchema.
+   * If valid, updates the user record through userService.
+   * Only accessible by admin accounts.
+   *
+   * Response:
+   *   200: User updated successfully.
+   *   400: Invalid input data.
+   *   500: Server error during update.
+   */
   async update(req, resp){
     const {error, value} = updateUserByAdminSchema.validate(req.body)
     if(error){
@@ -76,6 +111,16 @@ class UserController{
     }
   }
 
+  /**
+   * Ban a user by ID (admin only).
+   *
+   * Calls userService.ban() with the given userId to disable the account.
+   * Returns success when completed or an error if the operation fails.
+   *
+   * Response:
+   *   200: User banned successfully.
+   *   500: Server error while banning user.
+   */
   async ban(req, resp){
     const userId = new ObjectId(req.params.userId)
     try{
@@ -87,6 +132,16 @@ class UserController{
     }
   }
 
+  /**
+   * Restore a banned user's status (admin only).
+   *
+   * Calls userService.restoreStatus() with the given userId.
+   * Returns success when the user is restored or an error if it fails.
+   *
+   * Response:
+   *   200: User restored successfully.
+   *   500: Server error while restoring user.
+   */
   async restore(req, resp){
     const userId = new ObjectId(req.params.userId)
     try{
@@ -97,7 +152,16 @@ class UserController{
     }
   }
 
-
+  /**
+   * Get a paginated list of users (admin only).
+   *
+   * Reads filter and page info from the request, then fetches data via userService.
+   * Returns the user list or an error if retrieval fails.
+   *
+   * Response:
+   *   200: User list retrieved successfully.
+   *   500: Server error while fetching user list.
+   */
   async getUserList(req, resp){
     const {filter, page} = reader(req)
     try{

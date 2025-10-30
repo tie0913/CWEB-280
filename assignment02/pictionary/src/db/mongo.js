@@ -16,6 +16,22 @@ async function mongoDb() {
 
 async function closeMongo() { if (client) await client.close(); }
 
+/**
+ * Execute a function within a MongoDB transaction.
+ *
+ * Starts a new session and transaction, runs the given transaction callback,
+ * then commits if successful or aborts on error. Always ends the session.
+ *
+ * Parameters:
+ *   transaction (Function): Async function that receives the session.
+ *   txOptions (Object): Transaction options (default includes snapshot read concern and majority write concern).
+ *
+ * Returns:
+ *   The result of the transaction callback.
+ *
+ * Throws:
+ *   The error from the transaction if it fails.
+ */
 async function withMongoTx(transaction, txOptions = {
   readConcern: { level: 'snapshot' },
   writeConcern: { w: 'majority' },

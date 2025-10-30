@@ -3,6 +3,19 @@ const roomService = require("../services/room.service");
 const { succeed, fail } = require("../util/response");
 
 class RoomController {
+
+  /**
+   * Create a new chat room.
+   *
+   * Validates request data with createRoomSchema.
+   * If validation fails, return HTTP 400 with error messages.
+   * Otherwise, create a new room using roomService and the current user's ID.
+   *
+   * Response:
+   *   201: Room created successfully.
+   *   400: Invalid input data.
+   *   500: Server error during room creation.
+   */
   async createRoom(req, res) {
     const { error, value } = createRoomSchema.validate(req.body);
     if (error)
@@ -20,6 +33,18 @@ class RoomController {
     }
   }
 
+  /**
+   * List available chat rooms.
+   *
+   * Validates query parameters with listRoomsSchema.
+   * If invalid, return HTTP 400 with error messages.
+   * Otherwise, fetch and return the room list from roomService.
+   *
+   * Response:
+   *   200: List of rooms.
+   *   400: Invalid query parameters.
+   *   500: Server error while listing rooms.
+   */
   async list(req, res) {
     const { error, value } = listRoomsSchema.validate(req.query);
     if (error)
@@ -37,6 +62,20 @@ class RoomController {
     }
   }
 
+  /**
+   * Join a chat room by ID.
+   *
+   * Uses roomService.joinRoom() with the given roomId and current user ID.
+   * Handles common join errors and returns the proper HTTP status.
+   *
+   * Response:
+   *   200: Joined successfully.
+   *   400: Invalid join request.
+   *   403: Room is full.
+   *   404: Room not found.
+   *   409: User already in room.
+   *   500: Server error.
+   */
   async join(req, res) {
     try{
         const room = await roomService.joinRoom(req.params.roomId, req.user['_id']);
@@ -50,6 +89,19 @@ class RoomController {
     }
   }
 
+  /**
+   * Leave a chat room.
+   *
+   * Calls roomService.leaveRoom() with roomId and current user ID.
+   * If the room is closed (e.g., owner left), return a message accordingly.
+   * Handles common errors with proper HTTP codes.
+   *
+   * Response:
+   *   200: Successfully left or room closed.
+   *   400: User not in room.
+   *   404: Room not found.
+   *   500: Server error.
+   */
   async leave(req, res) {
     try{
         const result = await roomService.leaveRoom(req.params.roomId, req.user['_id']);
@@ -65,6 +117,20 @@ class RoomController {
     }
   }
 
+  /**
+   * Start a chat room session.
+   *
+   * Calls roomService.startRoom() with roomId and user ID.
+   * Only the owner can start a room that is in the waiting state.
+   * Returns the updated room or an error with the proper status code.
+   *
+   * Response:
+   *   200: Room started successfully.
+   *   400: Room not in waiting state.
+   *   403: Only owner can start the room.
+   *   404: Room not found.
+   *   500: Server error.
+   */
   async start(req, res) {
     try{
         const room = await roomService.startRoom(req.params.roomId, req.user['_id']);
@@ -77,6 +143,17 @@ class RoomController {
     }
   }
 
+  /**
+   * Delete a chat room.
+   *
+   * Calls roomService.deleteRoom() with roomId and current user ID.
+   * Returns 204 if deletion succeeds, or an error status if it fails.
+   *
+   * Response:
+   *   204: Room deleted successfully.
+   *   404: Room not found.
+   *   500: Server error.
+   */
   async delete(req, res) {
     try{
         await roomService.deleteRoom(req.params.roomId, req.user._id);

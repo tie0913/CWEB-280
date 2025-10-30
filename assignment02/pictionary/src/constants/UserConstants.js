@@ -11,6 +11,10 @@ const STATUS = [{
     code:3,
     name:"deleted"
 }]
+
+/**
+ * User States methods
+ */
 class UserStatus{
     static isActivated(user){
         return user.status === STATUS[0].code

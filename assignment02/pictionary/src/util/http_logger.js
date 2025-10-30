@@ -9,6 +9,15 @@ function ensureDirFor(filePath) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
 
+/**
+ * Create an HTTP logger middleware.
+ *
+ * Configures a Pino-based HTTP logger according to config.http_log settings.
+ * Supports logging to file or pretty-printing to console.
+ *
+ * Returns:
+ *   A pino-http middleware instance for Express or similar frameworks.
+ */
 function createHttpLogger() {
   let logger;
 

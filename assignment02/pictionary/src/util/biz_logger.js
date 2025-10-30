@@ -1,9 +1,21 @@
-// src/logger/bizLogger.js
 const fs = require('fs');
 const path = require('path');
 const pino = require('pino');
 const config = require('../config/env'); 
 
+/**
+ * BizLogger class
+ *
+ * Provides structured business-level logging using Pino.
+ * Supports configurable log levels, file output, and optional
+ * daily log rotation. Includes middleware for attaching contextual
+ * loggers to requests (e.g., user ID, method, path).
+ *
+ * Features:
+ *   - info, warn, error, and debug logging methods
+ *   - optional file or rotating log storage
+ *   - middleware to enrich request logs with context
+ */
 class BizLogger {
   constructor(opts = {}) {
     this.level = opts.level ?? config.biz_log.level ?? 'info';
@@ -24,18 +36,12 @@ class BizLogger {
     );
   }
 
-  // -------- 公共 API --------
   info(msg, obj) { this.logger.info(obj ?? {}, msg); }
   warn(msg, obj) { this.logger.warn(obj ?? {}, msg); }
   error(msg, obj) { this.logger.error(obj ?? {}, msg); }
   debug(msg, obj) { this.logger.debug(obj ?? {}, msg); }
   child(bindings) { return this.logger.child(bindings || {}); }
 
-  /**
-   * Express 中间件：把带请求上下文的 child logger 挂到 req.biz
-   * - 依赖 pino-http 的 req.id（如果你配置了 genReqId）；没有也不影响
-   * - 若有鉴权中间件把用户放在 req.user，则自动携带 userId
-   */
   attachMiddleware() {
     return (req, _res, next) => {
       const ctx = {
@@ -75,11 +81,10 @@ class BizLogger {
   }
 }
 
-// 单例导出
 const bizLoggerInstance = new BizLogger();
 
 module.exports = {
   BizLogger,
-  bizLogger: bizLoggerInstance,    // 直接用：const { bizLogger } = require('./logger/bizLogger')
-  attachBizLogger: () => bizLoggerInstance.attachMiddleware(), // 中间件：app.use(attachBizLogger())
+  bizLogger: bizLoggerInstance, 
+  attachBizLogger: () => bizLoggerInstance.attachMiddleware(), 
 };

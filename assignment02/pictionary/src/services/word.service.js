@@ -1,4 +1,14 @@
 const wordRepo = require('../repositories/word.repo');
+
+/**
+ * WordService class
+ *
+ * Handles word management operations including creation, update, deletion,
+ * listing with pagination, and random word retrieval. Ensures no duplicates
+ * and supports difficulty-based random selection. Serves as a business logic
+ * layer between controllers and the word repository.
+ */
+
 class WordService {
       async createWord({ word, difficulty }) {
     const existing = await wordRepo.findByWord(word);

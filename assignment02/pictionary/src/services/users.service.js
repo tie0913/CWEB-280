@@ -1,6 +1,13 @@
 const {UserStatus} = require('../constants/UserConstants');
 const repo = require('../repositories/users.repo');
 
+/**
+ * UserService class
+ *
+ * Provides user management operations such as creation, retrieval, updates,
+ * banning, and restoring user accounts. Acts as a service layer between
+ * controllers and the user repository, applying user status logic where needed.
+ */
 class UserService{
   constructor(){
     this.repo = repo
@@ -10,10 +17,6 @@ class UserService{
     return await this.repo.getUserByEmail(email)
   }
 
-  /**
-   * user status 1: activated, 2 banned, 3 deleted
-   * @param {} user 
-   */
   async createUser(user){
     user['admin'] = false
     UserStatus.activate(user)
