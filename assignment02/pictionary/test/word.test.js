@@ -93,9 +93,8 @@ describe('WORDS API', () => {
   // --- delete (admin)
   it.only('admin deletes created words', async () => {
     for (const id of createdIds) {
-      const r = await Word.remove(adminCookie, id);
-      // DELETE: 204 may produce undefined body; just ensure no throw
-      expect(true).toBe(true);
+      const res = await Word.remove(adminCookie, id);
+      expect(res).toHaveProperty('code', 0)
     }
   });
 

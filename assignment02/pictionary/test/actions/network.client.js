@@ -16,5 +16,13 @@ module.exports = {
             req.set('Cookie', cookie)
         }
         return await req
+    },
+
+    del: async (url, cookie) => {
+        const req = request(app).delete(url) .set('Accept', 'application/json')
+        if(cookie){
+            req.set('Cookie', cookie)
+        }
+        return await req
     }
 }

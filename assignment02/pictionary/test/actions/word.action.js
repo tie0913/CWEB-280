@@ -1,4 +1,4 @@
-const { get, post, put, del } = require('./network.client');
+const { get, post, del } = require('./network.client');
 
 // Admin-only
 exports.create = async (cookie, payload) => {
@@ -13,7 +13,7 @@ exports.update = async (cookie, id, payload) => {
 
 exports.remove = async (cookie, id) => {
   // network.client.del should handle 204; body may be undefined
-  const response = await post(`/api/v1/words/${id}`, {}, cookie);
+  const response = await del(`/api/v1/words/${id}`, cookie);
   return response.body;
 };
 

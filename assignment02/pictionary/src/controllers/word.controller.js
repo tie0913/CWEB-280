@@ -82,7 +82,7 @@ class WordController {
   async remove(req, res) {
     try {
       await wordService.deleteWord(req.params.id);
-      res.status(204).end();
+      res.status(200).json(succeed("the word has been deleted"))
     } catch (e) {
       res.status(500).json(fail(1, e.message));
     }
@@ -148,9 +148,7 @@ class WordController {
    */
   async randomByDifficulty(req, res) {
     try {
-      res.json(
-        succeed(await wordService.randomWordByDifficulty(req.params.difficulty))
-      );
+      res.status(200).json(succeed(await wordService.randomWordByDifficulty(req.params.difficulty)));
     } catch (e) {
       const code = e.message === "NoWordsForDifficulty" ? 404 : 500;
       res.status(code).json(fail(1, e.message));
