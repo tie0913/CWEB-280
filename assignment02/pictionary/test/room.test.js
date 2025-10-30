@@ -76,7 +76,7 @@ describe('Room flow', () => {
     expect(body.body).toHaveProperty('message');
     expect(body.body.message).toMatch(/Room closed/i);
   });
-
+ 
   // cleanup accounts
   it.only('delete both accounts', async () => {
     let b1 = await deleteAccount(owner_cookie);

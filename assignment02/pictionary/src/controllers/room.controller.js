@@ -142,27 +142,6 @@ class RoomController {
         res.status(code).json(fail(-1, err.message));
     }
   }
-
-  /**
-   * Delete a chat room.
-   *
-   * Calls roomService.deleteRoom() with roomId and current user ID.
-   * Returns 204 if deletion succeeds, or an error status if it fails.
-   *
-   * Response:
-   *   204: Room deleted successfully.
-   *   404: Room not found.
-   *   500: Server error.
-   */
-  async delete(req, res) {
-    try{
-        await roomService.deleteRoom(req.params.roomId, req.user._id);
-        res.status(204).end();
-    } catch(err){
-        const code = err.message === 'Room not found' ? 404 : 500;
-        res.status(code).json(fail(-1, err.message));
-    }
-  }
 }
 
 module.exports = new RoomController();

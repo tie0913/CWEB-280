@@ -141,22 +141,6 @@ class RoomService{
         await roomRepo.update(roomId, {state: room.state, updatedAt: room.updatedAt});
         return room;
     }
-
-    /**
-     * Delete a room.
-     *
-     * Verifies the room exists and that the requester is the owner.
-     * Deletes the room from the repository if authorized.
-     *
-     * Throws:
-     *   'Room not found' | 'Only owner can delete the room'
-     */
-    async deleteRoom(roomId, userId){
-        const room = await roomRepo.getRoomById(roomId);
-        if(!room) throw new Error('Room not found');
-        if(!eqId(room.ownerId, userId)) throw new Error('Only owner can delete the room');
-        await roomRepo.delete(roomId);
-    }
 }
 
 module.exports = new RoomService();
