@@ -15,6 +15,11 @@ exports.list = async(cookie) => {
     return response.body
 }
 
+exports.listBannedUsers = async(name, cookie) => {
+    const response = await get(`/api/v1/users/list?filter[name]=${name}`, cookie)
+    return response.body
+}
+
 
 exports.getUserForAdmin = async(user_id, cookie) => {
     const response = await get('/api/v1/users/get/' + user_id, cookie)

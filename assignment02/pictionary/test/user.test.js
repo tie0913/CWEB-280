@@ -1,4 +1,4 @@
-const {self, list, selfUpdate, getUserForAdmin, patch, ban, restore} = require('./actions/user.action')
+const {self, list, selfUpdate, getUserForAdmin, patch, ban, restore, listBannedUsers} = require('./actions/user.action')
 const {signIn, signUp, signOut,deleteAccount} = require('./actions/auth.action')
 const {params} = require('./parameters')
 let pictionary_cookie
@@ -127,7 +127,7 @@ describe('Test ban and restore user', () => {
      * find the banned user
      */
     it.only('should list first page of all users', async () => {
-        const {body} = await list(pictionary_cookie)
+        const {body} = await listBannedUsers(params.banned_user_name, pictionary_cookie)
         expect(body).toHaveProperty('list')
         expect(Array.isArray(body.list)).toBe(true)
         expect(body).toHaveProperty('page')
