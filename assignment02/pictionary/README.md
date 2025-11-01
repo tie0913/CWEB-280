@@ -15,3 +15,5 @@
 |ioredis||
 |socket.io|websocket server side|
 |@socket.io/redis-adapter|broadcast for multiple process or instances|
+|supertest|test|
+|jest|test|
