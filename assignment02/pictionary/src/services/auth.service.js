@@ -36,7 +36,9 @@ class AuthService{
             }
 
             const sessionId = await withMongoTx(txMethod)
-            return succeed(sessionId);
+            delete user.password
+            return succeed({
+                sessionId, user});
         }else{
             return fail(1, 'email and password does not match')
         }

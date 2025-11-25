@@ -48,10 +48,11 @@ class AuthController{
         try{
             const response = await authService.signIn(value)
             if(response.isSuccess()){
-                const token = generateToken(response.body)
+                const token = generateToken(response.body.sessionId)
                 resp.cookie(config.cookie_name, token, {
                     httpOnly:true
                 })
+                delete response.body.sessionId
             }
             return resp.status(200).json(response)
         }catch(e){
