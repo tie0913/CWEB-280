@@ -1,8 +1,8 @@
-<!-- src/components/modals/SignInModal.vue -->
 <script setup>
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
 import { apiRequest } from '../network/Request'
 import { useUserStore } from '../stores/UserStore'
+import { useModeStore } from '../stores/ModeStore'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -10,8 +10,6 @@ const props = defineProps({
 const emit = defineEmits(['update:show', 'signed-in'])
 
 const close = () => emit('update:show', false)
-
-const API_BASE = import.meta.env.VITE_API_BASE
 const email = ref('')
 const password = ref('')
 const errorMsg = ref('')
@@ -27,15 +25,29 @@ const onSubmit = async () => {
     })
     if(result.code === 0){
       useUserStore().setAuth(result.body)
+      if(useUserStore().get().admin){
+        useModeStore().toggle()
+      }
       emit('signed-in')
       close()
     }else{
-      error.value = result.message
+      errorMsg.value = result.message
     }
   }catch(e){
     console.error('Sign in has error', e)
   }
 }
+
+watch(
+  () => props.show,
+  (val) => {
+    if (val) {
+      email.value = ''
+      password.value = ''
+      errorMsg.value = ''
+    }
+  }
+)
 </script>
 
 <template>

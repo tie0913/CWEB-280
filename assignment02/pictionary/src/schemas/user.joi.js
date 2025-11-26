@@ -15,7 +15,7 @@ const signUpSchema = joi.object({
 const updateUserSchema = joi.object({
     _id:joi.string().trim().required(),
     email:joi.string().trim().email().required(),
-    password:joi.string().trim().required(),
+    password:joi.string().trim().optional().invalid(''),
     name:joi.string().trim().min(3).max(100).required()
 })
 

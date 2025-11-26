@@ -45,12 +45,18 @@ class UserController{
     const {error, value} = updateUserSchema.validate(req.body)
     if(error){
       bizLogger.error('update self has error when validating params', error)
-      return resp.status(400).json(fail(1, error.details.map(d => d.message)))
+      return resp.status(200).json(fail(1, error.details.map(d => d.message)))
     }
 
     try{
       const current = req.user
       const user = jsToBson(value)
+      console.log(`user pwd=${user.name}`)
+      if(!user.password){
+        user.password = current.password
+        console.log('set up original password')
+      }
+
       user.admin = current.admin
       user.status = current.status
       await userService.updateUser(user)

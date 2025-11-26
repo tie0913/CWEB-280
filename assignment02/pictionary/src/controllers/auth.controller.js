@@ -53,6 +53,9 @@ class AuthController{
                     httpOnly:true
                 })
                 delete response.body.sessionId
+                const user = response.body.user
+                delete response.body.user
+                response.body = user
             }
             return resp.status(200).json(response)
         }catch(e){
@@ -91,7 +94,7 @@ class AuthController{
     async signUp(req, resp){
         const {error, value} = signUpSchema.validate(req.body)
         if(error){
-            return resp.status(400).json(fail(1, error.details.map(d => d.message)))
+            return resp.status(200).json(fail(1, error.details.map(d => d.message)))
         }
 
         try{

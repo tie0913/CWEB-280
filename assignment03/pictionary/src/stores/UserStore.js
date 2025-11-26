@@ -18,11 +18,13 @@ export const useUserStore = defineStore('user', () => {
     return user.value
   }
 
-  const isLoggedIn = () => !!user.value
-
   const init = () => {
-    const savedUser  = localStorage.getItem('user')
-    if (savedUser)  user.value = JSON.parse(savedUser)
+    try{
+      const savedUser  = localStorage.getItem('user')
+      if (savedUser)  user.value = JSON.parse(savedUser)
+    }catch(e){
+      console.log('loading user from local storage has error',e)
+    }
   }
 
   watch(user, (val) => {
@@ -30,5 +32,5 @@ export const useUserStore = defineStore('user', () => {
     else localStorage.removeItem('user')
   }, { deep: true })
 
-  return { get, setAuth, logout, isLoggedIn, init}
+  return { get, setAuth, logout, init}
 })
