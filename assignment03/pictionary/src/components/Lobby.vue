@@ -1,3 +1,5 @@
-/**
- * This is the lobby displaying room cards.
- */
+
+<template>
+
+    <h1>This is lobby</h1>
+</template>

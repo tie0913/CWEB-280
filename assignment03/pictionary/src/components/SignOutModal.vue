@@ -1,6 +1,7 @@
 <script setup>
 import { useUserStore } from '../stores/UserStore'
 import { apiRequest } from '../network/Request'
+import { useModeStore } from '../stores/ModeStore'
 
 const props = defineProps({
     show: { type: Boolean, default: false },
@@ -17,11 +18,12 @@ const onConfirm = async () => {
         })
         if(result.code === 0){
             useUserStore().logout()
+            useModeStore().clear()
             emit('confirm')
             close()
         }
     }catch(e){
-
+        throw e
     }
 }
 </script>

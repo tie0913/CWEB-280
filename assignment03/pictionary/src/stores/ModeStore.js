@@ -6,11 +6,11 @@ export const useModeStore = defineStore('mode', () => {
     const PLAY_MODE = "Play Mode"
     const ADMIN_MODE = "Admin Mode"
 
-    const mode = ref(null)
+    const mode = ref(PLAY_MODE)
 
     const clear = () => {
         mode.value = null
-        localstorage.removeitem('mode')
+        localStorage.removeItem('mode')
     }
 
     const isPlayMode = () => {

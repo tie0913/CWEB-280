@@ -25,7 +25,7 @@ const onSubmit = async () => {
     })
     if(result.code === 0){
       useUserStore().setAuth(result.body)
-      if(useUserStore().get().admin){
+      if(useUserStore().get().admin && useModeStore().isPlayMode()){
         useModeStore().toggle()
       }
       emit('signed-in')
