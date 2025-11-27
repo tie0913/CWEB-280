@@ -14,6 +14,9 @@ const email = ref('')
 const password = ref('')
 const errorMsg = ref('')
 
+const userStore = useUserStore()
+const modeStore = useModeStore()
+
 const onSubmit = async () => {
   try{
     const result = await apiRequest('/auth/signIn', {
@@ -24,9 +27,16 @@ const onSubmit = async () => {
       })
     })
     if(result.code === 0){
-      useUserStore().setAuth(result.body)
-      if(useUserStore().get().admin && useModeStore().isPlayMode()){
-        useModeStore().toggle()
+
+      if(modeStore.isEmpty){
+        modeStore.init()
+      }
+
+      userStore.setAuth(result.body)
+      if(userStore.get().admin && modeStore.isPlayMode){
+        modeStore.toggle()
+      }else{
+        modeStore.init()
       }
       emit('signed-in')
       close()
@@ -82,7 +92,7 @@ watch(
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(255,255,255, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;

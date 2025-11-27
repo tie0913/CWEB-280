@@ -4,6 +4,16 @@ const { ObjectId } = require("mongodb");
 class RoomRepository {
   col = async () => (await mongoDb()).collection("rooms");
 
+
+  async existsInUnClosedRoom(userId, tx){
+    return await (await this.col()).countDocuments({
+      $and:[
+        {members : userId},
+        {state : {$ne: 0}}
+      ]
+    })
+  }
+
   async create(room, tx) {
     const r = await (await this.col()).insertOne(room, { session: tx });
     return r.insertedId;
@@ -33,7 +43,7 @@ class RoomRepository {
   async list({ q, visibility, state, skip, limit }) {
     const cond = {};
     if (visibility !== undefined) cond.visibility = visibility;
-    if (state !== undefined) cond.state = state;
+    if (state !== undefined) cond.state = {$in:state};
     if (q) cond.name = { $regex: q, $options: "i" };
 
     const c = await this.col();

@@ -8,13 +8,11 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import 'nes.css/css/nes.min.css'
 import "nes.icons/css/nes-icons.min.css";
 import "@fontsource/press-start-2p";
-import { useUserStore } from './stores/UserStore.js';
-import { useModeStore } from './stores/ModeStore.js'
+import { init } from './stores/StoreInit'
 
 const pinia = createPinia()
 const app = createApp(App)
 app.use(pinia)
-useUserStore().init()
-useModeStore().init()
+init()
 app.mount('#app')
 

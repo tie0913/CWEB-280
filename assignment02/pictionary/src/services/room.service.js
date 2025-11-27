@@ -18,6 +18,13 @@ class RoomService{
      */
     async createRoom({name, maxPlayers, visibility}, ownerId){
         const ownerObjectId = new ObjectId(ownerId);
+
+
+        const count = await roomRepo.existsInUnClosedRoom(ownerId)
+        if(count > 0){
+            throw new Error("Please quit the room you are in before creating a new one")
+        }
+
         const room = {
             name,
             ownerId: ownerObjectId,

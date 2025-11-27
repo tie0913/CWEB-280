@@ -9,7 +9,9 @@ const createRoomSchema = Joi.object({
 const listRoomsSchema = Joi.object({
   query: Joi.string().allow('', null),
   visibility: Joi.number().valid(0,1),
-  state: Joi.number().valid(0,1,2,3),
+  state: Joi.array()
+    .items(Joi.number().valid(0, 1, 2))
+    .optional(),
   page: Joi.number().integer().min(1).default(1),
   size: Joi.number().integer().min(1).max(50).default(20)
 });

@@ -21,7 +21,6 @@ class UserController{
   async self(req, resp){
     try{
       const user = await userService.getUserByObjectId(req.user['_id'])
-      delete user.admin
       delete user.status
       return resp.status(200).json(succeed(bsonToJs(user)))
     }catch(e){

@@ -8,7 +8,7 @@
 
     <input
       type="checkbox"
-      v-model="checked"
+      :checked="checked"
       :disabled="disabled"
       @change="onChange"
     />
@@ -23,10 +23,6 @@ import {computed} from 'vue'
 import { useModeStore } from '../stores/ModeStore'
 
 const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    required: true
-  },
   labelPosition: {
     type: String,
     default: 'right' 
@@ -37,17 +33,17 @@ const props = defineProps({
   }
 })
 
-const label = computed(() => useModeStore().get())
+const modeStore = useModeStore()
+
+const label = computed(() => modeStore.mode)
 const emit = defineEmits(['update:modelValue'])
 const onChange = (event) => {
-  useModeStore().toggle()
+  modeStore.toggle()
   const target = event.target
   emit('update:modelValue', target.checked)
 }
 
-const checked = computed({
-  get: () => useModeStore().isAdminMode()
-})
+const checked = computed(() => modeStore.isAdminMode)
 
 </script>
 

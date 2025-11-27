@@ -9,9 +9,10 @@ import Switch from './Switch.vue'
 import { useModeStore } from '../stores/ModeStore'
 
 const userStore = useUserStore()
+const modeStore = useModeStore()
 const isGuest = computed(() => !userStore.get())
 const isAdmin = computed(() => userStore.get()?.admin)
-const isPlayMode = computed(() => useModeStore().isPlayMode())
+const isPlayMode = computed(() => modeStore.isPlayMode)
 const uname = computed(() => userStore.get()?.name)
 const showSignIn = ref(false)
 const showSignUp = ref(false)
@@ -31,11 +32,11 @@ const showProfile = ref(false)
 
       <div class="d-flex align-items-center gap-3">
         <template v-if="isGuest">
-          <button class="nes-btn is-primary" @click="showSignIn = true">
-            <i class="nes-icon user is-small clickable" title="Sign in"></i>
+          <button class="nes-btn is-primary" @click="showSignIn = true" title="Sign In">
+            <i class="nes-icon user is-small clickable"></i>
           </button>
-          <button class="nes-btn is-success" @click="showSignUp = true">
-            <i class="nes-icon star is-small clickable" title="Sign Up"></i>
+          <button class="nes-btn is-success" @click="showSignUp = true" title="Sign Up">
+            <i class="nes-icon star is-small clickable"></i>
           </button>
         </template>
         <template v-else>
@@ -44,15 +45,11 @@ const showProfile = ref(false)
               <Switch label-position="left"/>
             </span>
           </template>
-          <template v-if="isPlayMode">
-            <button class="nes-btn is-primary">+</button>
-          </template>
-
-          <button class="nes-btn is-success" @click="showProfile = true">
-            <span>{{ uname }}</span><i class="nes-icon user is-small clickable" title="{{ userStore.get().name }}"></i>
+          <button class="nes-btn is-success" @click="showProfile = true" title="Profile">
+            <span>{{ uname }}</span><i class="nes-icon user is-small clickable" ></i>
           </button>
-          <button class="nes-btn is-error" @click="showSignOut = true">
-            <i class="nes-icon close is-small clickable" title="Switch"></i>
+          <button class="nes-btn is-error" @click="showSignOut = true" title="Sign Out">
+            <i class="nes-icon close is-small clickable"></i>
           </button>
         </template>
       </div>

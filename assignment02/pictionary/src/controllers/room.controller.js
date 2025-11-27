@@ -29,7 +29,7 @@ class RoomController {
       const room = await roomService.createRoom(value, req.user['_id']);
       res.status(201).json(succeed(room));
     } catch (err) {
-      res.status(500).json(fail(-1, err.message));
+      res.status(200).json(fail(-1, err.message));
     }
   }
 
@@ -56,6 +56,7 @@ class RoomController {
       );
 
     try {
+      console.log(value)
       res.json(succeed(await roomService.listRooms(value)));
     } catch (err) {
       res.status(500).json(fail(-1, err.message));
