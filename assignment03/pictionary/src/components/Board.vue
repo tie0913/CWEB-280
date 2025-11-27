@@ -1,5 +1,4 @@
 <template>
-  <!-- 这个 div 就是“父容器的占位”，尺寸由外面控制 -->
   <div class="fabric-board" ref="wrapperEl">
     <canvas ref="canvasEl"></canvas>
   </div>
@@ -16,7 +15,6 @@ let fabricCanvas = null
 const resizeCanvas = () => {
   if (!wrapperEl.value || !fabricCanvas) return
 
-  // 以外层 wrapper 的实际尺寸为准
   const rect = wrapperEl.value.getBoundingClientRect()
   const width = rect.width
   const height = rect.height
@@ -36,7 +34,6 @@ onMounted(async () => {
     backgroundColor: '#ffffff',
   })
 
-  // 明确设一个画笔
   fabricCanvas.freeDrawingBrush = new PencilBrush(fabricCanvas)
   fabricCanvas.freeDrawingBrush.color = '#000000'
   fabricCanvas.freeDrawingBrush.width = 4
@@ -52,12 +49,10 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* 关键点：这里不再写死高度，只是说“占满父容器” */
 .fabric-board {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  /* 边框你可以保留也可以删 */
   border: 1px solid #ccc;
 }
 

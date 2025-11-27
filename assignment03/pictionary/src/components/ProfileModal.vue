@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch} from 'vue'
+import { ref, watch } from 'vue'
 import { apiRequest } from '../network/Request'
 import { useUserStore } from '../stores/UserStore'
 
@@ -16,20 +16,20 @@ const errorMsg = ref('')
 const onSubmit = async () => {
     try {
         const param = password.value ? {
-                _id: useUserStore().get()._id,
-                name: name.value,
-                email: email.value,
-                password: password.value
-            } :{
-                _id: useUserStore().get()._id,
-                name: name.value,
-                email: email.value
-            }
+            _id: useUserStore().get()._id,
+            name: name.value,
+            email: email.value,
+            password: password.value
+        } : {
+            _id: useUserStore().get()._id,
+            name: name.value,
+            email: email.value
+        }
         const result = await apiRequest('/users/self', {
             method: 'POST',
             body: JSON.stringify(param)
         })
-        
+
         if (result.code === 0) {
             useUserStore().get().name = name.value
             close()
@@ -42,17 +42,17 @@ const onSubmit = async () => {
 }
 
 watch(
-  () => props.show,
-  (val) => {
-    if (val) {
-        const user = useUserStore().get()
-        email.value = user.email
-        name.value = user.name
-        password.value = ''
-        errorMsg.value = ''
-    }
-  },
-  {immediate: true}
+    () => props.show,
+    (val) => {
+        if (val) {
+            const user = useUserStore().get()
+            email.value = user.email
+            name.value = user.name
+            password.value = ''
+            errorMsg.value = ''
+        }
+    },
+    { immediate: true }
 )
 </script>
 

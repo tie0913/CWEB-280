@@ -80,7 +80,6 @@ class RoomController {
   async join(req, res) {
     try {
       const room = await roomService.joinRoom(req.params.roomId, req.user['_id']);
-      console.log(room)
       res.json(succeed(room));
     } catch (err) {
       const known = [

@@ -1,6 +1,7 @@
 <script setup>
 import Header from './components/Header.vue'
 import Frame from './components/Frame.vue'
+import Footer from './components/Footer.vue'
 import SignInModal from './components/SignInModal.vue'
 import SignOutModal from './components/SignOutModal.vue'
 import SignUpModal from './components/SignUpModal.vue'
@@ -16,6 +17,7 @@ const showProfile = ref(false)
   <div class="app-root d-flex flex-column min-vh-100">
     <Header @openSignIn="showSignIn = true" @openSignUp="showSignUp = true" @openSignOut="showSignOut = true" @openProfile="showProfile = true"/>
     <Frame @sign-in="showSignIn = true"/>
+    <Footer />
   </div>
     <SignInModal v-model:show="showSignIn"/>
     <SignOutModal v-model:show="showSignOut"/>

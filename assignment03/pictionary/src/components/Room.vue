@@ -99,7 +99,6 @@ watch(
       </h3>
 
       <div class="room-body">
-        <!-- loading -->
         <div v-if="loading" class="room-loading d-flex flex-column align-items-center">
           <i class="nes-icon coin is-large"></i>
           <p class="mt-3 mb-0">Loading room...</p>
@@ -168,7 +167,6 @@ watch(
                     </div>
                   </div>
 
-                  <!-- 空座位 -->
                   <div
                     v-for="n in (room.maxPlayers ? room.maxPlayers - room.players.length : 0)"
                     :key="'empty-' + n"
@@ -212,7 +210,6 @@ watch(
           </div>
         </div>
 
-        <!-- room 为空 -->
         <div v-else class="room-empty">
           <p>No data for this room.</p>
         </div>
@@ -239,7 +236,6 @@ watch(
         </div>
 
         <div class="room-actions-right">
-          <!-- 所有人都有：退出 -->
           <button class="nes-btn" type="button" @click="close">
             Exit
           </button>
@@ -291,11 +287,10 @@ watch(
   height: 100%;
 }
 
-/* 主布局：上层画板 + 右侧面板，下层聊天 */
 .room-layout {
   display: grid;
-  grid-template-columns: 3fr 1.2fr; /* 左宽右窄，大约 70% / 30% */
-  grid-template-rows: minmax(0, 1.4fr) minmax(0, 1fr); /* 上 画板+侧边，下 聊天 */
+  grid-template-columns: 3fr 1.2fr;
+  grid-template-rows: minmax(0, 1.4fr) minmax(0, 1fr);
   grid-template-areas:
     'draw side'
     'chat chat';
@@ -304,7 +299,6 @@ watch(
   min-height: 0;
 }
 
-/* 画图区域 */
 .drawing-area {
   grid-area: draw;
   display: flex;
@@ -350,7 +344,6 @@ watch(
   opacity: 0.7;
 }
 
-/* 右侧面板 */
 .side-panel {
   grid-area: side;
   display: flex;
@@ -374,7 +367,6 @@ watch(
   margin-left: 0.5rem;
 }
 
-/* 玩家列表 */
 .players-panel {
   flex: 1 1 auto;
   min-height: 0;
@@ -435,7 +427,6 @@ watch(
   opacity: 0.7;
 }
 
-/* 聊天区域 */
 .chat-panel {
   grid-area: chat;
   display: flex;
@@ -495,7 +486,6 @@ watch(
   flex-shrink: 0;
 }
 
-/* 按钮区域在底部 */
 .room-actions {
   display: flex;
   align-items: center;
@@ -512,7 +502,6 @@ watch(
   margin-left: auto;
 }
 
-/* 简单响应式：窄屏改为上下布局 */
 @media (max-width: 900px) {
   .room-layout {
     grid-template-columns: 1fr;
