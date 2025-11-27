@@ -3,9 +3,10 @@
     <Console />
 </template>
 <template v-else>
-    <Lobby />
+    <Lobby @sign-in="emit('sign-in')"/>
 </template></template>
 <script setup>
+const emit = defineEmits(['sign-in'])
 import {computed} from 'vue'
 import { useModeStore } from '../stores/ModeStore';
 import Lobby from './Lobby.vue';

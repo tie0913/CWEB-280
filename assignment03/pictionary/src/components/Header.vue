@@ -1,10 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
-import SignInModal from './SignInModal.vue'
 import { useUserStore } from '../stores/UserStore'
-import SignOutModal from './SignOutModal.vue'
-import SignUpModal from './SignUpModal.vue'
-import ProfileModal from './ProfileModal.vue'
+
 import Switch from './Switch.vue'
 import { useModeStore } from '../stores/ModeStore'
 
@@ -14,10 +11,9 @@ const isGuest = computed(() => !userStore.get())
 const isAdmin = computed(() => userStore.get()?.admin)
 const isPlayMode = computed(() => modeStore.isPlayMode)
 const uname = computed(() => userStore.get()?.name)
-const showSignIn = ref(false)
-const showSignUp = ref(false)
-const showSignOut = ref(false)
-const showProfile = ref(false)
+
+
+const emit = defineEmits(['openSignIn', 'openSignUp', 'openSignOut', 'openProfile'])
 
 
 </script>
@@ -32,10 +28,10 @@ const showProfile = ref(false)
 
       <div class="d-flex align-items-center gap-3">
         <template v-if="isGuest">
-          <button class="nes-btn is-primary" @click="showSignIn = true" title="Sign In">
+          <button class="nes-btn is-primary" @click="emit('openSignIn')" title="Sign In">
             <i class="nes-icon user is-small clickable"></i>
           </button>
-          <button class="nes-btn is-success" @click="showSignUp = true" title="Sign Up">
+          <button class="nes-btn is-success" @click="emit('openSignUp')" title="Sign Up">
             <i class="nes-icon star is-small clickable"></i>
           </button>
         </template>
@@ -45,19 +41,16 @@ const showProfile = ref(false)
               <Switch label-position="left"/>
             </span>
           </template>
-          <button class="nes-btn is-success" @click="showProfile = true" title="Profile">
+          <button class="nes-btn is-success" @click="emit('openProfile')" title="Profile">
             <span>{{ uname }}</span><i class="nes-icon user is-small clickable" ></i>
           </button>
-          <button class="nes-btn is-error" @click="showSignOut = true" title="Sign Out">
+          <button class="nes-btn is-error" @click="emit('openSignOut')" title="Sign Out">
             <i class="nes-icon close is-small clickable"></i>
           </button>
         </template>
       </div>
     </div>
-    <SignInModal v-model:show="showSignIn"/>
-    <SignOutModal v-model:show="showSignOut"/>
-    <SignUpModal v-model:show="showSignUp" />
-    <ProfileModal v-model:show="showProfile"/>
+ 
   </header>
 </template>
 

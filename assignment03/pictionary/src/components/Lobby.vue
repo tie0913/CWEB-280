@@ -10,7 +10,7 @@ const rooms = ref([])
 const selectedRoomId = ref('')
 const loading = ref(false)
 
-const emit = defineEmits(['signIn'])
+const emit = defineEmits(['sign-in'])
 
 const isGuest = computed(() => !useUserStore().get())
 
@@ -47,9 +47,6 @@ const open = (roomId) => {
   showRoom.value = true
 }
 
-const signIn = () => {
-  emit('signIn')
-}
 
 const showCreateModal = ref(false)
 const showRoom = ref(false)
@@ -71,7 +68,7 @@ const showRoom = ref(false)
 
         <div v-else class="room-list">
           <div v-for="room in rooms" :key="room.id" class=" nes-container with-title room-card">
-            <RoomCard :room="room" @open="open" @signIn="signIn"/>
+            <RoomCard :room="room" @open="open" @sign-in="emit('sign-in')"/>
           </div>
         </div>
       </div>

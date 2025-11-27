@@ -6,7 +6,7 @@
     <button v-if="!isGuest" class="nes-btn is-success" @click="enterRoom">
       Enter
     </button>
-    <button v-if="isGuest" class="nes-btn is-error disabled" @click="SignIn">
+    <button v-if="isGuest" class="nes-btn is-error disabled" @click="emit('sign-in')">
       Sign In
     </button>
   </div>
@@ -34,15 +34,11 @@ const statusText = (status) => {
 import { computed } from 'vue'
 import { useUserStore } from '../stores/UserStore'
 const props = defineProps({ room: { type: Object, required: true } })
-const emit = defineEmits(['open', 'signIn'])
+const emit = defineEmits(['open', 'sign-in'])
 const userStore = useUserStore()
 const isGuest = computed(() => !userStore.get())
 
 const enterRoom = () => {
   emit('open', props.room._id)
-}
-
-const signIn = () => {
-  emit('signIn')
 }
 </script>
