@@ -6,6 +6,7 @@ import { useUserStore } from '../stores/UserStore';
 import CreateRoomModal from './CreateRoomModal.vue';
 import Room from './Room.vue';
 
+const room = ref()
 const rooms = ref([])
 const selectedRoomId = ref('')
 const loading = ref(false)
@@ -40,10 +41,12 @@ const refresh = async () => {
 }
 const roomCreated = (newRoom) => {
   rooms.value = [newRoom].concat(rooms.value)
+  open(newRoom._id, newRoom)
 }
 
-const open = (roomId) => {
+const open = (roomId, newRoom) => {
   selectedRoomId.value = roomId
+  room.value = newRoom
   showRoom.value = true
 }
 
@@ -95,7 +98,7 @@ const showRoom = ref(false)
   </section>
 
   <CreateRoomModal v-model:show="showCreateModal" @create="roomCreated"></CreateRoomModal>
-  <Room v-model:show="showRoom" :room-id="selectedRoomId"></Room>
+  <Room v-model:show="showRoom" :room-id="selectedRoomId" :room="room" @update:rooms="refresh()"></Room>
 </template>
 <style scoped>
 .lobby {

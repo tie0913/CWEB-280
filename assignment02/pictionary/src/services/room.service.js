@@ -1,6 +1,8 @@
 const roomRepo = require('../repositories/room.repo');
+const userRepo = require('../repositories/users.repo')
 const { WAITING, RoomState } = require('../constants/RoomConstants');
 const { ObjectId } = require('mongodb');
+const usersRepo = require('../repositories/users.repo');
 
 const eqId = (a,b) => a.toString() === b.toString();
 
@@ -83,6 +85,7 @@ class RoomService{
 
         room.members.push(userId);
         room.updatedAt = new Date();
+        room.players = await userRepo.getUserListByObjectIds(room.members)
         await roomRepo.update(roomId, {members: room.members, updatedAt: room.updatedAt});
         return room;
     }

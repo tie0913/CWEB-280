@@ -23,6 +23,11 @@ class UserRepository{
     await db.collection('users').deleteOne({'_id': userObjectId}, tx)
   }
 
+  async getUserListByObjectIds(ids, tx){
+    const db = await mongoDb()
+    return await db.collection('users').find({'_id': {$in: ids}}, tx).toArray()
+  }
+
 
   async getUserByObjectId(userObjectId, tx){
     const db = await mongoDb()

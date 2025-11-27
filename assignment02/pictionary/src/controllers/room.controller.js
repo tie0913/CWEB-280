@@ -27,6 +27,7 @@ class RoomController {
       );
     try {
       const room = await roomService.createRoom(value, req.user['_id']);
+      room.players = [req.user]
       res.status(201).json(succeed(room));
     } catch (err) {
       res.status(200).json(fail(-1, err.message));
@@ -77,15 +78,20 @@ class RoomController {
    *   500: Server error.
    */
   async join(req, res) {
-    try{
-        const room = await roomService.joinRoom(req.params.roomId, req.user['_id']);
-        res.json(succeed(room));
-    } catch(err){
-        const code = err.message === 'Room not found' ? 404 :
-                     err.message.startsWith('Cannot join') ? 400 :
-                     err.message === 'Room is full' ? 403 :
-                     err.message === 'User already in room' ? 409 : 500;
-        res.status(code).json(fail(-1, err.message));
+    try {
+      const room = await roomService.joinRoom(req.params.roomId, req.user['_id']);
+      console.log(room)
+      res.json(succeed(room));
+    } catch (err) {
+      const known = [
+        'Room not found',
+        'Room is full',
+        'User already in room',
+        'Cannot join'
+      ]
+
+      const code = known.some(k => err.message.startsWith(k)) ? 200 : 500
+      res.status(code).json(fail(-1, err.message));
     }
   }
 
@@ -103,17 +109,17 @@ class RoomController {
    *   500: Server error.
    */
   async leave(req, res) {
-    try{
-        const result = await roomService.leaveRoom(req.params.roomId, req.user['_id']);
-        if(result.closed){
-            const message = result.reason === 'owner left' ? 'Room closed as owner left' : 'Room closed';
-            res.json(succeed({message}));
-        }
-        res.json(succeed(result.room));
-    } catch(err){
-        const code = err.message === 'Room not found' ? 404 :
-                     err.message === 'User not in room' ? 400 : 500;
-        res.status(code).json(fail(-1, err.message));
+    try {
+      const result = await roomService.leaveRoom(req.params.roomId, req.user['_id']);
+      if (result.closed) {
+        const message = result.reason === 'owner left' ? 'Room closed as owner left' : 'Room closed';
+        res.json(succeed({ message }));
+      }
+      res.json(succeed(result.room));
+    } catch (err) {
+      const code = err.message === 'Room not found' ? 404 :
+        err.message === 'User not in room' ? 400 : 500;
+      res.status(code).json(fail(-1, err.message));
     }
   }
 
@@ -132,14 +138,14 @@ class RoomController {
    *   500: Server error.
    */
   async start(req, res) {
-    try{
-        const room = await roomService.startRoom(req.params.roomId, req.user['_id']);
-        res.json(succeed(room));
-    } catch(err){
-        const code = err.message === 'Room not found' ? 404 :
-                     err.message === 'Only owner can start the room' ? 403 :
-                     err.message === 'Room is not in waiting state' ? 400 : 500;
-        res.status(code).json(fail(-1, err.message));
+    try {
+      const room = await roomService.startRoom(req.params.roomId, req.user['_id']);
+      res.json(succeed(room));
+    } catch (err) {
+      const code = err.message === 'Room not found' ? 404 :
+        err.message === 'Only owner can start the room' ? 403 :
+          err.message === 'Room is not in waiting state' ? 400 : 500;
+      res.status(code).json(fail(-1, err.message));
     }
   }
 }
