@@ -35,8 +35,8 @@ const loadRoom = async () => {
   room.value = null
 
   try {
-    const res = await apiRequest(`/rooms/${props.roomId}`, {
-      method: 'GET',
+    const res = await apiRequest(`/rooms/${props.roomId}/join`, {
+      method: 'POST',
     })
 
     if (res.code === 0) {
