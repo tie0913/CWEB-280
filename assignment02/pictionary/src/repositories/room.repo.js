@@ -40,6 +40,31 @@ class RoomRepository {
     ).deleteOne({ _id: new ObjectId(roomId) }, { session: tx });
   }
 
+
+  async refresh(ids, tx){
+
+    const condition = {
+      _id:{
+        $in:ids.map((e)=> new ObjectId(e))
+      }
+    }
+    return await (await this.col()).find(condition, tx).sort({_id:-1}).toArray()
+  }
+
+
+  async fetch(lastId, tx){
+    const condition = lastId ? 
+    {
+      _id :{ $lt: new ObjectId(lastId)},
+      state:{$in: [1, 2]}
+    } 
+    : 
+    {
+      state:{$in: [1, 2]}
+    } 
+    return await (await this.col()).find(condition, tx).sort({_id: -1}).limit(4).toArray()
+  }
+
   async list({ q, visibility, state, skip, limit }) {
     const cond = {};
     if (visibility !== undefined) cond.visibility = visibility;

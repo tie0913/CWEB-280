@@ -6,7 +6,7 @@ import { useUserStore } from '../stores/UserStore';
 import CreateRoomModal from './CreateRoomModal.vue';
 import Room from './Room.vue';
 
-const room = ref()
+const curRoom = ref()
 const rooms = ref([])
 const selectedRoomId = ref('')
 const loading = ref(false)
@@ -18,17 +18,20 @@ const isGuest = computed(() => !useUserStore().get())
 const load = async () => {
   loading.value = true
   try {
-    const result = await apiRequest('/rooms?state=1&state=2', {
+    const last = rooms.value.length == 0 ? {_id:''} : rooms.value[rooms.value.length - 1]
+    const url = `/rooms/fetch?lastId=${last?._id}`
+    const result = await apiRequest(url, {
       method: "GET",
     })
 
     if (result.code === 0) {
-      rooms.value = rooms.value.concat(result.body.list)
+      rooms.value = rooms.value.concat(result.body)
     }
   } catch (e) {
-
+    console.log('err', e)
+  }finally{
+    loading.value = false
   }
-  loading.value = false
 }
 
 onMounted(() => {
@@ -36,8 +39,22 @@ onMounted(() => {
 })
 
 const refresh = async () => {
-  rooms.value = []
-  await load()
+  const ids =  rooms.value.map((e) => e._id)
+  loading.value = true
+  try{
+    const result = await apiRequest('/rooms/rr', {
+      method:'POST',
+      body:JSON.stringify(ids)
+    })
+    if(result.code === 0){
+      rooms.value = result.body
+    }
+  }catch(e){
+    console.log('err', e)
+  }finally{
+    loading.value = false
+  }
+
 }
 const roomCreated = (newRoom) => {
   rooms.value = [newRoom].concat(rooms.value)
@@ -46,7 +63,7 @@ const roomCreated = (newRoom) => {
 
 const open = (roomId, newRoom) => {
   selectedRoomId.value = roomId
-  room.value = newRoom
+  curRoom.value = newRoom
   showRoom.value = true
 }
 
@@ -70,7 +87,7 @@ const showRoom = ref(false)
         </div>
 
         <div v-else class="room-list">
-          <div v-for="room in rooms" :key="room.id" class=" nes-container with-title room-card">
+          <div v-for="room in rooms" :key="room._id" class=" nes-container with-title room-card">
             <RoomCard :room="room" @open="open" @sign-in="emit('sign-in')"/>
           </div>
         </div>
@@ -83,7 +100,7 @@ const showRoom = ref(false)
               d="M17.65 6.35a8 8 0 1 0 2.3 5.65h-2a6 6 0 1 1-1.76-4.24l-2.12 2.12H22V2l-2.12 2.12a9.923 9.923 0 0 0-2.23 2.23z" />
           </svg>
         </button>
-        <button class="nes-btn is-primary " title="Load More" @click="$emit('load-more')">
+        <button class="nes-btn is-primary " title="Load More" @click="load">
           <svg width="20" height="20" viewBox="0 0 24 24" style="image-rendering: pixelated;">
             <path fill="currentColor" d="M7 10h2l3 3 3-3h2l-5 5-5-5z" />
           </svg>
@@ -98,7 +115,7 @@ const showRoom = ref(false)
   </section>
 
   <CreateRoomModal v-model:show="showCreateModal" @create="roomCreated"></CreateRoomModal>
-  <Room v-model:show="showRoom" :room-id="selectedRoomId" :room="room" @update:rooms="refresh()"></Room>
+  <Room v-model:show="showRoom" :room-id="selectedRoomId" :room="curRoom" @update:rooms="refresh()"></Room>
 </template>
 <style scoped>
 .lobby {

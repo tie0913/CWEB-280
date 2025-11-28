@@ -34,6 +34,32 @@ class RoomController {
     }
   }
 
+
+  async refresh(req, res) {
+    const ids = req.body
+    if (!ids || ids.length === 0) {
+      res.status(200).json(succeed([]))
+    }
+
+    try {
+      const rooms = await roomService.refresh(ids)
+      res.status(200).json(succeed(rooms))
+    } catch (e) {
+      res.status(200).json(fail(-1, "refreshing has error"))
+    }
+  }
+
+
+  async fetch(req, res) {
+    const lastId = req.query.lastId
+    try {
+      const rooms = await roomService.fetch(lastId)
+      res.status(200).json(succeed(rooms))
+    } catch (e) {
+      res.status(200).json(fail(-1, 'Fetching next batch of rooms has error'))
+    }
+  }
+
   /**
    * List available chat rooms.
    *

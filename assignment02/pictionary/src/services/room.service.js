@@ -42,6 +42,15 @@ class RoomService{
         return {...room, _id: roomId}
     }
 
+
+    async fetch(lastId) {
+        return await roomRepo.fetch(lastId)
+    }
+
+    async refresh(ids){
+        return await roomRepo.refresh(ids)
+    }
+
     /**
      * List chat rooms with filters and pagination.
      *
