@@ -1,3 +1,6 @@
+<!-- 
+    Frame Widget contains Console and Lobby
+-->
 <template>
 <template v-if="isAdminMode">
     <Console />

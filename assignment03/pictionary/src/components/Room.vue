@@ -47,7 +47,12 @@ const close = async () => {
   }
 }
 
-const loadRoom = async () => {
+/**
+ * join current user to the room 
+ * if the room is not null means current user is the owner , so we do not need to execute this join method
+ * otherwise, current user is a player, we have to join the user to the room
+ */
+const joinRoom = async () => {
   if (!props.roomId) return
 
   if(props.room){
@@ -82,7 +87,7 @@ watch(
     error.value = ''
     room.value = null
     if (show) {
-      loadRoom()
+      joinRoom()
     }
   },
   { immediate: true }
@@ -224,15 +229,6 @@ watch(
           >
             Start
           </button>
-          <!--
-          <button
-            v-if="isOwner"
-            class="nes-btn is-warning"
-            type="button"
-          >
-            Stop
-          </button>
-        -->
         </div>
 
         <div class="room-actions-right">

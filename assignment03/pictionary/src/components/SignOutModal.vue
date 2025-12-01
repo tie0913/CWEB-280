@@ -7,10 +7,8 @@ const props = defineProps({
     show: { type: Boolean, default: false },
 })
 
-const emit = defineEmits(['update:show', 'confirm'])
-
-const close = () => emit('update:show', false)
-
+const emit = defineEmits(['update:show'])
+const errorMsg = ref('')
 const onConfirm = async () => {
     try{
         const result = await apiRequest('/auth/signOut', {
@@ -19,11 +17,12 @@ const onConfirm = async () => {
         if(result.code === 0){
             useUserStore().logout()
             useModeStore().clear()
-            emit('confirm')
-            close()
+            emit('update:show')
+        }else{
+            errorMsg.value = result.message
         }
     }catch(e){
-        throw e
+        console.error('Signing out has error', e)
     }
 }
 </script>
@@ -37,6 +36,10 @@ const onConfirm = async () => {
                 <p style="margin-bottom: 16px;">
                     Are you sure you want to sign out?
                 </p>
+                <p v-if="errorMsg" class="nes-text is-error" style="margin-bottom: 10px;">
+                    {{ errorMsg }}
+                </p>
+
 
                 <div class="d-flex justify-content-end gap-2">
                     <button class="nes-btn" @click="close">
