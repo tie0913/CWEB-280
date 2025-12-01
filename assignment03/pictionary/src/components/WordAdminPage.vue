@@ -1,8 +1,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { apiRequest } from '@/network/Request'
+import { apiRequest } from '../network/Request'
 
-import AdminHeader from './AdminHeader.vue'
 import SearchBarModel from './SearchBarModel.vue'
 import EditPageModel from './EditPageModel.vue'
 
@@ -12,6 +11,12 @@ const errorMsg = ref('')
 
 const viewMode = ref('list')
 const editingWordId = ref(null)
+
+const pageInfo = ref({
+  no: 1,
+  size: 20,
+  totalPages: 1,
+})
 
 const search = reactive({
   text: '',
@@ -55,9 +60,9 @@ const wordFormFields = [
     label: 'Difficulty',
     type: 'select',
     options: [
-      { value: 'EASY', label: 'EASY' },
-      { value: 'MEDIUM', label: 'MEDIUM' },
-      { value: 'HARD', label: 'HARD' },
+      { value: 'easy', label: 'EASY' },
+      { value: 'medium', label: 'MEDIUM' },
+      { value: 'hard', label: 'HARD' },
     ],
   },
 ]
@@ -78,12 +83,31 @@ const filteredWords = computed(() => {
   })
 })
 
-const loadData = async () => {
+const loadData = async (pageNo = 1) => {
   loading.value = true
   errorMsg.value = ''
   try {
-    const res = await apiRequest('/admin/words', { method: 'GET' })
-    rawWords.value = res.data || []
+    // const params = new URLSearchParams()
+    // params.set('page[mp]', String(pageNo))                
+    // params.set('page[size]', String(pageInfo.value.size)) 
+
+    // if (search.name.trim()) {
+    //   params.set('filter[name]', search.name.trim()) 
+    // }
+
+    const res = await apiRequest(`/words`, { method: 'GET' })
+
+    console.log("DEBUG wordRes:", res)
+    console.log("DEBUG body:", res.body)
+
+    if(res.code === 0){
+      rawWords.value = res.body.list
+      pageInfo.value = res.body.page
+    }else{
+      errorMsg.value = res.message
+    }
+    console.log("DEBUG rawWord:", rawWords.value)
+    console.log("DEBUG pageInfo:", pageInfo.value)
   } catch (e) {
     console.error(e)
     errorMsg.value = 'Failed to load words.'
@@ -119,12 +143,12 @@ const cancelForm = () => {
 const submitForm = async () => {
   try {
     if (viewMode.value === 'create') {
-      await apiRequest('/admin/words', {
+      await apiRequest('/words', {
         method: 'POST',
         data: formWord.value,
       })
     } else if (viewMode.value === 'edit' && editingWordId.value) {
-      await apiRequest(`/admin/words/${editingWordId.value}`, {
+      await apiRequest(`/words/${editingWordId.value}`, {
         method: 'PUT',
         data: formWord.value,
       })
@@ -137,25 +161,47 @@ const submitForm = async () => {
     alert('Failed to save word')
   }
 }
+
+const goToPage = (page) => {
+  if (page < 1 || page > pageInfo.value.totalPages) return
+  loadData(page)
+}
+
+const nextPage = () => {
+  goToPage(pageInfo.value.no + 1)
+}
+
+const prevPage = () => {
+  goToPage(pageInfo.value.no - 1)
+}
+
+const onSearch = () =>{
+  console.log('SEARCH NOW:', { ...search })
+  loadData(1)
+}
+
+const onSearchModelChange = (val) =>{
+  Object.assign(search, val)
+}
 </script>
 
 <template>
   <div class="admin-page">
-    <AdminHeader active-tab="words" />
-
-    <!-- LIST VIEW -->
     <section v-if="viewMode === 'list'" class="content">
       <div class="nes-container is-rounded search-wrapper">
         <div class="search-row">
-          <SearchBarModel :fields="wordSearchFields" v-model="search" />
-
+          <SearchBarModel 
+          :fields="wordSearchFields" 
+          v-model="search" 
+          @update:modelValue="onSearchModelChange"
+          @search="onSearch"/>
           <button
             type="button"
             class="nes-btn is-success add-btn"
             @click="openCreate"
-            aria-label="Create word"
+            aria-label="Create user"
           >
-            <i class="nes-icon plus is-small"></i>
+            Create
           </button>
         </div>
       </div>
@@ -195,6 +241,31 @@ const submitForm = async () => {
           </tr>
         </tbody>
       </table>
+
+      <div
+        v-if="pageInfo.totalPages > 1"
+        class="pagination"
+      >
+        <button
+          class="nes-btn"
+          :disabled="pageInfo.no === 1"
+          @click="prevPage"
+        >
+          Prev
+        </button>
+
+        <span class="page-label">
+          Page {{ pageInfo.no }} / {{ pageInfo.totalPages }}
+        </span>
+
+        <button
+          class="nes-btn"
+          :disabled="pageInfo.no === pageInfo.totalPages"
+          @click="nextPage"
+        >
+          Next
+        </button>
+      </div>
     </section>
 
     <section v-else class="content">
@@ -254,5 +325,16 @@ const submitForm = async () => {
 .empty-row {
   text-align: center;
   font-style: italic;
+}
+.pagination {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-label {
+  font-size: 12px;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
 <template v-if="isAdminMode">
-    <Console />
+    <Console :admin-tab="props.adminTab" />
 </template>
 <template v-else>
     <Lobby @sign-in="emit('sign-in')"/>
@@ -14,4 +14,11 @@ import Console from './Console.vue';
 
 const modeStore = useModeStore()
 const isAdminMode = computed(() => modeStore.isAdminMode)
+
+const props = defineProps({
+    adminTab:{
+        type: String,
+        default: 'user'
+    }
+})
 </script>

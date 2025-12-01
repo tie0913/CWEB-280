@@ -13,9 +13,9 @@ const isPlayMode = computed(() => modeStore.isPlayMode)
 const uname = computed(() => userStore.get()?.name)
 
 
-const emit = defineEmits(['openSignIn', 'openSignUp', 'openSignOut', 'openProfile'])
+const emit = defineEmits(['openSignIn', 'openSignUp', 'openSignOut', 'openProfile','changeAdminTab'])
 
-
+const selectAdminTab = (tab) => emit('changeAdminTab', tab)
 </script>
 
 <template>
@@ -40,6 +40,20 @@ const emit = defineEmits(['openSignIn', 'openSignUp', 'openSignOut', 'openProfil
             <span class="nes-text is-warning">
               <Switch label-position="left"/>
             </span>
+            <div class="d-flex align-items-center gap-2">
+              <button class="nes-btn is-primary" @click="selectAdminTab('user')"
+              title="User">
+                User
+              </button>
+              <button class="nes-btn is-warning" @click="selectAdminTab('room')"
+              title="Room">
+                Room
+              </button>
+              <button class="nes-btn is-success" @click="selectAdminTab('word')"
+              title="Word">
+                Word
+              </button>
+            </div>
           </template>
           <button class="nes-btn is-success" @click="emit('openProfile')" title="Profile">
             <span>{{ uname }}</span><i class="nes-icon user is-small clickable" ></i>

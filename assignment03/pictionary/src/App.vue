@@ -11,12 +11,20 @@ const showSignIn = ref(false)
 const showSignUp = ref(false)
 const showSignOut = ref(false)
 const showProfile = ref(false)
+const adminTab = ref('user');
 </script>
 
 <template>
   <div class="app-root d-flex flex-column min-vh-100">
-    <Header @openSignIn="showSignIn = true" @openSignUp="showSignUp = true" @openSignOut="showSignOut = true" @openProfile="showProfile = true"/>
-    <Frame @sign-in="showSignIn = true"/>
+    <Header 
+    @openSignIn="showSignIn = true" 
+    @openSignUp="showSignUp = true" 
+    @openSignOut="showSignOut = true" 
+    @openProfile="showProfile = true"
+    @changeAdminTab="adminTab = $event"/>
+    <Frame 
+    :admin-tab="adminTab"
+    @sign-in="showSignIn = true"/>
     <Footer />
   </div>
     <SignInModal v-model:show="showSignIn"/>

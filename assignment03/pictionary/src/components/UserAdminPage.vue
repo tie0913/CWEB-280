@@ -1,13 +1,11 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { apiRequest } from '@/network/Request'
+import { apiRequest } from '../network/Request'
 
-import AdminHeader from './AdminHeader.vue'
 import SearchBarModel from './SearchBarModel.vue'
 import EditPageModel from './EditPageModel.vue'
 
 const rawUsers = ref([])
-const rawRooms = ref([])
 
 const loading = ref(false)
 const errorMsg = ref('')
@@ -15,11 +13,16 @@ const errorMsg = ref('')
 const viewMode = ref('list')
 const editingUserId = ref(null)    
 
+const pageInfo = ref({
+  no: 1,
+  size: 20,
+  totalPages: 1,
+})
+
 const search = reactive({
   name: '',
   email: '',
   admin: 'any',
-  online: 'any',
 })
 
 const userSearchFields = [
@@ -34,17 +37,7 @@ const userSearchFields = [
       { value: '1', label: 'True' },
       { value: '0', label: 'False' },
     ],
-  },
-  {
-    key: 'online',
-    label: 'IsOnline',
-    type: 'select',
-    options: [
-      { value: 'any', label: 'Any' },
-      { value: '1', label: 'Online' },
-      { value: '0', label: 'Offline' },
-    ],
-  },
+  }
 ]
 
 const formUser = ref({
@@ -82,26 +75,11 @@ const userFormFields = [
   },
 ]
 
-const usersWithStatus = computed(() => {
-  return rawUsers.value.map((user) => {
-    const activeRoom = rawRooms.value.find((room) => {
-      if (!room.isOnGoing) return false
-      if (!Array.isArray(room.members)) return false
-      return room.members.some((m) => m._id === user._id)
-    })
-
-    const playingAt = activeRoom ? activeRoom.name || activeRoom._id : null
-    const isOnline = !!playingAt
-
-    return { ...user, playingAt, isOnline }
-  })
-})
-
 const filteredUsers = computed(() => {
   const nameSearch = search.name.trim().toLowerCase()
   const emailSearch = search.email.trim().toLowerCase()
 
-  return usersWithStatus.value.filter((u) => {
+  return rawUsers.value.filter((u) => {
     if (nameSearch && !u.name.toLowerCase().includes(nameSearch)) return false
     if (emailSearch && !u.email.toLowerCase().includes(emailSearch)) return false
 
@@ -110,26 +88,39 @@ const filteredUsers = computed(() => {
       if (!!u.admin !== wantAdmin) return false
     }
 
-    if (search.online !== 'any') {
-      const wantOnline = search.online === '1'
-      if (!!u.isOnline !== wantOnline) return false
-    }
-
     return true
   })
 })
 
-const loadData = async () => {
+const loadData = async (pageNo = 1) => {
   loading.value = true
   errorMsg.value = ''
   try {
-    const [usersRes, roomsRes] = await Promise.all([
-      apiRequest('/admin/users'),
-      apiRequest('/admin/rooms'),
-    ])
+    const params = new URLSearchParams()
+    params.set('page[mp]', String(pageNo))                
+    params.set('page[size]', String(pageInfo.value.size)) 
 
-    rawUsers.value = usersRes.data || []
-    rawRooms.value = roomsRes.data || []
+    if (search.name.trim()) {
+      params.set('filter[name]', search.name.trim()) 
+    }
+
+    const usersRes = await apiRequest(`/users/list?${params.toString()}`, {
+      method: 'GET',
+    })
+  
+
+    console.log("DEBUG usersRes:", usersRes)
+    console.log("DEBUG body:", usersRes.body)
+
+    if(usersRes.code === 0){
+      rawUsers.value = usersRes.body.list
+      pageInfo.value = usersRes.body.page
+    }else{
+      errorMsg.value = usersRes.message
+    }
+    console.log("DEBUG rawUsers:", rawUsers.value)
+    console.log("DEBUG pageInfo:", pageInfo.value)
+    
   } catch (e) {
     console.error(e)
     errorMsg.value = 'Failed to load users or rooms.'
@@ -169,12 +160,12 @@ const cancelForm = () => {
 const submitForm = async () => {
   try {
     if (viewMode.value === 'create') {
-      await apiRequest('/admin/users', {
+      await apiRequest('/auth/signup', {
         method: 'POST',
         data: formUser.value,
       })
     } else if (viewMode.value === 'edit' && editingUserId.value) {
-      await apiRequest(`/admin/users/${editingUserId.value}`, {
+      await apiRequest(`/users/${editingUserId.value}`, {
         method: 'PUT',
         data: formUser.value,
       })
@@ -187,27 +178,48 @@ const submitForm = async () => {
     alert('Failed to save user')
   }
 }
+
+const goToPage = (page) => {
+  if (page < 1 || page > pageInfo.value.totalPages) return
+  loadData(page)
+}
+
+const nextPage = () => {
+  goToPage(pageInfo.value.no + 1)
+}
+
+const prevPage = () => {
+  goToPage(pageInfo.value.no - 1)
+}
+
+const onSearch = () =>{
+  console.log('SEARCH NOW:', { ...search })
+  loadData(1)
+}
+
+const onSearchModelChange = (val) =>{
+  Object.assign(search, val)
+}
 </script>
 
 
 <template>
   <div class="admin-page">
-    <AdminHeader active-tab="user"/>
-
     <section v-if="viewMode === 'list'" class="content">
       <div class="nes-container is-rounded search-wrapper">
         <div class="search-row">
           <SearchBarModel
             :fields="userSearchFields"
             v-model="search"
-          />
+            @update:modelValue="onSearchModelChange"
+            @search="onSearch"/>
           <button
             type="button"
             class="nes-btn is-success add-btn"
             @click="openCreate"
             aria-label="Create user"
           >
-            <i class="nes-icon plus is-small"></i>
+            Create
           </button>
         </div>
       </div>
@@ -222,7 +234,7 @@ const submitForm = async () => {
             <th>Name</th>
             <th>Email</th>
             <th>IsAdmin</th>
-            <th>Playing At</th>
+            <!-- <th>Playing At</th> -->
             <th>Edit</th>
           </tr>
         </thead>
@@ -232,7 +244,7 @@ const submitForm = async () => {
             <td>{{ u.name }}</td>
             <td>{{ u.email }}</td>
             <td>{{ u.admin ? 'Yes' : 'No' }}</td>
-            <td>{{ u.playingAt || '—' }}</td>
+            <!-- <td>{{ u.playingAt || '—' }}</td> -->
             <td class="edit-cell">
               <button
                 class="nes-btn is-primary edit-btn"
@@ -251,6 +263,31 @@ const submitForm = async () => {
           </tr>
         </tbody>
       </table>
+
+      <div
+        v-if="pageInfo.totalPages > 1"
+        class="pagination"
+      >
+        <button
+          class="nes-btn"
+          :disabled="pageInfo.no === 1"
+          @click="prevPage"
+        >
+          Prev
+        </button>
+
+        <span class="page-label">
+          Page {{ pageInfo.no }} / {{ pageInfo.totalPages }}
+        </span>
+
+        <button
+          class="nes-btn"
+          :disabled="pageInfo.no === pageInfo.totalPages"
+          @click="nextPage"
+        >
+          Next
+        </button>
+      </div>
     </section>
 
     <section v-else class="content">
@@ -318,4 +355,15 @@ const submitForm = async () => {
   font-style: italic;
 }
 
+.pagination {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-label {
+  font-size: 12px;
+}
 </style>

@@ -1,6 +1,4 @@
 <script setup>
-import { computed } from "vue";
-
 const props = defineProps({
   fields: {
     type: Array,
@@ -30,7 +28,7 @@ const onSubmit = (e) => {
     <div
       v-for="field in fields"
       :key="field.key"
-      class="search-field"
+      class="nes-field is-inline search-field"
       :style="{ width: field.width || 'auto' }"
     >
       <label>{{ field.label }}</label>
@@ -40,6 +38,7 @@ const onSubmit = (e) => {
         type="text"
         :value="modelValue[field.key]"
         @input="updateField(field.key, $event.target.value)"
+        class ="nes-input is-dark"
       />
 
       <select
@@ -53,7 +52,7 @@ const onSubmit = (e) => {
       </select>
     </div>
 
-    <button type="submit" class="search-btn">Search</button>
+    <!-- <button type="submit" class="nes-btn is-success search-btn">Search</button> -->
 
   </form>
 </template>

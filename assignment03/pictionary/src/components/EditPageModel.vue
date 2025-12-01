@@ -1,4 +1,5 @@
 <script setup>
+import {computed} from 'vue'
 const props = defineProps({
   title: {
     type: String,
@@ -44,10 +45,10 @@ const onSubmit = (e) => {
 </script>
 
 <template>
-  <div class="page-wrapper">
-    <div class="form-card">
-      <div class="tab-label">
-        {{ title }}
+  <div class="page-wrapper" @click.self="$emit('cancel')">
+    <div class="form-card nes-container is-rounded">
+      <div class="tab-label nes-text is-primary">
+        {{ title }} - {{isEditMode ? 'Edit' : 'Create'}}
       </div>
 
       <form @submit="onSubmit">
@@ -58,9 +59,9 @@ const onSubmit = (e) => {
         >
           <label class="label">
             {{ field.label }}:
+            <span v-if="field.required" class="required">*</span>
           </label>
 
-          <!-- TEXT / EMAIL / PASSWORD / NUMBER -->
           <input
             v-if="['text', 'email', 'password', 'number'].includes(field.type)"
             :type="field.type"
@@ -71,7 +72,6 @@ const onSubmit = (e) => {
             class="input"
           />
 
-          <!-- CHECKBOX -->
           <input
             v-else-if="field.type === 'checkbox'"
             type="checkbox"
@@ -80,7 +80,6 @@ const onSubmit = (e) => {
             @change="updateField(field.key, $event.target.checked)"
           />
 
-          <!-- SELECT -->
           <select
             v-else-if="field.type === 'select'"
             :disabled="isDisabled(field)"
@@ -100,10 +99,10 @@ const onSubmit = (e) => {
         </div>
 
         <div class="button-row">
-          <button type="button" class="btn" @click="$emit('cancel')">
+          <button type="button" class="nes-btn is-cancel" @click="$emit('cancel')">
             Cancel
           </button>
-          <button type="submit" class="btn primary">
+          <button type="submit" class="nes-btn is-success">
             {{ isEditMode ? 'Save' : 'Create' }}
           </button>
         </div>
@@ -114,54 +113,80 @@ const onSubmit = (e) => {
 
 <style scoped>
 .page-wrapper {
+  position: fixed;
+  inset: 0; 
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   justify-content: center;
-  margin-top: 40px;
+  align-items: center;
+  z-index: 999; 
 }
+
 .form-card {
   position: relative;
-  border: 1px solid #000;
+  border: 2px solid #000;
   padding: 24px 40px 32px;
   min-width: 420px;
-  background: #fff;
+  max-width: 560px;
+  max-height: 90vh;
+  background: #fff8dc;
+  overflow-y: auto;
+  box-shadow: 0 4px 0 #c0a96e;
 }
+
 .tab-label {
   position: absolute;
   top: -18px;
   left: 16px;
   padding: 4px 16px;
-  border: 1px solid #000;
-  background: #fff;
+  border: 2px solid #000;
+  background: #fff8dc;
   font-weight: 600;
+  font-size: 12px;
 }
+
 .form-row {
   display: flex;
   align-items: center;
   margin-bottom: 14px;
+  gap: 8px;
 }
+
 .label {
-  width: 110px;
+  width: 130px;
+  font-size: 13px;
 }
+
+.required {
+  color: #e53935;
+  margin-left: 4px;
+}
+
 .input {
   flex: 1;
   padding: 4px 6px;
   border: 1px solid #666;
+  font-size: 13px;
 }
+
 .button-row {
   display: flex;
   justify-content: center;
   gap: 24px;
   margin-top: 20px;
 }
+
 .btn {
   min-width: 120px;
   padding: 8px 16px;
-  border: 1px solid #999;
+  border: 2px solid #000;
   background: #e0e0e0;
   cursor: pointer;
+  font-size: 13px;
 }
+
 .btn.primary {
-  background: #d0d0d0;
+  background: #ffd54f;
   font-weight: 600;
 }
 </style>

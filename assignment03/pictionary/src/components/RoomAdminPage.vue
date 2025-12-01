@@ -1,17 +1,23 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
-import { apiRequest } from '@/network/Request'
+import { apiRequest } from '../network/Request'
 
-import AdminHeader from './AdminHeader.vue'
 import SearchBarModel from './SearchBarModel.vue'
 import EditPageModel from './EditPageModel.vue'
 
 const rawRooms = ref([])
+
 const loading = ref(false)
 const errorMsg = ref('')
 
 const viewMode = ref('list')
 const editingRoomId = ref(null)
+
+const pageInfo = ref({
+  no: 1,
+  size: 20,
+  totalPages: 1,
+})
 
 const search = reactive({
   ownerId: '',
@@ -83,15 +89,21 @@ const roomFormFields = [
     ],
   },
 ]
-
+const formRoom = ref({
+    name: '',
+    ownerId: '',
+    maxPlayers: '',
+    visibility: false,
+    state: '',
+})
 const roomStateText = (state) => {
   switch (Number(state)) {
     case 0:
-      return '0 → Closed'
+      return 'Closed'
     case 1:
-      return '1 → OnGoing'
+      return 'OnGoing'
     case 2:
-      return '2 → Waiting'
+      return 'Waiting'
     default:
       return state
   }
@@ -135,12 +147,31 @@ const filteredRooms = computed(() => {
   })
 })
 
-const loadData = async () => {
+const loadData = async (pageNo = 1) => {
   loading.value = true
   errorMsg.value = ''
   try {
-    const res = await apiRequest('/admin/rooms', { method: 'GET' })
-    rawRooms.value = res.data || []
+    // const params = new URLSearchParams()
+    // params.set('page[mp]', String(pageNo))                
+    // params.set('page[size]', String(pageInfo.value.size)) 
+
+    // if (search.name.trim()) {
+    //   params.set('filter[name]', search.name.trim()) 
+    // }
+
+    const res = await apiRequest(`/rooms`, { method: 'GET' })
+
+    console.log("DEBUG roomRes:", res)
+    console.log("DEBUG body:", res.body)
+
+    if(res.code === 0){
+      rawRooms.value = res.body.list
+      pageInfo.value = res.body.page
+    }else{
+      errorMsg.value = res.message
+    }
+    console.log("DEBUG rawRooms:", rawRooms.value)
+    console.log("DEBUG pageInfo:", pageInfo.value)
   } catch (e) {
     console.error(e)
     errorMsg.value = 'Failed to load rooms.'
@@ -171,7 +202,7 @@ const submitForm = async () => {
   try {
     if (!editingRoomId.value) return
 
-    await apiRequest(`/admin/rooms/${editingRoomId.value}`, {
+    await apiRequest(`/rooms/${editingRoomId.value}`, {
       method: 'PUT',
       data: formRoom.value,
     })
@@ -183,16 +214,39 @@ const submitForm = async () => {
     alert('Failed to save room')
   }
 }
+
+const goToPage = (page) => {
+  if (page < 1 || page > pageInfo.value.totalPages) return
+  loadData(page)
+}
+
+const nextPage = () => {
+  goToPage(pageInfo.value.no + 1)
+}
+
+const prevPage = () => {
+  goToPage(pageInfo.value.no - 1)
+}
+
+const onSearch = () =>{
+  console.log('SEARCH NOW:', { ...search })
+  loadData(1)
+}
+
+const onSearchModelChange = (val) =>{
+  Object.assign(search, val)
+}
 </script>
 
 <template>
   <div class="admin-page">
-    <AdminHeader active-tab="room" />
-
     <section v-if="viewMode === 'list'" class="content">
-      <div class="nes-container is-rounded search-wrapper">
-        <SearchBarModel :fields="roomSearchFields" v-model="search" />
-      </div>
+          <SearchBarModel
+            :fields="roomSearchFields"
+            v-model="search"
+            @update:modelValue="onSearchModelChange"
+            @search="onSearch"
+          />
 
       <p v-if="errorMsg" class="nes-text is-error">{{ errorMsg }}</p>
       <p v-else-if="loading">Loading...</p>
@@ -239,6 +293,30 @@ const submitForm = async () => {
           </tr>
         </tbody>
       </table>
+      <div
+        v-if="pageInfo.totalPages > 1"
+        class="pagination"
+      >
+        <button
+          class="nes-btn"
+          :disabled="pageInfo.no === 1"
+          @click="prevPage"
+        >
+          Prev
+        </button>
+
+        <span class="page-label">
+          Page {{ pageInfo.no }} / {{ pageInfo.totalPages }}
+        </span>
+
+        <button
+          class="nes-btn"
+          :disabled="pageInfo.no === pageInfo.totalPages"
+          @click="nextPage"
+        >
+          Next
+        </button>
+      </div>
     </section>
 
     <section v-else class="content">
@@ -269,6 +347,26 @@ const submitForm = async () => {
   margin-bottom: 8px;
 }
 
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-row > :first-child {
+  flex: 1;
+}
+
+.add-btn {
+  padding: 0 10px;
+}
+
+.hint {
+  font-size: 11px;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
+
 .room-table {
   width: 100%;
 }
@@ -284,5 +382,17 @@ const submitForm = async () => {
 .empty-row {
   text-align: center;
   font-style: italic;
+}
+
+.pagination {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-label {
+  font-size: 12px;
 }
 </style>
