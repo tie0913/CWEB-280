@@ -53,6 +53,7 @@ class UserRepository{
     if(filter.name){
       cond.name = {$regex: '^' + this.#escapeRegex(filter.name), $options:'i'}
     }
+    console.log(cond)
 
     const[recNum, items] = await Promise.all([
       col.countDocuments(cond),

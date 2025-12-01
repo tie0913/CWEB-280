@@ -12,11 +12,12 @@ const server = http.createServer(app);
 
 // Socket.IO
 const io = new Server(server, { cors: { origin: '*' } }); 
-const pub = getRedis().duplicate();
-const sub = getRedis().duplicate();
+//const pub = getRedis().duplicate();
+//const sub = getRedis().duplicate();
+/*
 Promise.all([pub.connect?.(), sub.connect?.()].map(p => p?.catch?.(() => {}))).finally(() => {
   io.adapter(createAdapter(pub, sub));
-});
+});*/
 
 /** 
  * registe websocket event

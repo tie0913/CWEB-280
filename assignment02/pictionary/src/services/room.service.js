@@ -68,6 +68,22 @@ class RoomService{
             skip: (page - 1) * size,
             limit: size
         });
+
+        // const ids = items.map((e) => e.ownerId)
+        // const userList = userRepo.getUserListByObjectIds(ids);
+
+        // const map = userList.reduce((acc, user) => {
+        //             acc[user._id] = user;
+        //             return acc;
+        //             }, {});
+
+        // items = items.map(e => ({
+        //     ...e,
+        //     owner:map[e._id]
+        // }))
+
+
+
         const totalPages = Math.ceil(total / size);
         return {list: items, page, size, total, totalPages};
     }
