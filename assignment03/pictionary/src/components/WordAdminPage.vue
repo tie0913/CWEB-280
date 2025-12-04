@@ -134,7 +134,7 @@ const openCreate = () => {
 
 const openEdit = (word) => {
   formWord.value = {
-    word: word.word,
+    text: word.word,
     difficulty: word.difficulty,
   }
   editingWordId.value = word._id
@@ -148,7 +148,7 @@ const cancelForm = () => {
 const submitForm = async () => {
   try {
     const payload = {
-      word: formWord.value.word,
+      word: formWord.value.text,
       difficulty: formWord.value.difficulty,
     }
 
