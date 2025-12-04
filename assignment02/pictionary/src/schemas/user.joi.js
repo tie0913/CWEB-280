@@ -23,6 +23,7 @@ const updateUserByAdminSchema = joi.object({
     _id:joi.string().trim().required(),
     email:joi.string().trim().email().required(),
     name:joi.string().trim().min(3).max(100).required(),
+    password:joi.string().trim().optional().invalid(''),
     admin:joi.boolean().required(),
     status:joi.number().valid(...STATUS.map(d => d.code)).required()
 })

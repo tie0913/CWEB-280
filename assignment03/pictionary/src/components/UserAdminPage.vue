@@ -185,6 +185,7 @@ const submitForm = async () => {
         name: formUser.value.name,
         email: formUser.value.email,
         admin: !!formUser.value.admin,
+        password: formUser.value.password,
         status: Number(formUser.value.status),
       };
       await apiRequest(`/users/patch`, {
