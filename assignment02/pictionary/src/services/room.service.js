@@ -69,23 +69,31 @@ class RoomService{
             limit: size
         });
 
-        // const ids = items.map((e) => e.ownerId)
-        // const userList = userRepo.getUserListByObjectIds(ids);
+        const ownerIds = [
+            ...new Set(
+                items.map(r => r.ownerId)
+                .filter(id => !!id)
+            )
+        ]
 
-        // const map = userList.reduce((acc, user) => {
-        //             acc[user._id] = user;
-        //             return acc;
-        //             }, {});
+        let ownerMap = {}
 
-        // items = items.map(e => ({
-        //     ...e,
-        //     owner:map[e._id]
-        // }))
+        if(ownerIds.length){
+            const objectIds = ownerIds.map(id => new ObjectId(id))
+            const userList = await usersRepo.getUserListByObjectIds(objectIds)
+            ownerMap = userList.reduce((acc, user) =>{
+                acc[user._id.toString()] = user
+                return acc
+            }, {})
+        }
 
-
+        const roomsWithOwner = items.map(r =>({
+            ...r,
+            owner: ownerMap[r.ownerId?.toString()] || null
+        }))
 
         const totalPages = Math.ceil(total / size);
-        return {list: items, page, size, total, totalPages};
+        return {list: roomsWithOwner, page, size, total, totalPages};
     }
 
     /**
@@ -176,6 +184,32 @@ class RoomService{
         await roomRepo.update(roomId, {state: room.state, updatedAt: room.updatedAt});
         return room;
     }
+
+    /**
+   * Admin update room info (name, maxPlayers, visibility, state)
+   */
+  async updateRoomByAdmin(roomId, { name, maxPlayers, visibility, state }) {
+    const room = await roomRepo.getRoomById(roomId);
+    if (!room) {
+      throw new Error('Room not found');
+    }
+
+    const updateObj = {
+      name,
+      maxPlayers,
+      visibility,
+      state,
+      updatedAt: new Date(),
+    };
+
+    await roomRepo.update(roomId, updateObj);
+
+    return {
+      ...room,
+      ...updateObj,
+    };
+  }
+
 }
 
 module.exports = new RoomService();

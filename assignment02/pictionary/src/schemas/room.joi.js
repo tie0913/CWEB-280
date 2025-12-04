@@ -16,4 +16,10 @@ const listRoomsSchema = Joi.object({
   size: Joi.number().integer().min(1).max(50).default(20)
 });
 
-module.exports = { createRoomSchema, listRoomsSchema };
+const updateRoomSchema = Joi.object({
+  name: Joi.string().trim().min(3).max(100).required(),
+  maxPlayers: Joi.number().integer().min(2).max(20).required(),
+  visibility: Joi.number().valid(0,1).required(),
+  state: Joi.number().valid(0,1,2).required(),
+});
+module.exports = { createRoomSchema, listRoomsSchema, updateRoomSchema };

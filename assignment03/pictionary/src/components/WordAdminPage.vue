@@ -14,8 +14,7 @@ const editingWordId = ref(null)
 
 const pageInfo = ref({
   no: 1,
-  size: 20,
-  totalPages: 1,
+  size: 8,
 })
 
 const search = reactive({
@@ -36,9 +35,9 @@ const wordSearchFields = [
     type: 'select',
     options: [
       { value: 'any', label: 'Any' },
-      { value: 'EASY', label: 'EASY' },
-      { value: 'MEDIUM', label: 'MEDIUM' },
-      { value: 'HARD', label: 'HARD' },
+      { value: 'easy', label: 'EASY' },
+      { value: 'medium', label: 'MEDIUM' },
+      { value: 'hard', label: 'HARD' },
     ],
   },
 ]
@@ -83,27 +82,33 @@ const filteredWords = computed(() => {
   })
 })
 
+const totalPages = computed(() => {
+  return Math.max(
+    1,
+    Math.ceil(filteredWords.value.length / pageInfo.value.size)
+  )
+})
+
+const pagedWords = computed(() => {
+  const start = (pageInfo.value.no - 1) * pageInfo.value.size
+  const end = start + pageInfo.value.size
+  return filteredWords.value.slice(start, end)
+})
+
 const loadData = async (pageNo = 1) => {
   loading.value = true
   errorMsg.value = ''
   try {
-    // const params = new URLSearchParams()
-    // params.set('page[mp]', String(pageNo))                
-    // params.set('page[size]', String(pageInfo.value.size)) 
-
-    // if (search.name.trim()) {
-    //   params.set('filter[name]', search.name.trim()) 
-    // }
 
     const res = await apiRequest(`/words`, { method: 'GET' })
 
     console.log("DEBUG wordRes:", res)
     console.log("DEBUG body:", res.body)
 
-    if(res.code === 0){
-      rawWords.value = res.body.list
-      pageInfo.value = res.body.page
-    }else{
+ if (res.code === 0) {
+      rawWords.value = res.body.list || []
+      pageInfo.value.no = 1
+    } else {
       errorMsg.value = res.message
     }
     console.log("DEBUG rawWord:", rawWords.value)
@@ -121,7 +126,7 @@ onMounted(loadData)
 const openCreate = () => {
   formWord.value = {
     word: '',
-    difficulty: 'EASY',
+    difficulty: 'easy',
   }
   editingWordId.value = null
   viewMode.value = 'create'
@@ -142,15 +147,20 @@ const cancelForm = () => {
 
 const submitForm = async () => {
   try {
+    const payload = {
+      word: formWord.value.word,
+      difficulty: formWord.value.difficulty,
+    }
+
     if (viewMode.value === 'create') {
       await apiRequest('/words', {
         method: 'POST',
-        data: formWord.value,
+        body: JSON.stringify(payload),
       })
     } else if (viewMode.value === 'edit' && editingWordId.value) {
       await apiRequest(`/words/${editingWordId.value}`, {
-        method: 'PUT',
-        data: formWord.value,
+        method: 'POST',
+        body: JSON.stringify(payload),
       })
     }
 
@@ -161,45 +171,44 @@ const submitForm = async () => {
     alert('Failed to save word')
   }
 }
-
-const goToPage = (page) => {
-  if (page < 1 || page > pageInfo.value.totalPages) return
-  loadData(page)
-}
-
 const nextPage = () => {
-  goToPage(pageInfo.value.no + 1)
+  if (pageInfo.value.no < totalPages.value) {
+    pageInfo.value.no++
+  }
 }
 
 const prevPage = () => {
-  goToPage(pageInfo.value.no - 1)
+  if (pageInfo.value.no > 1) {
+    pageInfo.value.no--
+  }
 }
-
 const onSearch = () =>{
   console.log('SEARCH NOW:', { ...search })
   loadData(1)
 }
 
-const onSearchModelChange = (val) =>{
+const onSearchModelChange = (val) => {
   Object.assign(search, val)
+  pageInfo.value.no = 1
 }
 </script>
 
 <template>
   <div class="admin-page">
-    <section v-if="viewMode === 'list'" class="content">
+    <section class="content">
       <div class="nes-container is-rounded search-wrapper">
         <div class="search-row">
-          <SearchBarModel 
-          :fields="wordSearchFields" 
-          v-model="search" 
-          @update:modelValue="onSearchModelChange"
-          @search="onSearch"/>
+          <SearchBarModel
+            :fields="wordSearchFields"
+            v-model="search"
+            @update:modelValue="onSearchModelChange"
+            @search="onSearch"
+          />
           <button
             type="button"
             class="nes-btn is-success add-btn"
             @click="openCreate"
-            aria-label="Create user"
+            aria-label="Create word"
           >
             Create
           </button>
@@ -219,7 +228,7 @@ const onSearchModelChange = (val) =>{
           </tr>
         </thead>
         <tbody>
-          <tr v-for="w in filteredWords" :key="w._id">
+          <tr v-for="w in pagedWords" :key="w._id">
             <td>{{ w._id }}</td>
             <td>{{ w.word }}</td>
             <td>{{ w.difficulty }}</td>
@@ -242,10 +251,7 @@ const onSearchModelChange = (val) =>{
         </tbody>
       </table>
 
-      <div
-        v-if="pageInfo.totalPages > 1"
-        class="pagination"
-      >
+      <div v-if="totalPages > 1" class="pagination">
         <button
           class="nes-btn"
           :disabled="pageInfo.no === 1"
@@ -255,12 +261,12 @@ const onSearchModelChange = (val) =>{
         </button>
 
         <span class="page-label">
-          Page {{ pageInfo.no }} / {{ pageInfo.totalPages }}
+          Page {{ pageInfo.no }} / {{ totalPages }}
         </span>
 
         <button
           class="nes-btn"
-          :disabled="pageInfo.no === pageInfo.totalPages"
+          :disabled="pageInfo.no >= totalPages"
           @click="nextPage"
         >
           Next
@@ -268,16 +274,18 @@ const onSearchModelChange = (val) =>{
       </div>
     </section>
 
-    <section v-else class="content">
-      <EditPageModel
-        title="Word"
-        :mode="viewMode === 'edit' ? 'edit' : 'create'"
-        :fields="wordFormFields"
-        v-model="formWord"
-        @cancel="cancelForm"
-        @submit="submitForm"
-      />
-    </section>
+    <div v-if="viewMode !== 'list'" class="modal-overlay">
+      <div class="modal-dialog">
+        <EditPageModel
+          title="Word"
+          :mode="viewMode === 'edit' ? 'edit' : 'create'"
+          :fields="wordFormFields"
+          v-model="formWord"
+          @cancel="cancelForm"
+          @submit="submitForm"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -286,6 +294,22 @@ const onSearchModelChange = (val) =>{
   display: flex;
   flex-direction: column;
   height: 100%;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.modal-dialog {
+  pointer-events: auto;
+  max-width: 480px;
+  width: 90%;
 }
 
 .content {
@@ -326,6 +350,7 @@ const onSearchModelChange = (val) =>{
   text-align: center;
   font-style: italic;
 }
+
 .pagination {
   margin-top: 12px;
   display: flex;

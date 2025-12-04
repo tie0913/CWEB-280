@@ -48,7 +48,7 @@ const onSubmit = (e) => {
   <div class="page-wrapper" @click.self="$emit('cancel')">
     <div class="form-card nes-container is-rounded">
       <div class="tab-label nes-text is-primary">
-        {{ title }} - {{isEditMode ? 'Edit' : 'Create'}}
+        {{ title }} - {{ isEditMode ? 'Edit' : 'Create' }}
       </div>
 
       <form @submit="onSubmit">
@@ -56,12 +56,15 @@ const onSubmit = (e) => {
           v-for="field in fields"
           :key="field.key"
           class="form-row"
+          :class="{ 'checkbox-row': field.type === 'checkbox' }"
         >
+          <!-- LABEL -->
           <label class="label">
             {{ field.label }}:
             <span v-if="field.required" class="required">*</span>
           </label>
 
+          <!-- TEXT / EMAIL / PASSWORD / NUMBER -->
           <input
             v-if="['text', 'email', 'password', 'number'].includes(field.type)"
             :type="field.type"
@@ -69,37 +72,55 @@ const onSubmit = (e) => {
             :disabled="isDisabled(field)"
             :value="modelValue[field.key] ?? ''"
             @input="updateField(field.key, $event.target.value)"
-            class="input"
+            class="nes-input"
           />
 
-          <input
+          <!-- CHECKBOX (NES) -->
+          <div
             v-else-if="field.type === 'checkbox'"
-            type="checkbox"
-            :disabled="isDisabled(field)"
-            :checked="!!modelValue[field.key]"
-            @change="updateField(field.key, $event.target.checked)"
-          />
-
-          <select
-            v-else-if="field.type === 'select'"
-            :disabled="isDisabled(field)"
-            :required="field.required"
-            :value="modelValue[field.key] ?? ''"
-            @change="updateField(field.key, $event.target.value)"
-            class="input"
+            class="checkbox-wrapper"
           >
-            <option
-              v-for="op in field.options || []"
-              :key="op.value"
-              :value="op.value"
+            <label>
+              <input
+                type="checkbox"
+                class="nes-checkbox"
+                :disabled="isDisabled(field)"
+                :checked="!!modelValue[field.key]"
+                @change="updateField(field.key, $event.target.checked)"
+              />
+              <!-- NES cần span, không nhất thiết có text -->
+              <span></span>
+            </label>
+          </div>
+
+          <!-- SELECT (NES) -->
+          <div
+            v-else-if="field.type === 'select'"
+            class="nes-select select-wrapper"
+          >
+            <select
+              :disabled="isDisabled(field)"
+              :required="field.required"
+              :value="modelValue[field.key] ?? ''"
+              @change="updateField(field.key, $event.target.value)"
             >
-              {{ op.label }}
-            </option>
-          </select>
+              <option
+                v-for="op in field.options || []"
+                :key="op.value"
+                :value="op.value"
+              >
+                {{ op.label }}
+              </option>
+            </select>
+          </div>
         </div>
 
         <div class="button-row">
-          <button type="button" class="nes-btn is-cancel" @click="$emit('cancel')">
+          <button
+            type="button"
+            class="nes-btn is-error"
+            @click="$emit('cancel')"
+          >
             Cancel
           </button>
           <button type="submit" class="nes-btn is-success">
@@ -114,42 +135,44 @@ const onSubmit = (e) => {
 <style scoped>
 .page-wrapper {
   position: fixed;
-  inset: 0; 
+  inset: 0;
   background: rgba(0, 0, 0, 0.45);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999; 
+  z-index: 999;
 }
 
 .form-card {
   position: relative;
-  border: 2px solid #000;
-  padding: 24px 40px 32px;
-  min-width: 420px;
-  max-width: 560px;
+  padding: 40px 48px 32px;
+  min-width: 460px;
+  max-width: 640px;
   max-height: 90vh;
   background: #fff8dc;
-  overflow-y: auto;
-  box-shadow: 0 4px 0 #c0a96e;
+  overflow-y: visible;
 }
 
 .tab-label {
   position: absolute;
-  top: -18px;
-  left: 16px;
+  top: -24px;
+  left: 24px;
   padding: 4px 16px;
   border: 2px solid #000;
   background: #fff8dc;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .form-row {
   display: flex;
   align-items: center;
-  margin-bottom: 14px;
   gap: 8px;
+  margin-bottom: 14px;
+}
+
+.checkbox-row {
+  align-items: center;
 }
 
 .label {
@@ -162,11 +185,21 @@ const onSubmit = (e) => {
   margin-left: 4px;
 }
 
-.input {
+.checkbox-wrapper {
   flex: 1;
-  padding: 4px 6px;
-  border: 1px solid #666;
-  font-size: 13px;
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-wrapper .nes-checkbox {
+  width: 18px;
+  height: 18px;
+  transform: scale(1.4);
+  transform-origin: left center;
+}
+
+.select-wrapper {
+  width: 100%;
 }
 
 .button-row {
@@ -176,17 +209,4 @@ const onSubmit = (e) => {
   margin-top: 20px;
 }
 
-.btn {
-  min-width: 120px;
-  padding: 8px 16px;
-  border: 2px solid #000;
-  background: #e0e0e0;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.btn.primary {
-  background: #ffd54f;
-  font-weight: 600;
-}
 </style>

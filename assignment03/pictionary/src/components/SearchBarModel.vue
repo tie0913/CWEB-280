@@ -51,9 +51,6 @@ const onSubmit = (e) => {
         </option>
       </select>
     </div>
-
-    <!-- <button type="submit" class="nes-btn is-success search-btn">Search</button> -->
-
   </form>
 </template>
 
@@ -61,6 +58,7 @@ const onSubmit = (e) => {
 .search-bar {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   padding: 8px;
   border: 1px solid #ccc;
@@ -69,7 +67,7 @@ const onSubmit = (e) => {
 .search-field {
   display: flex;
   flex-direction: column;
-  font-size: 12px;
+  font-size: 16px;
 }
 
 .search-btn {

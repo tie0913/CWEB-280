@@ -1,218 +1,228 @@
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { apiRequest } from '../network/Request'
+import { ref, reactive, computed, onMounted } from "vue";
+import { apiRequest } from "../network/Request";
 
-import SearchBarModel from './SearchBarModel.vue'
-import EditPageModel from './EditPageModel.vue'
+import SearchBarModel from "./SearchBarModel.vue";
+import EditPageModel from "./EditPageModel.vue";
 
-const rawUsers = ref([])
+const rawUsers = ref([]);
 
-const loading = ref(false)
-const errorMsg = ref('')
+const loading = ref(false);
+const errorMsg = ref("");
 
-const viewMode = ref('list')
-const editingUserId = ref(null)    
+const viewMode = ref("list");
+const editingUserId = ref(null);
 
 const pageInfo = ref({
   no: 1,
-  size: 20,
-  totalPages: 1,
-})
+  size: 8,
+});
 
 const search = reactive({
-  name: '',
-  email: '',
-  admin: 'any',
-})
+  name: "",
+  email: "",
+  admin: "any",
+});
 
 const userSearchFields = [
-  { key: 'name', label: 'Name', type: 'text', width: '30%' },
-  { key: 'email', label: 'Email', type: 'text', width: '30%' },
+  { key: "name", label: "Name", type: "text", width: "30%" },
+  { key: "email", label: "Email", type: "text", width: "30%" },
   {
-    key: 'admin',
-    label: 'IsAdmin',
-    type: 'select',
+    key: "admin",
+    label: "IsAdmin",
+    type: "select",
     options: [
-      { value: 'any', label: 'Any' },
-      { value: '1', label: 'True' },
-      { value: '0', label: 'False' },
+      { value: "any", label: "Any" },
+      { value: "1", label: "True" },
+      { value: "0", label: "False" },
     ],
-  }
-]
+  },
+];
 
 const formUser = ref({
-  name: '',
-  email: '',
-  password: '',
+  name: "",
+  email: "",
+  password: "",
   admin: false,
-})
+});
 
 const userFormFields = [
   {
-    key: 'name',
-    label: 'Name',
-    type: 'text',
+    key: "name",
+    label: "Name",
+    type: "text",
     required: true,
   },
   {
-    key: 'email',
-    label: 'Email',
-    type: 'email',
+    key: "email",
+    label: "Email",
+    type: "email",
     required: true,
     editableOnEdit: false,
   },
   {
-    key: 'password',
-    label: 'Password',
-    type: 'password',
+    key: "password",
+    label: "Password",
+    type: "password",
     required: false,
   },
   {
-    key: 'admin',
-    label: 'Admin Permit',
-    type: 'checkbox',
-    editableOnEdit: false,
+    key: "admin",
+    label: "Admin Permit",
+    type: "checkbox",
   },
-]
+];
 
 const filteredUsers = computed(() => {
-  const nameSearch = search.name.trim().toLowerCase()
-  const emailSearch = search.email.trim().toLowerCase()
+  const nameSearch = search.name.trim().toLowerCase();
+  const emailSearch = search.email.trim().toLowerCase();
 
   return rawUsers.value.filter((u) => {
-    if (nameSearch && !u.name.toLowerCase().includes(nameSearch)) return false
-    if (emailSearch && !u.email.toLowerCase().includes(emailSearch)) return false
+    if (nameSearch && !u.name.toLowerCase().includes(nameSearch)) return false;
+    if (emailSearch && !u.email.toLowerCase().includes(emailSearch))
+      return false;
 
-    if (search.admin !== 'any') {
-      const wantAdmin = search.admin === '1'
-      if (!!u.admin !== wantAdmin) return false
+    if (search.admin !== "any") {
+      const wantAdmin = search.admin === "1";
+      if (!!u.admin !== wantAdmin) return false;
     }
 
-    return true
-  })
-})
+    return true;
+  });
+});
+
+const totalPages = computed(() => {
+  return Math.max(
+    1,
+    Math.ceil(filteredUsers.value.length / pageInfo.value.size)
+  );
+});
+
+const pagedUsers = computed(() => {
+  const start = (pageInfo.value.no - 1) * pageInfo.value.size;
+  const end = start + pageInfo.value.size;
+  return filteredUsers.value.slice(start, end);
+});
 
 const loadData = async (pageNo = 1) => {
-  loading.value = true
-  errorMsg.value = ''
+  loading.value = true;
+  errorMsg.value = "";
   try {
-    const params = new URLSearchParams()
-    params.set('page[mp]', String(pageNo))                
-    params.set('page[size]', String(pageInfo.value.size)) 
+    const usersRes = await apiRequest(
+      "/users/list?page[mp]=1&page[size]=9999",
+      {
+        method: "GET",
+      }
+    );
 
-    if (search.name.trim()) {
-      params.set('filter[name]', search.name.trim()) 
+    // console.log('DEBUG usersRes:', usersRes)
+    // console.log("DEBUG body:", usersRes.body)
+
+    if (usersRes.code === 0) {
+      rawUsers.value = usersRes.body.list;
+      pageInfo.value.no = 1;
+    } else {
+      errorMsg.value = usersRes.message;
     }
-
-    const usersRes = await apiRequest(`/users/list?${params.toString()}`, {
-      method: 'GET',
-    })
-  
-
-    console.log("DEBUG usersRes:", usersRes)
-    console.log("DEBUG body:", usersRes.body)
-
-    if(usersRes.code === 0){
-      rawUsers.value = usersRes.body.list
-      pageInfo.value = usersRes.body.page
-    }else{
-      errorMsg.value = usersRes.message
-    }
-    console.log("DEBUG rawUsers:", rawUsers.value)
-    console.log("DEBUG pageInfo:", pageInfo.value)
-    
+    console.log("DEBUG rawUsers:", rawUsers.value);
+    console.log("DEBUG pageInfo:", pageInfo.value);
   } catch (e) {
-    console.error(e)
-    errorMsg.value = 'Failed to load users or rooms.'
+    console.error(e);
+    errorMsg.value = "Failed to load users or rooms.";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
-onMounted(loadData)
+onMounted(loadData);
 
 const openCreate = () => {
   formUser.value = {
-    name: '',
-    email: '',
-    password: '',
+    name: "",
+    email: "",
+    password: "",
     admin: false,
-  }
-  editingUserId.value = null
-  viewMode.value = 'create'
-}
+  };
+  editingUserId.value = null;
+  viewMode.value = "create";
+};
 
 const openEdit = (user) => {
   formUser.value = {
+    _id: user._id,
     name: user.name,
     email: user.email,
-    password: '',
-    admin: user.admin,
-  }
-  editingUserId.value = user._id
-  viewMode.value = 'edit'
-}
+    admin: !!user.admin,
+    status: user.status,
+    password: "",
+  };
+  editingUserId.value = user._id;
+  viewMode.value = "edit";
+};
 
 const cancelForm = () => {
-  viewMode.value = 'list'
-}
+  viewMode.value = "list";
+};
 
 const submitForm = async () => {
   try {
-    if (viewMode.value === 'create') {
-      await apiRequest('/auth/signup', {
-        method: 'POST',
-        data: formUser.value,
-      })
-    } else if (viewMode.value === 'edit' && editingUserId.value) {
-      await apiRequest(`/users/${editingUserId.value}`, {
-        method: 'PUT',
-        data: formUser.value,
-      })
+    if (viewMode.value === "create") {
+      const payload = {
+        name: formUser.value.name,
+        email: formUser.value.email,
+        password: formUser.value.password,
+      };
+
+      console.log("DEBUG CREATE payload:", payload);
+
+      await apiRequest("/auth/signup", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    } else if (viewMode.value === "edit" && editingUserId.value) {
+      const payload = {
+        _id: editingUserId.value,
+        name: formUser.value.name,
+        email: formUser.value.email,
+        admin: !!formUser.value.admin,
+        status: Number(formUser.value.status),
+      };
+      await apiRequest(`/users/patch`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
     }
 
-    await loadData()
-    viewMode.value = 'list'
+    await loadData();
+    viewMode.value = "list";
   } catch (e) {
-    console.error('Failed to save user', e)
-    alert('Failed to save user')
+    console.error("Failed to save user", e);
+    alert("Failed to save user");
   }
-}
+};
 
-const goToPage = (page) => {
-  if (page < 1 || page > pageInfo.value.totalPages) return
-  loadData(page)
-}
+const onSearch = () => {
+  console.log("SEARCH NOW:", { ...search });
+  loadData(1);
+};
 
-const nextPage = () => {
-  goToPage(pageInfo.value.no + 1)
-}
-
-const prevPage = () => {
-  goToPage(pageInfo.value.no - 1)
-}
-
-const onSearch = () =>{
-  console.log('SEARCH NOW:', { ...search })
-  loadData(1)
-}
-
-const onSearchModelChange = (val) =>{
-  Object.assign(search, val)
-}
+const onSearchModelChange = (val) => {
+  Object.assign(search, val);
+  pageInfo.value.no = 1;
+};
 </script>
-
 
 <template>
   <div class="admin-page">
-    <section v-if="viewMode === 'list'" class="content">
+    <section class="content">
       <div class="nes-container is-rounded search-wrapper">
         <div class="search-row">
           <SearchBarModel
             :fields="userSearchFields"
             v-model="search"
             @update:modelValue="onSearchModelChange"
-            @search="onSearch"/>
+            @search="onSearch"
+          />
           <button
             type="button"
             class="nes-btn is-success add-btn"
@@ -239,11 +249,11 @@ const onSearchModelChange = (val) =>{
           </tr>
         </thead>
         <tbody>
-          <tr v-for="u in filteredUsers" :key="u._id">
+          <tr v-for="u in pagedUsers" :key="u._id">
             <td>{{ u._id }}</td>
             <td>{{ u.name }}</td>
             <td>{{ u.email }}</td>
-            <td>{{ u.admin ? 'Yes' : 'No' }}</td>
+            <td>{{ u.admin ? "Yes" : "No" }}</td>
             <!-- <td>{{ u.playingAt || '—' }}</td> -->
             <td class="edit-cell">
               <button
@@ -264,42 +274,41 @@ const onSearchModelChange = (val) =>{
         </tbody>
       </table>
 
-      <div
-        v-if="pageInfo.totalPages > 1"
-        class="pagination"
-      >
+      <div v-if="totalPages > 1" class="pagination">
         <button
           class="nes-btn"
           :disabled="pageInfo.no === 1"
-          @click="prevPage"
+          @click="pageInfo.no--"
         >
           Prev
         </button>
 
         <span class="page-label">
-          Page {{ pageInfo.no }} / {{ pageInfo.totalPages }}
+          Page {{ pageInfo.no }} / {{ totalPages }}
         </span>
 
         <button
           class="nes-btn"
-          :disabled="pageInfo.no === pageInfo.totalPages"
-          @click="nextPage"
+          :disabled="pageInfo.no >= totalPages"
+          @click="pageInfo.no++"
         >
           Next
         </button>
       </div>
     </section>
 
-    <section v-else class="content">
-      <EditPageModel
-        title="User"
-        :mode="viewMode === 'edit' ? 'edit' : 'create'"
-        :fields="userFormFields"
-        v-model="formUser"
-        @cancel="cancelForm"
-        @submit="submitForm"
-      />
-    </section>
+    <div v-if="viewMode !== 'list'" class="modal-overlay">
+      <div class="modal-dialog">
+        <EditPageModel
+          title="User"
+          :mode="viewMode === 'edit' ? 'edit' : 'create'"
+          :fields="userFormFields"
+          v-model="formUser"
+          @cancel="cancelForm"
+          @submit="submitForm"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -310,6 +319,21 @@ const onSearchModelChange = (val) =>{
   height: 100%;
 }
 
+.modal-overlay {
+  position: fixed;
+  inset: 0;                      
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;              
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.modal-dialog {
+  pointer-events: auto;  
+  max-width: 480px;
+  width: 90%;
+}
 .content {
   padding: 16px;
 }

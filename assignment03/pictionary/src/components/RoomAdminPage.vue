@@ -1,186 +1,198 @@
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
-import { apiRequest } from '../network/Request'
+import { ref, reactive, computed, onMounted } from "vue";
+import { apiRequest } from "../network/Request";
 
-import SearchBarModel from './SearchBarModel.vue'
-import EditPageModel from './EditPageModel.vue'
+import SearchBarModel from "./SearchBarModel.vue";
+import EditPageModel from "./EditPageModel.vue";
 
-const rawRooms = ref([])
+const rawRooms = ref([]);
 
-const loading = ref(false)
-const errorMsg = ref('')
+const loading = ref(false);
+const errorMsg = ref("");
 
-const viewMode = ref('list')
-const editingRoomId = ref(null)
+const viewMode = ref("list");
+const editingRoomId = ref(null);
 
 const pageInfo = ref({
   no: 1,
-  size: 20,
-  totalPages: 1,
-})
+  size: 8,
+});
 
 const search = reactive({
-  ownerId: '',
-  name: '',
-  maxPlayers: '',
-  visibility: 'any',
-  state: 'any',
-})
+  ownerId: "",
+  name: "",
+  maxPlayers: "",
+  visibility: "any",
+  state: "any",
+});
 const roomSearchFields = [
-  { key: 'ownerId', label: 'Owner ID', type: 'text', width: '20%' },
-  { key: 'name', label: 'Name', type: 'text', width: '25%' },
-  { key: 'maxPlayers', label: 'Max Players', type: 'text', width: '15%' },
+  { key: "ownerId", label: "Owner", type: "text", width: "20%" },
+  { key: "name", label: "Name", type: "text", width: "25%" },
+  { key: "maxPlayers", label: "Max Players", type: "text", width: "15%" },
   {
-    key: 'visibility',
-    label: 'Visibility',
-    type: 'select',
+    key: "visibility",
+    label: "Visibility",
+    type: "select",
     options: [
-      { value: 'any', label: 'Any' },
-      { value: '1', label: 'True' },
-      { value: '0', label: 'False' },
+      { value: "any", label: "Any" },
+      { value: "1", label: "True" },
+      { value: "0", label: "False" },
     ],
   },
   {
-    key: 'state',
-    label: 'State',
-    type: 'select',
+    key: "state",
+    label: "State",
+    type: "select",
     options: [
-      { value: 'any', label: 'Any' },
-      { value: '0', label: 'Closed' },
-      { value: '1', label: 'OnGoing' },
-      { value: '2', label: 'Waiting' },
+      { value: "any", label: "Any" },
+      { value: "0", label: "Closed" },
+      { value: "1", label: "OnGoing" },
+      { value: "2", label: "Waiting" },
     ],
   },
-]
+];
 
 const roomFormFields = [
   {
-    key: 'name',
-    label: 'Name',
-    type: 'text',
+    key: "name",
+    label: "Name",
+    type: "text",
     required: true,
   },
   {
-    key: 'ownerId',
-    label: 'Owner ID',
-    type: 'text',
+    key: "ownerId",
+    label: "Owner ID",
+    type: "text",
     editableOnEdit: false,
     editableOnCreate: false,
   },
   {
-    key: 'maxPlayers',
-    label: 'Max Players',
-    type: 'number',
+    key: "maxPlayers",
+    label: "Max Players",
+    type: "number",
     required: true,
   },
   {
-    key: 'visibility',
-    label: 'Visibility',
-    type: 'checkbox',
+    key: "visibility",
+    label: "Visibility",
+    type: "checkbox",
   },
   {
-    key: 'state',
-    label: 'Room State',
-    type: 'select',
+    key: "state",
+    label: "Room State",
+    type: "select",
     options: [
-      { value: 0, label: 'Closed' },
-      { value: 1, label: 'On Going' },
-      { value: 2, label: 'Waiting' },
+      { value: 0, label: "Closed" },
+      { value: 1, label: "On Going" },
+      { value: 2, label: "Waiting" },
     ],
   },
-]
+];
 const formRoom = ref({
-    name: '',
-    ownerId: '',
-    maxPlayers: '',
-    visibility: false,
-    state: '',
-})
+  name: "",
+  ownerId: "",
+  maxPlayers: "",
+  visibility: false,
+  state: "",
+});
 const roomStateText = (state) => {
   switch (Number(state)) {
     case 0:
-      return 'Closed'
+      return "Closed";
     case 1:
-      return 'OnGoing'
+      return "OnGoing";
     case 2:
-      return 'Waiting'
+      return "Waiting";
     default:
-      return state
+      return state;
   }
-}
+};
 
 const formatDate = (value) => {
-  if (!value) return '—'
+  if (!value) return "—";
   try {
-    return new Date(value).toLocaleString()
+    return new Date(value).toLocaleString();
   } catch {
-    return String(value)
+    return String(value);
   }
-}
+};
 
 const filteredRooms = computed(() => {
-  const ownerSearch = search.ownerId.trim().toLowerCase()
-  const nameSearch = search.name.trim().toLowerCase()
-  const maxPlayersSearch = search.maxPlayers.trim()
+  const ownerSearch = search.ownerId.trim().toLowerCase();
+  const nameSearch = search.name.trim().toLowerCase();
+  const maxPlayersSearch = search.maxPlayers.trim();
 
   return rawRooms.value.filter((r) => {
-    if (ownerSearch && String(r.ownerId || '').toLowerCase().includes(ownerSearch) === false)
-      return false
+    if (ownerSearch) {
+      const ownerName = (r.owner?.name || "").toLowerCase();
+      const ownerIdStr = String(r.ownerId || "").toLowerCase();
 
-    if (nameSearch && String(r.name || '').toLowerCase().includes(nameSearch) === false)
-      return false
+      if (
+        !ownerName.includes(ownerSearch) &&
+        !ownerIdStr.includes(ownerSearch)
+      ) {
+        return false;
+      }
+    }
+
+    if (
+      nameSearch &&
+      String(r.name || "")
+        .toLowerCase()
+        .includes(nameSearch) === false
+    )
+      return false;
 
     if (maxPlayersSearch) {
-      if (String(r.maxPlayers ?? '').includes(maxPlayersSearch) === false) return false
+      if (String(r.maxPlayers ?? "").includes(maxPlayersSearch) === false)
+        return false;
     }
 
-    if (search.visibility !== 'any') {
-      const wantVisible = search.visibility === '1'
-      if (!!r.visibility !== wantVisible) return false
+    if (search.visibility !== "any") {
+      const wantVisible = search.visibility === "1";
+      if (!!r.visibility !== wantVisible) return false;
     }
 
-    if (search.state !== 'any') {
-      if (String(r.state) !== search.state) return false
+    if (search.state !== "any") {
+      if (String(r.state) !== search.state) return false;
     }
 
-    return true
-  })
-})
+    return true;
+  });
+});
+
+const totalPages = computed(() => {
+  return Math.max(
+    1,
+    Math.ceil(filteredRooms.value.length / pageInfo.value.size)
+  );
+});
 
 const loadData = async (pageNo = 1) => {
-  loading.value = true
-  errorMsg.value = ''
+  loading.value = true;
+  errorMsg.value = "";
   try {
-    // const params = new URLSearchParams()
-    // params.set('page[mp]', String(pageNo))                
-    // params.set('page[size]', String(pageInfo.value.size)) 
+    const res = await apiRequest(`/rooms`, { method: "GET" });
 
-    // if (search.name.trim()) {
-    //   params.set('filter[name]', search.name.trim()) 
-    // }
+    console.log("DEBUG roomRes:", res);
+    console.log("DEBUG body:", res.body);
 
-    const res = await apiRequest(`/rooms`, { method: 'GET' })
-
-    console.log("DEBUG roomRes:", res)
-    console.log("DEBUG body:", res.body)
-
-    if(res.code === 0){
-      rawRooms.value = res.body.list
-      pageInfo.value = res.body.page
-    }else{
-      errorMsg.value = res.message
+    if (res.code === 0) {
+      rawRooms.value = res.body.list;
+      pageInfo.value.no = 1;
+    } else {
+      errorMsg.value = res.message;
     }
-    console.log("DEBUG rawRooms:", rawRooms.value)
-    console.log("DEBUG pageInfo:", pageInfo.value)
+    console.log("DEBUG rawRooms:", rawRooms.value);
   } catch (e) {
-    console.error(e)
-    errorMsg.value = 'Failed to load rooms.'
+    console.error(e);
+    errorMsg.value = "Failed to load rooms.";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
-onMounted(loadData)
+onMounted(loadData);
 
 const openEdit = (room) => {
   formRoom.value = {
@@ -189,64 +201,73 @@ const openEdit = (room) => {
     maxPlayers: room.maxPlayers,
     visibility: !!room.visibility,
     state: room.state,
-  }
-  editingRoomId.value = room._id
-  viewMode.value = 'edit'
-}
+  };
+  editingRoomId.value = room._id;
+  viewMode.value = "edit";
+};
 
 const cancelForm = () => {
-  viewMode.value = 'list'
-}
+  viewMode.value = "list";
+};
 
 const submitForm = async () => {
   try {
-    if (!editingRoomId.value) return
+    if (!editingRoomId.value) return;
+
+    const payload = {
+      name: formRoom.value.name,
+      maxPlayers: Number(formRoom.value.maxPlayers),
+      visibility: formRoom.value.visibility ? 1 : 0,
+      state: Number(formRoom.value.state),
+    };
 
     await apiRequest(`/rooms/${editingRoomId.value}`, {
-      method: 'PUT',
-      data: formRoom.value,
-    })
+      method: "PUT",
+      body: JSON.stringify(payload),
+    });
 
-    await loadData()
-    viewMode.value = 'list'
+    await loadData();
+    viewMode.value = "list";
   } catch (e) {
-    console.error('Failed to save room', e)
-    alert('Failed to save room')
+    console.error("Failed to save room", e);
+    alert("Failed to save room");
   }
-}
+};
+
 
 const goToPage = (page) => {
-  if (page < 1 || page > pageInfo.value.totalPages) return
-  loadData(page)
-}
+  if (page < 1 || page > pageInfo.value.totalPages) return;
+  loadData(page);
+};
 
 const nextPage = () => {
-  goToPage(pageInfo.value.no + 1)
-}
+  goToPage(pageInfo.value.no + 1);
+};
 
 const prevPage = () => {
-  goToPage(pageInfo.value.no - 1)
-}
+  goToPage(pageInfo.value.no - 1);
+};
 
-const onSearch = () =>{
-  console.log('SEARCH NOW:', { ...search })
-  loadData(1)
-}
+const onSearch = () => {
+  console.log("SEARCH NOW:", { ...search });
+  loadData(1);
+};
 
-const onSearchModelChange = (val) =>{
-  Object.assign(search, val)
-}
+const onSearchModelChange = (val) => {
+  Object.assign(search, val);
+  pageInfo.value.no = 1;
+};
 </script>
 
 <template>
   <div class="admin-page">
-    <section v-if="viewMode === 'list'" class="content">
-          <SearchBarModel
-            :fields="roomSearchFields"
-            v-model="search"
-            @update:modelValue="onSearchModelChange"
-            @search="onSearch"
-          />
+    <section class="content">
+      <SearchBarModel
+        :fields="roomSearchFields"
+        v-model="search"
+        @update:modelValue="onSearchModelChange"
+        @search="onSearch"
+      />
 
       <p v-if="errorMsg" class="nes-text is-error">{{ errorMsg }}</p>
       <p v-else-if="loading">Loading...</p>
@@ -254,8 +275,7 @@ const onSearchModelChange = (val) =>{
       <table v-else class="nes-table is-bordered is-centered room-table">
         <thead>
           <tr>
-            <th>Room ID</th>
-            <th>Owner ID</th>
+            <th>Owner</th>
             <th>Name</th>
             <th>Max Players</th>
             <th>Visibility</th>
@@ -267,11 +287,10 @@ const onSearchModelChange = (val) =>{
         </thead>
         <tbody>
           <tr v-for="r in filteredRooms" :key="r._id">
-            <td>{{ r._id }}</td>
-            <td>{{ r.ownerId }}</td>
+            <td>{{ r.owner?.name || r.ownerId }}</td>
             <td>{{ r.name }}</td>
             <td>{{ r.maxPlayers }}</td>
-            <td>{{ r.visibility ? 'True' : 'False' }}</td>
+            <td>{{ r.visibility ? "True" : "False" }}</td>
             <td>{{ roomStateText(r.state) }}</td>
             <td>{{ formatDate(r.createdAt) }}</td>
             <td>{{ formatDate(r.updatedAt) }}</td>
@@ -293,42 +312,50 @@ const onSearchModelChange = (val) =>{
           </tr>
         </tbody>
       </table>
-      <div
-        v-if="pageInfo.totalPages > 1"
-        class="pagination"
-      >
+      <div v-if="totalPages > 1" class="pagination">
         <button
           class="nes-btn"
           :disabled="pageInfo.no === 1"
-          @click="prevPage"
+          @click="pageInfo.no--"
         >
           Prev
         </button>
 
         <span class="page-label">
-          Page {{ pageInfo.no }} / {{ pageInfo.totalPages }}
+          Page {{ pageInfo.no }} / {{ totalPages }}
         </span>
 
         <button
           class="nes-btn"
-          :disabled="pageInfo.no === pageInfo.totalPages"
-          @click="nextPage"
+          :disabled="pageInfo.no >= totalPages"
+          @click="pageInfo.no++"
         >
           Next
         </button>
       </div>
     </section>
 
-    <section v-else class="content">
-      <EditPageModel
-        title="Room"
-        mode="edit"
-        :fields="roomFormFields"
-        v-model="formRoom"
-        @cancel="cancelForm"
-        @submit="submitForm"
-      />
-    </section>
+    <EditPageModel
+      v-if="viewMode !== 'list'"
+      title="Room"
+      mode="edit"
+      :fields="roomFormFields"
+      v-model="formRoom"
+      @cancel="cancelForm"
+      @submit="submitForm"
+    />
+    <div v-if="viewMode !== 'list'" class="modal-overlay">
+      <div class="modal-dialog">
+        <EditPageModel
+          title="Room"
+          mode="edit"
+          :fields="roomFormFields"
+          v-model="formRoom"
+          @cancel="cancelForm"
+          @submit="submitForm"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -339,6 +366,21 @@ const onSearchModelChange = (val) =>{
   height: 100%;
 }
 
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.modal-dialog {
+  pointer-events: auto;
+  max-width: 480px;
+  width: 90%;
+}
 .content {
   padding: 16px;
 }

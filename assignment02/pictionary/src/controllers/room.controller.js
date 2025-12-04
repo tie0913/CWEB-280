@@ -1,4 +1,4 @@
-const { createRoomSchema, listRoomsSchema } = require("../schemas/room.joi");
+const { createRoomSchema, listRoomsSchema, updateRoomSchema } = require("../schemas/room.joi");
 const roomService = require("../services/room.service");
 const { succeed, fail } = require("../util/response");
 
@@ -171,6 +171,33 @@ class RoomController {
         err.message === 'Only owner can start the room' ? 403 :
           err.message === 'Room is not in waiting state' ? 400 : 500;
       res.status(code).json(fail(-1, err.message));
+    }
+  }
+
+   /**
+   * Admin cập nhật room.
+   * Body: { name, maxPlayers, visibility, state }
+   * Param: roomId
+   */
+  async updateByAdmin(req, res) {
+    const { roomId } = req.params;
+
+    const { error, value } = updateRoomSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json(
+        fail(
+          1,
+          error.details.map(d => d.message)
+        )
+      );
+    }
+
+    try {
+      const updated = await roomService.updateRoomByAdmin(roomId, value);
+      return res.status(200).json(succeed(updated));
+    } catch (err) {
+      const code = err.message === 'Room not found' ? 404 : 500;
+      return res.status(code).json(fail(-1, err.message));
     }
   }
 }
