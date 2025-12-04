@@ -2,6 +2,7 @@
 import { useUserStore } from '../stores/UserStore'
 import { apiRequest } from '../network/Request'
 import { useModeStore } from '../stores/ModeStore'
+import { ref } from 'vue'
 
 const props = defineProps({
     show: { type: Boolean, default: false },
