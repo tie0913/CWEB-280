@@ -7,11 +7,12 @@ import { useModeStore } from '../stores/ModeStore'
 
 const userStore = useUserStore()
 const modeStore = useModeStore()
+const isAdminMode = computed(() => modeStore.isAdminMode)
 const isGuest = computed(() => !userStore.get())
 const isAdmin = computed(() => userStore.get()?.admin)
 const uname = computed(() => userStore.get()?.name)
 
-const emit = defineEmits(['openSignIn', 'openSignUp', 'openSignOut', 'openProfile','changeAdminTab'])
+const emit = defineEmits(['openSignIn', 'openSignUp', 'openSignOut', 'openProfile', 'changeAdminTab'])
 const selectAdminTab = (tab) => emit('changeAdminTab', tab)
 </script>
 
@@ -34,26 +35,23 @@ const selectAdminTab = (tab) => emit('changeAdminTab', tab)
         </template>
         <template v-else>
           <template v-if="isAdmin">
-            <span class="nes-text is-warning">
-              <Switch label-position="left"/>
-            </span>
-            <div class="d-flex align-items-center gap-2">
-              <button class="nes-btn is-primary" @click="selectAdminTab('user')"
-              title="User">
+            <div v-if="isAdminMode" class="d-flex align-items-center gap-2">
+              <button class="nes-btn is-primary" @click="selectAdminTab('user')" title="User">
                 User
               </button>
-              <button class="nes-btn is-warning" @click="selectAdminTab('room')"
-              title="Room">
+              <button class="nes-btn is-warning" @click="selectAdminTab('room')" title="Room">
                 Room
               </button>
-              <button class="nes-btn is-success" @click="selectAdminTab('word')"
-              title="Word">
+              <button class="nes-btn is-success" @click="selectAdminTab('word')" title="Word">
                 Word
               </button>
             </div>
+            <span class="nes-text is-warning">
+              <Switch label-position="left" />
+            </span>
           </template>
           <button class="nes-btn is-success" @click="emit('openProfile')" title="Profile">
-            <span>{{ uname }}</span><i class="nes-icon user is-small clickable" ></i>
+            <span>{{ uname }}</span><i class="nes-icon user is-small clickable"></i>
           </button>
           <button class="nes-btn is-error" @click="emit('openSignOut')" title="Sign Out">
             <i class="nes-icon close is-small clickable"></i>
@@ -61,7 +59,7 @@ const selectAdminTab = (tab) => emit('changeAdminTab', tab)
         </template>
       </div>
     </div>
- 
+
   </header>
 </template>
 

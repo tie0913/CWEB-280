@@ -20,6 +20,8 @@ import { apiRequest } from "../network/Request";
  */
 export async function init() {
 
+    const modeStore = useModeStore()
+    const userStore = useUserStore()
     let clean = true
     try {
         const result = await apiRequest('/users/self', {
@@ -27,10 +29,10 @@ export async function init() {
         })
         if(result.code === 0){
             const user = result.body
-            useModeStore().init()
-            useUserStore().setAuth(user)
-            if(!user.admin && useModeStore().isAdminMode()){
-                useModeStore().toggle()
+            modeStore.init()
+            userStore.set(user)
+            if(!user.admin && modeStore.isAdminMode()){
+                modeStore.toggle()
             }
             clean = false
         }
@@ -39,8 +41,8 @@ export async function init() {
     }
 
     if(clean){
-        useUserStore().logout()
-        useModeStore().clear()
-        useModeStore().init()
+        userStore.logout()
+        modeStore.clear()
+        modeStore.init()
     }
 }

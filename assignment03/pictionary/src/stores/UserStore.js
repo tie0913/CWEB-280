@@ -47,5 +47,5 @@ export const useUserStore = defineStore('user', () => {
     else localStorage.removeItem('user')
   }, { deep: true })
 
-  return { get, setAuth: set, logout, init}
+  return { get, set, logout, init}
 })

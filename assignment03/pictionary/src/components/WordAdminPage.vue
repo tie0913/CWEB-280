@@ -14,7 +14,7 @@ const editingWordId = ref(null)
 
 const pageInfo = ref({
   no: 1,
-  size: 8,
+  size: 4,
 })
 
 const search = reactive({

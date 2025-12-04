@@ -35,6 +35,7 @@ export const useModeStore = defineStore('mode', () => {
   const clear = () => {
     console.log('[ModeStore] clear')
     mode.value = null
+    localStorage.removeItem('mode')
   }
 
   /**
