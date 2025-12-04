@@ -1,6 +1,23 @@
 import { useUserStore } from "./UserStore";
 import { useModeStore } from './ModeStore'
 import { apiRequest } from "../network/Request";
+
+/**
+ * Initialize application session state.
+ *
+ * - Calls `/users/self` to fetch current user.
+ * - On success:
+ *   - Initializes mode store.
+ *   - Sets authenticated user.
+ *   - Ensures non-admin users cannot stay in Admin Mode.
+ * - On failure or missing/invalid user:
+ *   - Logs out user.
+ *   - Clears mode and reinitializes to default.
+ *
+ * @async
+ * @function init
+ * @returns {Promise<void>}
+ */
 export async function init() {
 
     let clean = true
@@ -18,7 +35,7 @@ export async function init() {
             clean = false
         }
     } catch (e) {
-
+        console.error('Reading local storage has error', e)
     }
 
     if(clean){

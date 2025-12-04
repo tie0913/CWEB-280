@@ -32,7 +32,7 @@ const onSubmit = async () => {
         modeStore.init()
       }
 
-      userStore.setAuth(result.body)
+      userStore.set(result.body)
       if(userStore.get().admin && modeStore.isPlayMode){
         modeStore.toggle()
       }else{

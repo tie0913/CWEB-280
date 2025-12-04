@@ -6,7 +6,7 @@
     >
       <div class="nes-container is-rounded room-modal">
         <h3 class="mb-3">Create Room</h3>
-
+        <!-- room form -->
         <form @submit.prevent="onSubmit">
           <!-- Room name -->
           <div class="mb-3">
@@ -87,7 +87,6 @@ const props = defineProps({
 
 const submitting = ref(false)
 const error = ref('') 
-
 const emit = defineEmits(['update:show', 'create'])
 
 const form = reactive({
@@ -111,6 +110,10 @@ const onCancel = () => {
     emit('update:show')
 }
 
+/**
+ * save the room info to backend
+ * and emit create event to the parent widget
+ */
 const onSubmit = async () => {
   if (!form.name.trim()) return
 

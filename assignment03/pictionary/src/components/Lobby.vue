@@ -15,6 +15,9 @@ const emit = defineEmits(['sign-in'])
 
 const isGuest = computed(() => !useUserStore().get())
 
+/**
+ * This method loads rooms by batches
+ */
 const load = async () => {
   loading.value = true
   try {
@@ -38,6 +41,9 @@ onMounted(() => {
   load()
 })
 
+/**
+ * refresh all the rooms listed in current lobby
+ */
 const refresh = async () => {
   const ids =  rooms.value.map((e) => e._id)
   loading.value = true
@@ -56,11 +62,24 @@ const refresh = async () => {
   }
 
 }
+
+/**
+ * create room event handler
+ * we need to add the new room to the list and then open room window
+ * @param newRoom 
+ */
 const roomCreated = (newRoom) => {
   rooms.value = [newRoom].concat(rooms.value)
   open(newRoom._id, newRoom)
 }
 
+/**
+ * open a room window.
+ * if the newRoom is not null, this room is created just now(current user will be the owner)
+ * otherwise means that current user is joining this room
+ * @param roomId 
+ * @param newRoom 
+ */
 const open = (roomId, newRoom) => {
   selectedRoomId.value = roomId
   curRoom.value = newRoom

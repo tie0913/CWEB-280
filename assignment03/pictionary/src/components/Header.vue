@@ -9,12 +9,9 @@ const userStore = useUserStore()
 const modeStore = useModeStore()
 const isGuest = computed(() => !userStore.get())
 const isAdmin = computed(() => userStore.get()?.admin)
-const isPlayMode = computed(() => modeStore.isPlayMode)
 const uname = computed(() => userStore.get()?.name)
 
-
 const emit = defineEmits(['openSignIn', 'openSignUp', 'openSignOut', 'openProfile','changeAdminTab'])
-
 const selectAdminTab = (tab) => emit('changeAdminTab', tab)
 </script>
 
